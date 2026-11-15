@@ -41,6 +41,9 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
   const [leads, setLeads] = useState<LeadItem[]>(initialLeads);
   const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
   const [notes, setNotes] = useState("");
+  const [nextStatus, setNextStatus] = useState<LeadStatus>(LeadStatus.NEW);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const stages: Array<{ key: LeadStatus; label: string; color: string }> = [
     { key: LeadStatus.NEW, label: "Fresh Inquiries", color: "border-blue-500" },
@@ -51,10 +54,18 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
     { key: LeadStatus.ENROLLED, label: "Final Admission", color: "border-emerald-600" },
   ];
 
-  const updateStatus = (leadId: string, nextStatus: LeadStatus) => {
-    setLeads((prev) =>
-      prev.map((l) => (l.id === leadId ? { ...l, status: nextStatus } : l))
-    );
+  const updateStatus = (_leadId: string, status: LeadStatus) => setNextStatus(status);
+  const saveLead = async () => {
+    if (!selectedLead || saving) return;
+    setSaving(true); setError("");
+    try {
+      const response = await fetch("/api/v1/admin/enquiries", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: selectedLead.id, status: nextStatus, counselorNotes: notes }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Unable to save enquiry");
+      setLeads(previous => previous.map(lead => lead.id === selectedLead.id ? { ...lead, status: data.lead.status, counselorNotes: data.lead.counselorNotes } : lead));
+      setSelectedLead(null);
+    } catch (error) { setError(error instanceof Error ? error.message : "Unable to save enquiry"); }
+    finally { setSaving(false); }
   };
 
   return (
@@ -83,6 +94,7 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
                     onClick={() => {
                       setSelectedLead(lead);
                       setNotes(lead.counselorNotes || "");
+                      setNextStatus(lead.status); setError("");
                     }}
                     className="p-3.5 rounded-xl bg-card border hover:shadow-md transition-all cursor-pointer space-y-2 group"
                   >
@@ -142,7 +154,7 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
                 </h3>
               </div>
               <button
-                onClick={() => setSelectedLead(null)}
+                onClick={() => { if (!saving) setSelectedLead(null); }}
                 className="text-muted-foreground hover:text-foreground text-sm font-semibold"
               >
                 ✕
@@ -183,7 +195,7 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
                     key={st.key}
                     onClick={() => updateStatus(selectedLead.id, st.key)}
                     className={`py-1.5 px-2 rounded-lg border text-center font-semibold transition-all ${
-                      selectedLead.status === st.key
+                      nextStatus === st.key
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-muted/40 hover:bg-accent text-foreground"
                     }`}
@@ -195,6 +207,7 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
             </div>
 
             {/* Counselor Follow-up Notes */}
+            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
             <div>
               <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                 Counselor Follow-up Notes
@@ -210,10 +223,11 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
 
             <div className="flex justify-end gap-2 pt-2 border-t">
               <button
-                onClick={() => setSelectedLead(null)}
+                onClick={saveLead}
+                disabled={saving}
                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold"
               >
-                Save & Close
+                {saving ? "Saving…" : "Save & Close"}
               </button>
             </div>
           </div>

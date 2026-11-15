@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { X, CheckCircle2, FileText, Send, Sparkles, Phone, User, GraduationCap, AlertCircle } from "lucide-react";
 import { LeadCtaType } from "@prisma/client";
 
@@ -25,6 +26,7 @@ export function LeadCaptureModal({
   brochureUrl,
   defaultStream = "Engineering",
 }: LeadCaptureModalProps) {
+  useScrollLock(open);
   const [step, setStep] = useState<"form" | "success">("form");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -138,7 +140,7 @@ export function LeadCaptureModal({
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto">
+        <div className="p-4 sm:p-6 min-h-0 overflow-y-auto overscroll-contain">
           {step === "form" && (
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (

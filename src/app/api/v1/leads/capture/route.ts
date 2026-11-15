@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { LeadCtaType, LeadStatus } from "@prisma/client";
 import { z } from "zod";
+import { isValidStateDistrict } from "@/lib/india-locations";
+import { resolveCollegeBrochures } from "@/lib/brochures";
+import { auth } from "@/lib/auth/config";
 
 const LeadCaptureSchema = z.object({
   studentName: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -12,6 +15,7 @@ const LeadCaptureSchema = z.object({
     .regex(/^(\+?\d{1,3})?[0-9\s\-]{10,14}$/, "Valid contact number required"),
   targetStream: z.string().min(2, "Target stream is required"),
   targetCourse: z.string().optional().nullable(),
+  brochureId: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
   state: z.string().optional().nullable(),
   district: z.string().optional().nullable(),
@@ -39,6 +43,25 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
+    const session = await auth();
+    const studentId = (session?.user as any)?.role === "STUDENT" ? session!.user!.id : null;
+    if (data.targetCollegeId && !await db.college.findUnique({ where: { id: data.targetCollegeId, isPublished: true }, select: { id: true } })) return NextResponse.json({ error: "College not found" }, { status: 404 });
+    if ((data.state || data.district) && !isValidStateDistrict(data.state || "", data.district || "")) {
+      return NextResponse.json({ success: false, error: "Select a valid state and a district belonging to that state." }, { status: 400 });
+    }
+    if (data.ctaType === LeadCtaType.DOWNLOAD_BROCHURE) {
+      if (!data.targetCollegeId || !data.brochureId || !data.email || !data.parentPhone || !data.state || !data.district) {
+        return NextResponse.json({ success: false, error: "Complete all brochure request fields." }, { status: 400 });
+      }
+      const college = await db.college.findUnique({ where: { id: data.targetCollegeId, isPublished: true }, select: { id: true, slug: true, brochurePdfUrl: true, courses: { select: { course: { select: { degree: true } } } } } });
+      const brochure = college && resolveCollegeBrochures(college).find(item => item.id === data.brochureId);
+      if (!brochure || !brochure.programs.includes(data.targetCourse || "")) {
+        return NextResponse.json({ success: false, error: "Select an available brochure and a course covered by that document." }, { status: 400 });
+      }
+      if (!/^(?:\+91|91|0)?[6-9]\d{9}$/.test(data.parentPhone.replace(/[\s()-]/g, ""))) {
+        return NextResponse.json({ success: false, error: "Enter a valid parent or guardian mobile number." }, { status: 400 });
+      }
+    }
     const cleanPhone = data.phone.replace(/[\s\-()]/g, "");
 
     // Duplicate submission prevention:
@@ -47,7 +70,10 @@ export async function POST(req: NextRequest) {
     const existing = await db.lead.findFirst({
       where: {
         phone: cleanPhone,
+        userId: studentId,
         targetCollegeId: data.targetCollegeId || null,
+        ctaType: data.ctaType,
+        targetCourse: data.targetCourse || null,
         createdAt: { gte: twoMinutesAgo },
       },
       include: {
@@ -68,6 +94,7 @@ export async function POST(req: NextRequest) {
     const lead = await db.lead.create({
       data: {
         studentName: data.studentName.trim(),
+        userId: studentId,
         phone: cleanPhone,
         email: data.email ? data.email.toLowerCase().trim() : null,
         state: data.state ? data.state.trim() : null,

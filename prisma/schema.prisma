@@ -76,6 +76,7 @@ model User {
   updatedAt        DateTime     @updatedAt
 
   blogPosts        BlogPost[]
+  blogImages       BlogImage[]
   reviews          Review[]
   leads            Lead[]
   staffPermission  StaffPermission?
@@ -180,6 +181,10 @@ model College {
   reviewCount     Int           @default(0)
   isFeatured      Boolean       @default(false)
   isPublished     Boolean       @default(true)
+  showInNavbar    Boolean       @default(false)
+  navbarCategory  String?
+  navbarSection   String        @default("featured")
+  navbarFilter    String?
   searchTsv       Unsupported("tsvector")?
   embedding       Json?
   createdAt       DateTime      @default(now())
@@ -316,6 +321,18 @@ model Review {
   user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([collegeId, isVerified, moderationStatus])
+}
+
+model BlogImage {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  uploaderId String?  @db.Uuid
+  mimeType   String
+  size       Int
+  data       Bytes
+  createdAt  DateTime @default(now())
+  uploader   User?    @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  @@index([uploaderId])
 }
 
 model BlogPost {

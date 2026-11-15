@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Building2, Plus, Award, CheckCircle2, Globe2, BookOpen } from "lucide-react";
-import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { checkAdminAccess, collegeScope } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { AdminCollegeActions } from "./AdminCollegeActions";
 
 export const revalidate = 0;
 
-export default async function AdminCollegesPage() {
+export default async function AdminCollegesPage({ searchParams }: {
+  searchParams: Promise<{ submitted?: string }>;
+}) {
   const access = await checkAdminAccess("colleges");
   if (!access.allowed) {
     return (
@@ -18,14 +20,34 @@ export default async function AdminCollegesPage() {
     );
   }
 
-  const colleges = await db.college.findMany({
+  const { submitted } = await searchParams;
+  const [colleges, submissions] = await Promise.all([db.college.findMany({
+    where: collegeScope(access),
     orderBy: [{ nirfRank: "asc" }, { name: "asc" }],
     include: {
       _count: {
         select: { courses: true, reviews: true, leads: true },
       },
     },
-  });
+  }), db.collegeApprovalRequest.findMany({
+    where: {
+      actionType: "CREATE",
+      ...(access.isSuperAdmin ? { status: "PENDING" as const } : { staffId: access.userId }),
+    },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+    select: {
+      id: true, title: true, status: true, adminFeedback: true, createdAt: true,
+      staff: { select: { name: true } },
+    },
+  })]);
+  const submittedRequest = submissions.find(request => request.id === submitted);
+  const submissionLabels = {
+    PENDING: "Awaiting admin approval",
+    APPROVED: "Approved",
+    REJECTED: "Rejected",
+    REVISION_REQUESTED: "Revision requested",
+  };
 
   const totalCount = colleges.length;
   const publishedCount = colleges.filter((c) => c.isPublished).length;
@@ -34,6 +56,12 @@ export default async function AdminCollegesPage() {
 
   return (
     <div className="space-y-6 max-w-7xl">
+      {submittedRequest && (
+        <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+          <p className="font-bold">College submitted successfully.</p>
+          <p>{submissionLabels[submittedRequest.status]}. Track your submission below or in <Link href="/admin/approvals" className="font-semibold underline">Staff Approvals</Link>.</p>
+        </div>
+      )}
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b">
         <div>
@@ -57,7 +85,7 @@ export default async function AdminCollegesPage() {
             style={{ background: "#1a3068" }}
           >
             <Plus className="w-4 h-4" />
-            <span>Add New College</span>
+            <span>{access.isSuperAdmin ? "Add New College" : "Submit New College"}</span>
           </Link>
         </div>
       </div>
@@ -77,7 +105,7 @@ export default async function AdminCollegesPage() {
         </div>
 
         <div className="p-4 rounded-xl border bg-card shadow-2xs">
-          <span className="text-xs font-semibold text-muted-foreground">Drafts / In Review</span>
+          <span className="text-xs font-semibold text-muted-foreground">Draft Profiles</span>
           <p className="text-2xl font-black text-amber-700 mt-1">{draftCount}</p>
           <p className="text-[11px] text-muted-foreground mt-0.5">Pending publication</p>
         </div>
@@ -88,6 +116,45 @@ export default async function AdminCollegesPage() {
           <p className="text-[11px] text-muted-foreground mt-0.5">Verified NIRF 2025</p>
         </div>
       </div>
+
+      {(!access.isSuperAdmin || submissions.length > 0) && (
+        <section className="rounded-2xl border bg-card p-4 sm:p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-bold">{access.isSuperAdmin ? "New colleges awaiting approval" : "My college submissions"}</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                {access.isSuperAdmin
+                  ? "Review staff submissions before adding them to the public directory."
+                  : "New colleges stay here until the administrator reviews them. Approved colleges are assigned to you automatically."}
+              </p>
+            </div>
+            <Link href="/admin/approvals" className="text-sm font-semibold text-primary underline">
+              {access.isSuperAdmin ? "Review staff submissions" : "View all submissions"}
+            </Link>
+          </div>
+          {submissions.length === 0 ? (
+            <p className="text-sm text-muted-foreground">You haven’t submitted a college yet. Use Submit New College to send one for admin approval.</p>
+          ) : (
+            <ul className="divide-y">
+              {submissions.map(request => (
+                <li key={request.id} className="py-3 flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold break-words">{request.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {access.isSuperAdmin && `${request.staff.name} · `}
+                      {request.createdAt.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}
+                    </p>
+                    {request.adminFeedback && <p className="text-xs text-muted-foreground mt-1 break-words">Admin feedback: {request.adminFeedback}</p>}
+                  </div>
+                  <span className={`rounded-lg px-3 py-1 text-xs font-semibold ${request.status === "APPROVED" ? "bg-emerald-100 text-emerald-800" : request.status === "REJECTED" ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}`}>
+                    {submissionLabels[request.status]}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
 
       {/* Colleges Data Table */}
       <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
@@ -111,6 +178,13 @@ export default async function AdminCollegesPage() {
               </tr>
             </thead>
             <tbody className="divide-y text-foreground">
+              {colleges.length === 0 && (
+                <tr><td colSpan={8} className="p-6 text-sm text-muted-foreground">
+                  {access.isSuperAdmin
+                    ? "No college profiles have been created yet."
+                    : "No colleges are assigned to you yet. You can submit a new college now; it will appear in this directory after admin approval."}
+                </td></tr>
+              )}
               {colleges.map((c) => (
                 <tr key={c.id} className="hover:bg-muted/20 transition-colors">
                   <td className="p-4 max-w-xs">

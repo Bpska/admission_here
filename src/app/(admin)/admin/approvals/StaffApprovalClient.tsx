@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useScrollLock } from "@/hooks/useScrollLock";
+import { ADMIN_RESOURCES } from "@/lib/admin-data-config";
 import { 
   CheckSquare, 
   CheckCircle2, 
@@ -36,6 +39,7 @@ interface ApprovalItem {
   reviewedById?: string | null;
   reviewedAt?: string | null;
   createdAt: string;
+  updatedAt?: string;
   staff: {
     id: string;
     name: string;
@@ -80,6 +84,7 @@ export function StaffApprovalClient({
   const [requests, setRequests] = useState<ApprovalItem[]>(initialRequests);
   const [logs, setLogs] = useState<ActivityLogItem[]>(initialLogs);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [previewWidth, setPreviewWidth] = useState<"desktop" | "mobile">("desktop");
   const [previewItem, setPreviewItem] = useState<ApprovalItem | null>(null);
   const [reviewActionModal, setReviewActionModal] = useState<{
     item: ApprovalItem;
@@ -88,6 +93,7 @@ export function StaffApprovalClient({
   const [feedbackText, setFeedbackText] = useState("");
   const [processing, setProcessing] = useState(false);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  useScrollLock(Boolean(previewItem || reviewActionModal));
 
   const filteredRequests = requests.filter((req) => {
     if (statusFilter === "ALL") return true;
@@ -108,6 +114,7 @@ export function StaffApprovalClient({
         body: JSON.stringify({
           requestId: reviewActionModal.item.id,
           action: reviewActionModal.action,
+          expectedUpdatedAt: reviewActionModal.item.updatedAt,
           adminFeedback: feedbackText,
         }),
       });
@@ -337,6 +344,9 @@ export function StaffApprovalClient({
                           <span>Preview</span>
                         </button>
 
+                        {isSuperAdmin && req.status === ApprovalStatus.PENDING && !req.proposedData?.__resourceMutation && (
+                          <Link href={`/admin/approvals/${req.id}/edit`} className="rounded-lg border px-2.5 py-1 text-[11px] font-bold hover:bg-muted">Edit</Link>
+                        )}
                         {isSuperAdmin && req.status === ApprovalStatus.PENDING && (
                           <>
                             <button
@@ -411,133 +421,37 @@ export function StaffApprovalClient({
         </div>
       </div>
 
-      {/* Preview Changes Modal */}
+      {/* Website preview uses the same content components as the public college pages. */}
       {previewItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-2xl bg-card border rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
-            <div className="p-4 border-b flex items-center justify-between bg-muted/30">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Proposed Changes Preview
-                </span>
-                <h3 className="font-extrabold text-base text-foreground">{previewItem.title}</h3>
-                <p className="text-xs text-muted-foreground">
-                  Submitted by {previewItem.staff.name} on {new Date(previewItem.createdAt).toLocaleString("en-IN")}
-                </p>
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+          <section role="dialog" aria-modal="true" aria-labelledby="college-preview-title" className="w-full max-w-[1500px] h-[94dvh] bg-card border rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-3 sm:p-4 border-b flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="min-w-0">
+                <h3 id="college-preview-title" className="font-bold text-sm sm:text-base break-words">{previewItem.title}</h3>
+                <p className="text-xs text-muted-foreground">Submitted by {previewItem.staff.name} · {previewItem.status.replaceAll("_", " ")}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => setPreviewItem(null)}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" aria-pressed={previewWidth === "desktop"} onClick={() => setPreviewWidth("desktop")} className="rounded-lg border px-3 py-1.5 text-xs">Desktop</button>
+                <button type="button" aria-pressed={previewWidth === "mobile"} onClick={() => setPreviewWidth("mobile")} className="rounded-lg border px-3 py-1.5 text-xs">Mobile</button>
+                <Link href={`/approval-preview/${previewItem.id}`} target="_blank" rel="noopener noreferrer" className="rounded-lg border px-3 py-1.5 text-xs">Open full preview</Link>
+                {isSuperAdmin && previewItem.status === ApprovalStatus.PENDING && !previewItem.proposedData?.__resourceMutation && <Link href={`/admin/approvals/${previewItem.id}/edit`} className="rounded-lg bg-primary text-primary-foreground px-3 py-1.5 text-xs font-semibold">Edit submission</Link>}
+                <button type="button" aria-label="Close college preview" onClick={() => setPreviewItem(null)} className="rounded-lg border p-1.5"><X className="h-4 w-4" /></button>
+              </div>
             </div>
-
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl border bg-muted/20 space-y-2">
-                <span className="text-[10px] uppercase font-bold text-muted-foreground block">
-                  Proposed Metadata &amp; Content Fields
-                </span>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-muted-foreground text-[10px] block">College Name:</span>
-                    <strong className="text-foreground">{previewItem.proposedData?.name || "-"}</strong>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px] block">Slug:</span>
-                    <strong className="text-foreground font-mono">{previewItem.proposedData?.slug || "-"}</strong>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px] block">City &amp; State:</span>
-                    <strong className="text-foreground">{previewItem.proposedData?.city}, {previewItem.proposedData?.state}</strong>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px] block">NIRF Rank:</span>
-                    <strong className="text-foreground">{previewItem.proposedData?.nirfRank ? `#${previewItem.proposedData.nirfRank}` : "Unranked"}</strong>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px] block">Brochure URL:</span>
-                    <strong className="text-foreground truncate block">{previewItem.proposedData?.brochurePdfUrl || "Not attached"}</strong>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-[10px] block">NAAC Grade:</span>
-                    <strong className="text-foreground">{previewItem.proposedData?.naacGrade || "N/A"}</strong>
-                  </div>
-                </div>
-              </div>
-
-              {previewItem.proposedData?.overviewHtml && (
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Institutional Overview Preview:
-                  </span>
-                  <div
-                    className="p-3 rounded-xl border bg-background prose prose-xs max-h-40 overflow-y-auto"
-                    dangerouslySetInnerHTML={{ __html: previewItem.proposedData.overviewHtml }}
-                  />
-                </div>
-              )}
-
-              {previewItem.proposedData?.admissionHtml && (
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Admission 2026 Guidelines Preview:
-                  </span>
-                  <div
-                    className="p-3 rounded-xl border bg-background prose prose-xs max-h-40 overflow-y-auto"
-                    dangerouslySetInnerHTML={{ __html: previewItem.proposedData.admissionHtml }}
-                  />
-                </div>
-              )}
-
-              {/* JSON Payload viewer for full accuracy */}
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Raw Proposed Payload:
-                </span>
-                <pre className="p-3 rounded-xl border bg-muted/40 text-[10px] font-mono max-h-40 overflow-y-auto">
-                  {JSON.stringify(previewItem.proposedData, null, 2)}
-                </pre>
-              </div>
-
-              {/* Action buttons inside preview */}
-              {isSuperAdmin && previewItem.status === ApprovalStatus.PENDING && (
-                <div className="pt-3 border-t flex flex-wrap gap-2 justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setReviewActionModal({ item: previewItem, action: "REQUEST_REVISION" });
-                      setFeedbackText("");
-                    }}
-                    className="px-3.5 py-2 rounded-xl border text-xs font-bold text-foreground hover:bg-muted"
-                  >
-                    Request Revision
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setReviewActionModal({ item: previewItem, action: "REJECT" });
-                      setFeedbackText("");
-                    }}
-                    className="px-3.5 py-2 rounded-xl border border-red-500/30 text-red-600 hover:bg-red-500/10 text-xs font-bold"
-                  >
-                    Reject
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setReviewActionModal({ item: previewItem, action: "APPROVE" });
-                      setFeedbackText("Approved and published to public directory.");
-                    }}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs"
-                  >
-                    Approve &amp; Publish Live
-                  </button>
-                </div>
-              )}
+            {previewItem.proposedData?.__resourceMutation && <details className="border-b p-3 text-xs shrink-0" open>
+              <summary className="font-bold cursor-pointer">Proposed {ADMIN_RESOURCES[previewItem.proposedData.__resourceMutation.resource]?.label} changes</summary>
+              <dl className="max-h-36 overflow-auto mt-2 grid grid-cols-2 gap-2">{Object.entries(previewItem.proposedData.__resourceMutation.data || {}).map(([key, value]) => <div key={key}><dt className="font-semibold">{ADMIN_RESOURCES[previewItem.proposedData.__resourceMutation.resource]?.fields.find(field => field.key === key)?.label || key}</dt><dd className="break-words">{Array.isArray(value) ? value.join(", ") : String(value ?? "—")}</dd></div>)}</dl>
+              <p className="mt-2 text-muted-foreground">The website below shows the current college profile. Review the proposed data above before approval.</p>
+            </details>}
+            <div className="flex-1 min-h-0 flex justify-center bg-muted/40 overflow-hidden">
+              <iframe key={previewItem.id} src={`/approval-preview/${previewItem.id}`} title="College website preview" className="h-full border-0 bg-background" style={{ width: previewWidth === "mobile" ? 390 : "100%", maxWidth: "100%" }} />
             </div>
-          </div>
+            {isSuperAdmin && previewItem.status === ApprovalStatus.PENDING && <div className="shrink-0 p-3 border-t flex flex-wrap justify-end gap-2">
+              <button type="button" onClick={() => { setReviewActionModal({ item: previewItem, action: "REQUEST_REVISION" }); setFeedbackText(""); }} className="rounded-lg border px-3 py-2 text-xs font-semibold">Request Revision</button>
+              <button type="button" onClick={() => { setReviewActionModal({ item: previewItem, action: "REJECT" }); setFeedbackText(""); }} className="rounded-lg border border-red-200 text-red-700 px-3 py-2 text-xs font-semibold">Reject</button>
+              <button type="button" onClick={() => { setReviewActionModal({ item: previewItem, action: "APPROVE" }); setFeedbackText("Approved and published to public directory."); }} className="rounded-lg bg-emerald-600 text-white px-4 py-2 text-xs font-semibold">Approve &amp; Publish Live</button>
+            </div>}
+          </section>
         </div>
       )}
 

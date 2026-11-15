@@ -4,9 +4,9 @@ import { z } from "zod";
 
 const PredictorSchema = z.object({
   examSlug: z.string().default("jee-main"),
-  rank: z.coerce.number().min(1, "Rank must be at least 1"),
-  category: z.string().default("GEN"),
-  quota: z.string().default("AI"),
+  rank: z.coerce.number().finite().min(0).max(100000000),
+  category: z.enum(["GEN", "OBC", "EWS", "SC", "ST"]).default("GEN"),
+  quota: z.enum(["AI", "HS", "OS", "ALL"]).default("AI"),
   homeState: z.string().optional().nullable(),
   targetCourse: z.string().optional().nullable(),
 });
@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
 
     const { examSlug, rank, category, quota, homeState, targetCourse } = parsed.data;
 
+    const percentile = examSlug === "cat";
+    if ((percentile && rank > 100) || (!percentile && (!Number.isInteger(rank) || rank < 1))) return NextResponse.json({error: percentile ? "Enter a percentile between 0 and 100." : "Enter a positive whole-number rank."}, {status:400});
+    if ((quota === "HS" || quota === "OS") && !homeState?.trim()) return NextResponse.json({error:"Select your home state for this quota."}, {status:400});
     // Find the exam
     const exam = await db.exam.findUnique({
       where: { slug: examSlug },
@@ -37,6 +40,7 @@ export async function POST(req: NextRequest) {
     // Query historical cutoffs for this exam matching category & quotas
     const whereConditions: any = {
       examId: exam.id,
+      collegeCourse: { college: { isPublished: true } },
       category: { equals: category, mode: "insensitive" },
     };
 
@@ -54,18 +58,27 @@ export async function POST(req: NextRequest) {
           },
         },
       },
-      orderBy: { closingRank: "asc" },
-      take: 60,
+      orderBy: [{ academicYear: "desc" }, { counselingRound: "desc" }],
     });
 
     // Optional filter by target course / stream if specified
+    const seen = new Set<string>();
+    const eligibleCutoffs = cutoffs.filter(c => {
+      if (percentile ? c.cutoffPercentile == null : c.closingRank == null || c.closingRank <= 0) return false;
+      const sameState = c.collegeCourse.college.state.toLowerCase() === homeState?.trim().toLowerCase();
+      if (c.quota === "HS" && !sameState) return false;
+      if (c.quota === "OS" && (!homeState || sameState)) return false;
+      const key = `${c.collegeCourseId}:${c.quota}:${c.category}:${c.gender}`;
+      if (seen.has(key)) return false;
+      seen.add(key); return true;
+    });
     const filteredCutoffs = targetCourse && targetCourse !== "ALL"
-      ? cutoffs.filter((c) =>
+      ? eligibleCutoffs.filter((c) =>
           c.collegeCourse.specialization.toLowerCase().includes(targetCourse.toLowerCase()) ||
           c.collegeCourse.course.degree.toLowerCase().includes(targetCourse.toLowerCase()) ||
           c.collegeCourse.course.stream.toLowerCase().includes(targetCourse.toLowerCase())
         )
-      : cutoffs;
+      : eligibleCutoffs;
 
     if (filteredCutoffs.length === 0) {
       return NextResponse.json({
@@ -87,7 +100,7 @@ export async function POST(req: NextRequest) {
     const lowProbability: any[] = [];
 
     filteredCutoffs.forEach((item) => {
-      const closing = item.closingRank || 999999;
+      const closing = item.closingRank;
       const option = {
         id: item.id,
         collegeName: item.collegeCourse.college.name,
@@ -105,14 +118,15 @@ export async function POST(req: NextRequest) {
         category: item.category,
         quota: item.quota,
         closingRank: closing,
+        cutoffPercentile: item.cutoffPercentile,
         openingRank: item.openingRank,
         eligibility: item.collegeCourse.eligibilityCriteria,
       };
 
       // Classification based on student AIR compared to closing rank
-      if (closing >= rank * 1.15) {
+      if (percentile ? rank >= item.cutoffPercentile! + 2 : closing! >= rank * 1.15) {
         highProbability.push({ ...option, chanceCategory: "High Chance" });
-      } else if (closing >= rank * 0.9) {
+      } else if (percentile ? rank >= item.cutoffPercentile! : closing! >= rank * 0.9) {
         moderateProbability.push({ ...option, chanceCategory: "Moderate Chance" });
       } else {
         lowProbability.push({ ...option, chanceCategory: "Low Chance" });

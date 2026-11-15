@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { Sparkles, X, Send, Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
 
 interface AiCounselorDrawerProps {
@@ -14,10 +15,11 @@ interface Message {
 }
 
 export function AiCounselorDrawer({ open, onClose }: AiCounselorDrawerProps) {
+  useScrollLock(open);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hello! I am your AI Admissions Counselor. Tell me your target stream, exam rank (e.g., JEE Main 15,000, NEET 580, or CAT 98%), category, and home state, and I will recommend realistic college choices, cutoff probabilities, and fee insights.",
+      content: "Hello! Search colleges by name, city, state, or course. I can show recorded courses, fees, and placements. Use the college predictor for a comparison with historical cutoffs.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -97,7 +99,7 @@ export function AiCounselorDrawer({ open, onClose }: AiCounselorDrawerProps) {
               <p className="text-[11px] text-muted-foreground">JoSAA, CSAB, NEET & NIRF Grounded Advice</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-md text-muted-foreground hover:text-foreground">
+          <button aria-label="Close counselor" onClick={onClose} className="p-1 rounded-md text-muted-foreground hover:text-foreground">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -142,7 +144,7 @@ export function AiCounselorDrawer({ open, onClose }: AiCounselorDrawerProps) {
         </div>
 
         {/* Chat Stream History */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 space-y-4">
           {messages.map((m, idx) => (
             <div
               key={idx}

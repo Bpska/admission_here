@@ -1,12 +1,13 @@
 import { db } from "@/lib/db";
-import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { checkAdminAccess, collegeScope } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { EnquiriesManagementClient } from "./EnquiriesManagementClient";
 import { Contact2, FileText, Send, Sparkles } from "lucide-react";
 
 export const revalidate = 0;
 
-export default async function AdminEnquiriesPage() {
+export default async function AdminEnquiriesPage({ searchParams }: { searchParams: Promise<{ lead?: string }> }) {
+  const { lead: selectedLeadId } = await searchParams;
   const access = await checkAdminAccess("leads");
   if (!access.allowed) {
     return (
@@ -19,13 +20,14 @@ export default async function AdminEnquiriesPage() {
 
   const [leads, colleges] = await Promise.all([
     db.lead.findMany({
+      where: access.isSuperAdmin ? {} : { targetCollegeId: { in: access.assignedCollegeIds || [] } },
       orderBy: { createdAt: "desc" },
       include: {
         targetCollege: { select: { id: true, name: true, slug: true, city: true, state: true } },
       },
-      take: 200,
     }),
     db.college.findMany({
+      where: collegeScope(access),
       select: { id: true, name: true },
       orderBy: { name: "asc" },
     }),
@@ -61,6 +63,7 @@ export default async function AdminEnquiriesPage() {
       <EnquiriesManagementClient
         initialLeads={leads as any}
         colleges={colleges}
+        selectedLeadId={selectedLeadId}
       />
     </div>
   );

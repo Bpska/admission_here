@@ -1,5 +1,6 @@
 "use client";
 
+import { INDIAN_STATES } from "@/lib/india-locations";
 import { useState } from "react";
 import Link from "next/link";
 import { 
@@ -44,6 +45,7 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
     e.preventDefault();
     if (!rank) return;
 
+    setResults(null);
     setLoading(true);
     setInsufficientData(false);
     setMessage(null);
@@ -62,8 +64,9 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
         }),
       });
 
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Prediction failed. Please try again.");
       if (res.ok) {
-        const json = await res.json();
         if (json.insufficientData) {
           setInsufficientData(true);
           setMessage(json.message);
@@ -82,7 +85,7 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
       }
     } catch (err) {
       console.error(err);
-      setMessage("Failed to run college prediction engine. Please try again.");
+      setMessage(err instanceof Error ? err.message : "Failed to run college prediction engine. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -111,7 +114,7 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
               </label>
               <select
                 value={examSlug}
-                onChange={(e) => setExamSlug(e.target.value)}
+                onChange={(e) => {setExamSlug(e.target.value);setRank("");setResults(null);}}
                 className="w-full py-2.5 px-3 text-xs border rounded-xl bg-background font-medium outline-hidden focus:border-primary"
               >
                 <option value="jee-main">JEE Main (B.Tech / NITs / IIITs)</option>
@@ -123,12 +126,14 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
             {/* 2. Score / Rank */}
             <div>
               <label className="block text-xs font-bold text-foreground uppercase tracking-wider mb-2">
-                2. All India Rank (AIR) *
+                2. {examSlug === "cat" ? "Percentile" : "All India Rank (AIR)"} *
               </label>
               <input
                 type="number"
                 required
-                min={1}
+                min={examSlug === "cat" ? 0 : 1}
+                max={examSlug === "cat" ? 100 : 100000000}
+                step={examSlug === "cat" ? "any" : 1}
                 value={rank}
                 onChange={(e) => setRank(e.target.value)}
                 placeholder="e.g. 14200"
@@ -190,6 +195,11 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
             </div>
           </div>
 
+          <label className="block text-xs font-bold">Home state
+            <select aria-label="Predictor home state" value={homeState} onChange={e => setHomeState(e.target.value)} className="block w-full sm:w-72 border rounded-xl p-3 mt-2 bg-background" required={quota === "HS" || quota === "OS"}>
+              <option value="">Select state</option>{INDIAN_STATES.map(state => <option key={state} value={state}>{state}</option>)}
+            </select>
+          </label>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
             <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -218,6 +228,7 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
         </form>
       </div>
 
+      {message && !insufficientData && <p role="alert" className="border rounded-xl p-4 text-red-700">{message}</p>}
       {/* Insufficient Data State */}
       {insufficientData && (
         <div className="p-6 rounded-2xl border bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200 space-y-2">
@@ -349,7 +360,7 @@ export function PredictorForm({ initialExamSlug = "jee-main" }: PredictorFormPro
                           <span>{item.degree} in {item.specialization}</span>
                         </div>
                         <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground pt-1">
-                          <span>Closing Rank: <strong className="text-foreground font-mono">#{item.closingRank}</strong></span>
+                          <span>{item.cutoffPercentile != null && examSlug === "cat" ? "Cutoff percentile:" : "Closing rank:"} <strong className="text-foreground font-mono">{examSlug === "cat" ? item.cutoffPercentile : `#${item.closingRank}`}</strong></span>
                           <span>•</span>
                           <span>Quota: <strong className="text-foreground">{item.quota}</strong></span>
                           <span>•</span>

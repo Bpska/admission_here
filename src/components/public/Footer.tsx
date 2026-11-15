@@ -186,7 +186,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="text-slate-600 hover:text-[#1a3068] font-semibold hover:underline block">
+                <Link href="/login?callbackUrl=%2Fadmin" className="text-slate-600 hover:text-[#1a3068] font-semibold hover:underline block">
                   • Staff &amp; Admin Desk
                 </Link>
               </li>

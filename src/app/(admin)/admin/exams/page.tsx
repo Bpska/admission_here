@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { BookOpen, Calendar, Clock, Award, Layers } from "lucide-react";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
+import { AdminDataEditor } from "@/components/admin/AdminDataEditor";
 
 export const revalidate = 0;
 
@@ -92,6 +93,7 @@ export default async function AdminExamsPage() {
           </div>
         ))}
       </div>
+      <AdminDataEditor resource="exams" />
     </div>
   );
 }

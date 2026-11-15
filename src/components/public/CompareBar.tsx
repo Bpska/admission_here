@@ -5,7 +5,7 @@ import { X, ArrowRight, Scale } from "lucide-react";
 import type { CollegeCardData } from "./CollegeCard";
 
 interface CompareBarProps {
-  selectedColleges: CollegeCardData[];
+  selectedColleges: Pick<CollegeCardData, "id" | "slug" | "name" | "shortName">[];
   onRemove: (id: string) => void;
   onClear: () => void;
 }
@@ -21,7 +21,7 @@ export function CompareBar({ selectedColleges, onRemove, onClear }: CompareBarPr
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur border-t shadow-2xl p-3 sm:p-4">
+    <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur border-t shadow-2xl p-3 sm:p-4">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
         {/* Selected List */}
         <div className="flex items-center gap-3 overflow-x-auto py-1">
@@ -38,6 +38,7 @@ export function CompareBar({ selectedColleges, onRemove, onClear }: CompareBarPr
               >
                 <span className="truncate max-w-[120px]">{col.shortName || col.name}</span>
                 <button
+                  aria-label={`Remove ${col.shortName || col.name} from comparison`}
                   onClick={() => onRemove(col.id)}
                   className="p-0.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground"
                 >

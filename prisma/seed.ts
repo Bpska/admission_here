@@ -1,5 +1,7 @@
 import { PrismaClient, UserRole, OwnershipType, BlogCategory, PostStatus, LeadCtaType, LeadStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import campusPhotos from "../src/data/campus-photos.json";
+import collegeBrochures from "../src/data/college-brochures.json";
 
 const db = new PrismaClient();
 
@@ -263,7 +265,7 @@ async function main() {
       shortName: "IIT Bombay",
       logoUrl: "https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=160&h=160&fit=crop&q=80",
       coverImageUrl: "https://images.unsplash.com/photo-1562774053-701939374585?w=1200&h=600&fit=crop&q=80",
-      brochurePdfUrl: "https://example.com/brochures/iit-bombay-2026.pdf",
+      brochurePdfUrl: collegeBrochures["iit-bombay"][0].url,
       city: "Mumbai",
       state: "Maharashtra",
       pincode: "400076",
@@ -312,7 +314,7 @@ async function main() {
       shortName: "NIT Rourkela",
       logoUrl: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=160&h=160&fit=crop&q=80",
       coverImageUrl: "https://images.unsplash.com/photo-1590012314607-cda9d9b699ae?w=1200&h=600&fit=crop&q=80",
-      brochurePdfUrl: "https://example.com/brochures/nit-rourkela-2026.pdf",
+      brochurePdfUrl: collegeBrochures["nit-rourkela"][0].url,
       city: "Rourkela",
       state: "Odisha",
       pincode: "769008",
@@ -355,7 +357,7 @@ async function main() {
       shortName: "IIT Bhubaneswar",
       logoUrl: "https://images.unsplash.com/photo-1607237138185-eedd9c632b0b?w=160&h=160&fit=crop&q=80",
       coverImageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&h=600&fit=crop&q=80",
-      brochurePdfUrl: "https://example.com/brochures/iit-bbsr-2026.pdf",
+      brochurePdfUrl: collegeBrochures["iit-bhubaneswar"][0].url,
       city: "Bhubaneswar",
       state: "Odisha",
       pincode: "752050",
@@ -388,7 +390,7 @@ async function main() {
       shortName: "BITS Pilani",
       logoUrl: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=160&h=160&fit=crop&q=80",
       coverImageUrl: "https://images.unsplash.com/photo-1525921429624-479b6a26d84d?w=1200&h=600&fit=crop&q=80",
-      brochurePdfUrl: "https://example.com/brochures/bits-pilani-2026.pdf",
+      brochurePdfUrl: collegeBrochures["bits-pilani"][0].url,
       city: "Pilani",
       state: "Rajasthan",
       pincode: "333031",
@@ -421,7 +423,7 @@ async function main() {
       shortName: "IIM Ahmedabad",
       logoUrl: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=160&h=160&fit=crop&q=80",
       coverImageUrl: "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=600&fit=crop&q=80",
-      brochurePdfUrl: "https://example.com/brochures/iima-2026.pdf",
+      brochurePdfUrl: collegeBrochures["iim-ahmedabad"][0].url,
       city: "Ahmedabad",
       state: "Gujarat",
       pincode: "380015",
@@ -886,6 +888,10 @@ Stay tuned for real-time score updates, cutoff shifts, and direct college predic
   });
 
   console.log("🎯 Seeded B2B Student Leads with Full Attribution.");
+  for (const [slug, photos] of Object.entries(campusPhotos)) {
+    await db.college.updateMany({ where: { slug }, data: { galleryUrls: photos.map(photo => photo.src) } });
+  }
+
   console.log("✅ Database seeding complete!");
 }
 

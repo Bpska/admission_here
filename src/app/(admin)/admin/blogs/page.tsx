@@ -27,6 +27,7 @@ export default async function AdminBlogsPage() {
   }
 
   const posts = await db.blogPost.findMany({
+    where: access.isSuperAdmin ? {} : { authorId: access.userId },
     orderBy: { createdAt: "desc" },
     include: {
       author: { select: { name: true } },

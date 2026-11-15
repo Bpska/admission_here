@@ -9,6 +9,7 @@ export interface AdminAccessResult {
   userName: string;
   userEmail: string;
   permissions: string[];
+  assignedCollegeIds?: string[];
 }
 
 /**
@@ -84,6 +85,7 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
         userName,
         userEmail,
         permissions,
+        assignedCollegeIds: user.assignedCollegeIds || [],
       };
     }
 
@@ -97,7 +99,12 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
       userName,
       userEmail,
       permissions,
+      assignedCollegeIds: user.assignedCollegeIds || [],
     };
+  }
+
+  if (role === "AUTHOR") {
+    return { allowed: feature === "blogs" || feature === "dashboard", isSuperAdmin: false, role, userId, userName, userEmail, permissions: ["blogs", "dashboard"] };
   }
 
   return {
@@ -110,4 +117,12 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
     permissions: [],
   };
 });
+
+export function canAccessCollege(access: AdminAccessResult, collegeId: string) {
+  return access.isSuperAdmin || (access.role === "STAFF" && (access.assignedCollegeIds || []).includes(collegeId));
+}
+
+export function collegeScope(access: AdminAccessResult) {
+  return access.isSuperAdmin ? {} : { id: { in: access.assignedCollegeIds || [] } };
+}
 

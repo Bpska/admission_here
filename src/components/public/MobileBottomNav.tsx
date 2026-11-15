@@ -19,7 +19,7 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 md:hidden py-1.5 px-3 flex items-center justify-around shadow-lg">
+      <div className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 md:hidden py-1.5 px-3 ${pathname.startsWith("/college/") ? "hidden sm:flex" : "flex"} items-center justify-around shadow-lg`}>
         {navLinks.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));

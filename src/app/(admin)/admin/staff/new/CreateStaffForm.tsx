@@ -22,7 +22,7 @@ const AVAILABLE_PERMISSIONS = [
   {
     id: "colleges",
     label: "Colleges Directory",
-    desc: "Manage college profiles, courses, fee structures, cutoffs & rankings",
+    desc: "Submit new colleges for admin approval and manage assigned college profiles",
     icon: Building2,
     badgeColor: "#1a3068",
   },
@@ -103,8 +103,8 @@ export function CreateStaffForm() {
       setErrorMsg("Please enter a User ID or Email for the staff.");
       return;
     }
-    if (!password || password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters long.");
+    if (!password || password.length < 8) {
+      setErrorMsg("Password must be at least 8 characters long.");
       return;
     }
     if (selectedPermissions.length === 0) {
@@ -206,7 +206,7 @@ export function CreateStaffForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Set secure password (min. 6 characters)"
+              placeholder="Set secure password (min. 8 characters)"
               className="w-full pl-3 pr-10 py-2 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
             />
             <button

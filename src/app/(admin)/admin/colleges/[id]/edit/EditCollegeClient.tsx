@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { defaultNavbarFilter } from "@/lib/navbar-filters";
+import { CollegeNavbarFields } from "@/components/admin/CollegeNavbarFields";
 import { 
   Building2, 
   Save, 
@@ -24,6 +26,7 @@ import {
 } from "lucide-react";
 
 interface EditCollegeClientProps {
+  approvalRequest?: { id: string; updatedAt: string };
   college: {
     id: string;
     name: string;
@@ -55,12 +58,17 @@ interface EditCollegeClientProps {
     metaTitle?: string | null;
     metaDescription?: string | null;
     isPublished: boolean;
+    showInNavbar?: boolean;
+    navbarCategory?: string | null;
+    navbarSection?: string;
+    navbarFilter?: string | null;
     courses: any[];
   };
 }
 
-export function EditCollegeClient({ college }: EditCollegeClientProps) {
+export function EditCollegeClient({ college, approvalRequest }: EditCollegeClientProps) {
   const router = useRouter();
+  const [proposalVersion, setProposalVersion] = useState(approvalRequest?.updatedAt);
 
   // Basic Info Form States
   const [name, setName] = useState(college.name || "");
@@ -118,6 +126,10 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
   const [metaTitle, setMetaTitle] = useState(college.metaTitle || "");
   const [metaDescription, setMetaDescription] = useState(college.metaDescription || "");
   const [isPublished, setIsPublished] = useState(college.isPublished);
+  const [showInNavbar, setShowInNavbar] = useState(college.showInNavbar ?? false);
+  const [navbarCategory, setNavbarCategory] = useState(college.navbarCategory || "");
+  const [navbarSection, setNavbarSection] = useState(college.navbarSection || "featured");
+  const [navbarFilter, setNavbarFilter] = useState(college.navbarFilter || defaultNavbarFilter(college.navbarCategory, college.navbarSection)?.id || "");
 
   // Status / Loading
   const [loading, setLoading] = useState(false);
@@ -141,10 +153,7 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
       .filter(Boolean);
 
     try {
-      const res = await fetch(`/api/v1/cms/colleges/${college.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const data = {
           name: name.trim(),
           shortName: shortName.trim() || null,
           slug: slug.trim().toLowerCase(),
@@ -173,13 +182,26 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
           metaTitle: metaTitle.trim() || null,
           metaDescription: metaDescription.trim() || null,
           isPublished,
-        }),
+          showInNavbar,
+          navbarCategory: navbarCategory || null,
+          navbarSection,
+          navbarFilter: navbarFilter || defaultNavbarFilter(navbarCategory, navbarSection)?.id || null,
+        };
+      const res = await fetch(approvalRequest
+        ? `/api/v1/admin/approvals/${approvalRequest.id}`
+        : `/api/v1/cms/colleges/${college.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(approvalRequest ? { data, expectedUpdatedAt: proposalVersion } : data),
       });
 
       const json = await res.json();
 
       if (res.ok && json.success) {
-        if (json.pendingApproval) {
+        if (approvalRequest) {
+          setProposalVersion(json.updatedAt);
+          setSuccessMsg("Submission updated. Review the preview, then approve it when ready. Nothing has been published yet.");
+        } else if (json.pendingApproval) {
           setSuccessMsg(
             "Your changes have been submitted to the Administrator for approval and will publish live once approved!"
           );
@@ -199,18 +221,19 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
 
   return (
     <div className="max-w-5xl space-y-6">
+      {!approvalRequest && <Link href={`/admin/colleges/${college.id}/data`} className="inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Manage courses, fees, cutoffs, placements & rankings</Link>}
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b">
         <div className="flex items-center gap-3">
           <Link
-            href="/admin/colleges"
+            href={approvalRequest ? "/admin/approvals" : "/admin/colleges"}
             className="p-2 rounded-lg border hover:bg-accent text-muted-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
             <h1 className="text-2xl font-extrabold text-foreground">
-              Edit College: {college.name}
+              {approvalRequest ? "Edit Pending Submission" : "Edit College"}: {college.name}
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
               Configure basic info, logos, gallery, contact details, fees, hostel, and SEO discovery tags.
@@ -220,12 +243,12 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
 
         <div className="flex items-center gap-2">
           <Link
-            href={`/college/${slug}`}
+            href={approvalRequest ? `/approval-preview/${approvalRequest.id}` : `/college/${slug}`}
             target="_blank"
             className="px-4 py-2 rounded-xl border bg-background hover:bg-accent text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
           >
             <Eye className="w-3.5 h-3.5" />
-            <span>Preview Public Page</span>
+            <span>{approvalRequest ? "Preview Submission" : "Preview Public Page"}</span>
           </Link>
         </div>
       </div>
@@ -291,8 +314,13 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
                 required
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                minLength={2}
+                maxLength={80}
+                title="Use lowercase words separated by hyphens, such as nit-rourkela. Enter the website in Website URL."
                 className="w-full px-3 py-2 font-mono border rounded-lg bg-background outline-hidden focus:border-primary"
               />
+              <p className="mt-1 text-xs text-muted-foreground">Use a name like nit-rourkela. Enter the external website in Website URL.</p>
             </div>
 
             <div>
@@ -442,6 +470,7 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
                 placeholder="https://images.unsplash.com/photo-1&#10;https://images.unsplash.com/photo-2"
                 className="w-full p-3 font-mono text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
               />
+              <p className="mt-1 text-xs text-muted-foreground">Only the photo URLs listed here will appear in the gallery. Leave empty to show no campus photos.</p>
             </div>
           </div>
         </div>
@@ -725,17 +754,19 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
                   className="rounded text-primary focus:ring-primary w-4 h-4"
                 />
                 <span className="font-bold text-xs text-foreground">
-                  {isPublished ? "PUBLISHED LIVE" : "DRAFT MODE"}
+                  {approvalRequest ? (isPublished ? "Publish after approval" : "Keep as draft after approval") : (isPublished ? "PUBLISHED LIVE" : "DRAFT MODE")}
                 </span>
               </label>
             </div>
           </div>
         </div>
 
+        <CollegeNavbarFields enabled={showInNavbar} category={navbarCategory} section={navbarSection} filter={navbarFilter} onFilterChange={setNavbarFilter} onSectionChange={setNavbarSection} onEnabledChange={setShowInNavbar} onCategoryChange={setNavbarCategory} />
+
         {/* BOTTOM ACTION BUTTONS */}
         <div className="flex items-center justify-end gap-3 pt-3 border-t">
           <Link
-            href="/admin/colleges"
+            href={approvalRequest ? "/admin/approvals" : "/admin/colleges"}
             className="px-4 py-2.5 rounded-xl border bg-background hover:bg-muted text-xs font-semibold text-foreground transition-colors"
           >
             Cancel
@@ -755,7 +786,7 @@ export function EditCollegeClient({ college }: EditCollegeClientProps) {
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                <span>Save College Profile</span>
+                <span>{approvalRequest ? "Save Submission Changes" : "Save College Profile"}</span>
               </>
             )}
           </button>

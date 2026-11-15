@@ -4,6 +4,7 @@ import { generateEmbedding } from "@/lib/ai/embeddings";
 import { revalidatePath } from "next/cache";
 import { PostStatus } from "@prisma/client";
 import { z } from "zod";
+import { checkAdminAccess } from "@/lib/auth/staff-guard";
 
 const PublishSchema = z.object({
   blogId: z.string().uuid(),
@@ -11,6 +12,8 @@ const PublishSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const access = await checkAdminAccess("blogs");
+    if (!access.allowed) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const body = await req.json();
     const parsed = PublishSchema.safeParse(body);
 
@@ -30,6 +33,7 @@ export async function POST(req: NextRequest) {
     if (!post) {
       return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
     }
+    if (!access.isSuperAdmin && post.authorId !== access.userId) return NextResponse.json({ error: "You can only publish your own articles." }, { status: 403 });
 
     // 1. Generate 1536-dim embedding for semantic search
     const textToEmbed = `${post.title}. ${post.metaDescription || ""} ${(post.tldrSummary || []).join(" ")}`;
@@ -45,17 +49,14 @@ export async function POST(req: NextRequest) {
     });
 
     try {
-      await db.$executeRaw`
-        UPDATE "BlogPost" 
-        SET embedding = ${embedding}::vector 
-        WHERE id = ${blogId}::uuid
-      `;
+      await db.blogPost.update({ where: { id: blogId }, data: { embedding } });
     } catch (embErr) {
       console.warn("Vector embedding storage note:", embErr);
     }
 
     // 3. On-Demand ISR Revalidation
     try {
+      revalidatePath("/", "layout");
       revalidatePath("/blog");
       revalidatePath(`/blog/${updatedPost.slug}`);
       revalidatePath("/sitemap.xml");

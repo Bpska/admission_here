@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { checkAdminAccess, canAccessCollege } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { EditCollegeClient } from "./EditCollegeClient";
 
@@ -22,6 +22,7 @@ export default async function EditCollegePage({ params }: EditCollegePageProps) 
   }
 
   const { id } = await params;
+  if (!canAccessCollege(access, id)) notFound();
 
   const college = await db.college.findUnique({
     where: { id },

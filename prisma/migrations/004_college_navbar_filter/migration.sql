@@ -1,0 +1,1 @@
+ALTER TABLE "College" ADD COLUMN IF NOT EXISTS "navbarFilter" TEXT;

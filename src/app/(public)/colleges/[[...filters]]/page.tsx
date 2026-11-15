@@ -7,13 +7,16 @@ import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { generateBreadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { Building2 } from "lucide-react";
 import { Suspense } from "react";
-import { redirect } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
+import { NAVBAR_FILTERS, defaultNavbarFilter } from "@/lib/navbar-filters";
+import type { Prisma } from "@prisma/client";
 
 export const revalidate = 3600;
 
 interface CollegesPageProps {
   params: Promise<{ filters?: string[] }>;
   searchParams: Promise<{
+    q?: string;
     stream?: string;
     course?: string;
     level?: string;
@@ -21,18 +24,24 @@ interface CollegesPageProps {
     ownership?: string;
     maxFees?: string;
     page?: string;
+    navFilter?: string;
   }>;
 }
 
 export async function generateMetadata({ params, searchParams }: CollegesPageProps) {
   const { filters = [] } = await params;
   const sParams = await searchParams;
+  const query = sParams.q?.trim() || "";
+  const selectedFilter = NAVBAR_FILTERS.find(filter => filter.id === sParams.navFilter);
 
   let title = "Top Colleges in India 2026";
   let description =
     "Explore, compare and filter verified Indian colleges by NIRF rankings, cutoffs, tuition fees, and placements.";
 
-  if (filters.length > 0) {
+  if (query) {
+    title = `Search results for ${query}`;
+    description = `Find colleges matching ${query}, with fees, rankings, and placement records.`;
+  } else if (filters.length > 0) {
     const filterText = filters.join(" ").replace(/-/g, " ");
     title = `Top ${filterText.toUpperCase()} Colleges in India`;
     description = `Find the best ${filterText} colleges in India with verified cutoff ranks, total fees, and official NIRF rankings.`;
@@ -42,9 +51,9 @@ export async function generateMetadata({ params, searchParams }: CollegesPagePro
   }
 
   return constructSeoMetadata({
-    title,
+    title: selectedFilter?.label || title,
     description,
-    canonicalPath: `/colleges/${filters.join("/")}`,
+    canonicalPath: `/colleges/${filters.join("/")}${selectedFilter ? `?navFilter=${encodeURIComponent(selectedFilter.id)}` : ""}`,
   });
 }
 
@@ -54,6 +63,10 @@ export default async function CollegesDirectoryPage({
 }: CollegesPageProps) {
   const { filters = [] } = await params;
   const sParams = await searchParams;
+  const selectedFilter = NAVBAR_FILTERS.find(filter => filter.id === sParams.navFilter);
+  const filterUrl = selectedFilter ? new URL(selectedFilter.href, "https://local.invalid") : null;
+  const query = sParams.q?.trim() || filterUrl?.searchParams.get("q") || "";
+  if (sParams.navFilter && !selectedFilter) notFound();
 
   // If a single slug parameter is passed, check if it matches a college profile directly (e.g. /colleges/nit-rourkela)
   if (filters.length === 1) {
@@ -73,16 +86,42 @@ export default async function CollegesDirectoryPage({
   let targetLevel = sParams.level || "";
 
   if (filters.length === 1) {
-    targetStream = filters[0].replace(/-/g, " ");
+    targetStream = filters[0];
   } else if (filters.length >= 2) {
-    targetStream = filters[0].replace(/-/g, " ");
+    targetStream = filters[0];
     targetState = filters[1].replace(/-/g, " ");
   }
 
+  if (filters.length === 0 && filterUrl) {
+    const baseFilters = filterUrl.pathname.split("/").slice(2);
+    targetStream = sParams.stream || sParams.course || baseFilters[0] || "";
+    targetState = sParams.state || baseFilters[1]?.replace(/-/g, " ") || filterUrl.searchParams.get("state") || "";
+  }
+
   // Build Prisma Where Clause
-  const whereClause: any = {
+  const whereClause: Prisma.CollegeWhereInput = {
     isPublished: true,
   };
+
+  if (query) {
+    whereClause.AND = query.split(/\s+/).map((term) => ({
+      OR: [
+        { name: { contains: term, mode: "insensitive" } },
+        { shortName: { contains: term, mode: "insensitive" } },
+        { city: { contains: term, mode: "insensitive" } },
+        { state: { contains: term, mode: "insensitive" } },
+        { courses: { some: { OR: [
+          { specialization: { contains: term, mode: "insensitive" } },
+          { course: { OR: [
+            { fullName: { contains: term, mode: "insensitive" } },
+            { stream: { contains: term, mode: "insensitive" } },
+            { degree: { contains: term, mode: "insensitive" } },
+            { slug: { contains: term, mode: "insensitive" } },
+          ] } },
+        ] } } },
+      ],
+    }));
+  }
 
   if (targetState) {
     whereClause.state = { contains: targetState, mode: "insensitive" };
@@ -93,6 +132,7 @@ export default async function CollegesDirectoryPage({
   }
 
   if (targetStream || targetLevel) {
+    const streamName = ({ "b-tech": "B.Tech", mba: "MBA", mbbs: "MBBS" } as Record<string, string>)[targetStream] || targetStream.replace(/-/g, " ");
     whereClause.courses = {
       some: {
         course: {
@@ -101,8 +141,8 @@ export default async function CollegesDirectoryPage({
             targetStream
               ? {
                   OR: [
-                    { stream: { contains: targetStream, mode: "insensitive" } },
-                    { degree: { contains: targetStream, mode: "insensitive" } },
+                    { stream: { contains: streamName, mode: "insensitive" } },
+                    { degree: { contains: streamName, mode: "insensitive" } },
                     { slug: { contains: targetStream, mode: "insensitive" } },
                   ],
                 }
@@ -113,18 +153,48 @@ export default async function CollegesDirectoryPage({
     };
   }
 
+  if (selectedFilter?.specialization) {
+    whereClause.courses = { some: {
+      ...(whereClause.courses?.some || {}),
+      specialization: { contains: selectedFilter.specialization, mode: "insensitive" },
+    } };
+  }
+
   if (sParams.maxFees) {
     const maxFee = parseInt(sParams.maxFees, 10);
     whereClause.courses = {
       ...(whereClause.courses || {}),
       some: {
+        ...(whereClause.courses?.some || {}),
         totalFeesInr: { lte: maxFee },
       },
     };
   }
 
+  let directoryWhere = whereClause;
+  if (selectedFilter) {
+    const intrinsicQuery = new URL(selectedFilter.href, "https://local.invalid").searchParams.get("q") || "";
+    const legacySections = ["featured", "column_1", "column_2", "column_3"].filter(section => defaultNavbarFilter(selectedFilter.category, section)?.id === selectedFilter.id);
+    const assigned: Prisma.CollegeWhereInput = {
+      isPublished: true,
+      showInNavbar: true,
+      OR: [
+        { navbarFilter: selectedFilter.id },
+        { navbarFilter: null, navbarCategory: selectedFilter.category, navbarSection: { in: legacySections } },
+      ],
+      ...(targetState ? { state: whereClause.state } : {}),
+      ...(sParams.ownership ? { ownershipType: whereClause.ownershipType } : {}),
+      ...(query && query !== intrinsicQuery ? { AND: whereClause.AND } : {}),
+      ...(sParams.maxFees || sParams.level ? { courses: { some: {
+        ...(sParams.maxFees ? { totalFeesInr: { lte: parseInt(sParams.maxFees, 10) } } : {}),
+        ...(sParams.level ? { course: { level: { equals: sParams.level, mode: "insensitive" } } } : {}),
+      } } } : {}),
+    };
+    directoryWhere = { isPublished: true, OR: [whereClause, assigned] };
+  }
+
   const colleges = await db.college.findMany({
-    where: whereClause,
+    where: directoryWhere,
     orderBy: [{ nirfRank: "asc" }, { ratingOverall: "desc" }],
     include: {
       courses: {
@@ -157,7 +227,7 @@ export default async function CollegesDirectoryPage({
 
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground capitalize">
-          {targetStream ? `Top ${targetStream} Colleges` : "Discover Top Colleges in India"}{" "}
+          {selectedFilter && (!query || query === new URL(selectedFilter.href, "https://local.invalid").searchParams.get("q")) ? selectedFilter.label : query ? `Search results for “${query}”` : targetStream ? `Top ${targetStream} Colleges` : "Discover Top Colleges in India"}{" "}
           {targetState ? `in ${targetState}` : ""}
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">

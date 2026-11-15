@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { AdminSidebar } from "./AdminSidebar";
 import { Menu, ShieldCheck, Database } from "lucide-react";
 import Image from "next/image";
@@ -22,11 +23,12 @@ export function AdminLayoutClient({
   userEmail,
 }: AdminLayoutClientProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  useScrollLock(mobileSidebarOpen);
 
   return (
-    <div className="min-h-screen flex bg-muted/20">
-      {/* Desktop Sidebar (hidden on mobile, sticky on md+) */}
-      <div className="hidden md:block w-64 h-screen sticky top-0 shrink-0">
+    <div className="h-dvh flex overflow-hidden bg-muted/20">
+      {/* Desktop sidebar stays within the viewport while content scrolls. */}
+      <div className="hidden md:block w-64 h-full shrink-0">
         <AdminSidebar
           role={role}
           permissions={permissions}
@@ -58,9 +60,9 @@ export function AdminLayoutClient({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Admin Top Header */}
-        <header className="h-16 border-b bg-card px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs gap-3">
+        <header className="h-16 shrink-0 border-b bg-card px-4 sm:px-6 flex items-center justify-between z-30 shadow-2xs gap-3">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger Button */}
             <button
@@ -123,7 +125,7 @@ export function AdminLayoutClient({
         </header>
 
         {/* Content Viewport */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-w-0">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto overscroll-contain min-w-0 min-h-0">
           {children}
         </main>
       </div>

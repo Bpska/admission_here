@@ -34,6 +34,7 @@ export default async function AdminApprovalsPage() {
       take: 100,
     }),
     db.staffActivityLog.findMany({
+        where: access.isSuperAdmin ? {} : { staffId: access.userId },
       orderBy: { createdAt: "desc" },
       include: {
         staff: { select: { name: true, email: true } },

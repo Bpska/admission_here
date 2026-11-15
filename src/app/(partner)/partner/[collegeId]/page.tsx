@@ -1,4 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@/lib/auth/config";
 import { db } from "@/lib/db";
 import { Contact2, Building2, TrendingUp, Download, Phone, Mail, Award } from "lucide-react";
 import Link from "next/link";
@@ -10,6 +11,9 @@ interface PartnerPageProps {
 }
 
 export default async function PartnerDashboardPage({ params }: PartnerPageProps) {
+  const session = await auth();
+  const user = session?.user as any;
+  if (!user) redirect("/login");
   const { collegeId } = await params;
 
   // Locate college by either ID or slug
@@ -28,6 +32,7 @@ export default async function PartnerDashboardPage({ params }: PartnerPageProps)
   });
 
   if (!college) notFound();
+  if (user.role !== "SUPER_ADMIN" && !(user.role === "COLLEGE_ADMIN" && user.managedCollegeId === college.id)) notFound();
 
   return (
     <div className="min-h-screen bg-muted/20">

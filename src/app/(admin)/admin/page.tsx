@@ -1,3 +1,4 @@
+import { LeadExportButton } from "@/components/admin/LeadExportButton";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { 
@@ -13,11 +14,13 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { redirect } from "next/navigation";
 
 export const revalidate = 0; // Dynamic
 
 export default async function AdminDashboardPage() {
   const access = await checkAdminAccess("dashboard");
+  if (!access.allowed) redirect("/login?callbackUrl=%2Fadmin");
 
   const [
     collegeCount,
@@ -27,16 +30,18 @@ export default async function AdminDashboardPage() {
     recentLeads,
     recentBlogs,
   ] = await Promise.all([
-    db.college.count(),
-    db.blogPost.count(),
-    db.lead.count(),
-    db.user.count(),
+    db.college.count({ where: access.isSuperAdmin ? {} : { id: { in: access.assignedCollegeIds || [] } } }),
+    db.blogPost.count({ where: access.isSuperAdmin ? {} : { authorId: access.userId } }),
+    db.lead.count({ where: access.isSuperAdmin ? {} : { targetCollegeId: { in: access.permissions.includes("leads") ? access.assignedCollegeIds || [] : [] } } }),
+    access.isSuperAdmin ? db.user.count() : Promise.resolve(0),
     db.lead.findMany({
+      where: access.isSuperAdmin ? {} : { targetCollegeId: { in: access.permissions.includes("leads") ? access.assignedCollegeIds || [] : [] } },
       take: 5,
       orderBy: { createdAt: "desc" },
       include: { targetCollege: { select: { name: true } } },
     }),
     db.blogPost.findMany({
+      where: access.isSuperAdmin ? {} : { authorId: access.userId },
       take: 4,
       orderBy: { createdAt: "desc" },
       include: { author: { select: { name: true } } },
@@ -53,6 +58,8 @@ export default async function AdminDashboardPage() {
           Real-time oversight of colleges directory, student lead pipeline, editorial publishing, and AI search indexing.
         </p>
       </div>
+
+      {(access.isSuperAdmin || access.permissions.includes("leads")) && <LeadExportButton />}
 
       {/* Staff Banner if logged in as Staff */}
       {!access.isSuperAdmin && (
@@ -83,7 +90,7 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2 pt-1">
-            {access.permissions.map((perm) => (
+            {access.permissions.filter(perm => !perm.includes(":" )).map((perm) => (
               <Link
                 key={perm}
                 href={`/admin/${perm === "dashboard" ? "" : perm}`}
@@ -100,7 +107,7 @@ export default async function AdminDashboardPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="p-5 rounded-2xl border bg-card shadow-xs space-y-3">
+        {(access.isSuperAdmin || access.permissions.includes("leads")) && <Link href="/admin/enquiries" className="p-5 rounded-2xl border bg-card shadow-xs space-y-3 block hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Student Leads
@@ -113,11 +120,11 @@ export default async function AdminDashboardPage() {
             {leadCount}
           </div>
           <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" /> +18.4% from last week
+            View all student leads →
           </span>
-        </div>
+        </Link>}
 
-        <div className="p-5 rounded-2xl border bg-card shadow-xs space-y-3">
+        {(access.isSuperAdmin || access.permissions.includes("colleges")) && <Link href="/admin/colleges" className="p-5 rounded-2xl border bg-card shadow-xs space-y-3 block hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Indexed Colleges
@@ -132,9 +139,9 @@ export default async function AdminDashboardPage() {
           <span className="text-[11px] text-muted-foreground">
             NIRF & NAAC Audited Directory
           </span>
-        </div>
+        </Link>}
 
-        <div className="p-5 rounded-2xl border bg-card shadow-xs space-y-3">
+        {(access.isSuperAdmin || access.permissions.includes("blogs")) && <Link href="/admin/blogs" className="p-5 rounded-2xl border bg-card shadow-xs space-y-3 block hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Editorial Articles
@@ -149,9 +156,9 @@ export default async function AdminDashboardPage() {
           <span className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
             <Sparkles className="w-3 h-3" /> GEO & AI Overviews Indexed
           </span>
-        </div>
+        </Link>}
 
-        <div className="p-5 rounded-2xl border bg-card shadow-xs space-y-3">
+        {access.isSuperAdmin && <Link href="/admin/users" className="p-5 rounded-2xl border bg-card shadow-xs space-y-3 block hover:border-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               Platform Users
@@ -164,9 +171,9 @@ export default async function AdminDashboardPage() {
             {userCount}
           </div>
           <span className="text-[11px] text-muted-foreground">
-            4 RBAC Roles Active
+            View all platform users →
           </span>
-        </div>
+        </Link>}
       </div>
 
       {/* Two-Column Grid: Recent Leads & Recent Blogs */}
@@ -186,9 +193,10 @@ export default async function AdminDashboardPage() {
 
           <div className="space-y-3">
             {recentLeads.map((l) => (
-              <div
+              <Link
+                href={`/admin/enquiries?lead=${l.id}`}
                 key={l.id}
-                className="p-3 rounded-xl bg-muted/30 border flex items-center justify-between gap-3 text-xs"
+                className="p-3 rounded-xl bg-muted/30 border flex items-center justify-between gap-3 text-xs hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <div>
                   <h4 className="font-bold text-foreground">{l.studentName}</h4>
@@ -199,7 +207,7 @@ export default async function AdminDashboardPage() {
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase">
                   {l.status.replace("_", " ")}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

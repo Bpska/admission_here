@@ -3,6 +3,10 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { z } from "zod";
+
+const permissionsSchema = z.array(z.enum(["dashboard", "colleges", "exams", "blogs", "reviews", "leads", "seo-geo", "blogs:publish", "blogs:delete"]));
+const assignedSchema = z.array(z.string().uuid());
 
 export async function GET() {
   try {
@@ -58,6 +62,8 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { name, userId, password, permissions, assignedCollegeIds = [] } = body;
+    if (typeof name !== "string" || typeof userId !== "string" || typeof password !== "string" || password.length < 8 || !permissionsSchema.safeParse(permissions).success || !assignedSchema.safeParse(assignedCollegeIds).success) return NextResponse.json({ error: "Enter valid staff details, permissions and a password of at least 8 characters." }, { status: 400 });
+    if (await db.college.count({ where: { id: { in: Array.from(new Set(assignedCollegeIds)) as string[] } } }) !== new Set(assignedCollegeIds).size) return NextResponse.json({ error: "An assigned college no longer exists." }, { status: 400 });
 
     if (!name || !userId || !password) {
       return NextResponse.json(
@@ -158,6 +164,10 @@ export async function PATCH(req: Request) {
 
     const body = await req.json();
     const { id, permissions, assignedCollegeIds, isActive } = body;
+    if (!z.string().uuid().safeParse(id).success || (permissions !== undefined && !permissionsSchema.safeParse(permissions).success) || (assignedCollegeIds !== undefined && !assignedSchema.safeParse(assignedCollegeIds).success)) return NextResponse.json({ error: "Invalid staff account or permissions." }, { status: 400 });
+    const target = await db.user.findUnique({ where: { id } });
+    if (!target || target.role !== "STAFF") return NextResponse.json({ error: "Staff account not found." }, { status: 404 });
+    if (assignedCollegeIds && await db.college.count({ where: { id: { in: Array.from(new Set(assignedCollegeIds)) as string[] } } }) !== new Set(assignedCollegeIds).size) return NextResponse.json({ error: "An assigned college no longer exists." }, { status: 400 });
 
     if (!id) {
       return NextResponse.json(
@@ -238,6 +248,9 @@ export async function DELETE(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Invalid staff ID." }, { status: 400 });
+    const target = await db.user.findUnique({ where: { id: id! } });
+    if (!target || target.role !== "STAFF") return NextResponse.json({ error: "Staff account not found." }, { status: 404 });
 
     if (!id) {
       return NextResponse.json(

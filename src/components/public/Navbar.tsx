@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { CATEGORIES } from "@/lib/navbar-items";
+import { navbarFilterHref } from "@/lib/navbar-filters";
 import { useState, useEffect, useRef } from "react";
 import { 
   Search, 
@@ -22,268 +24,6 @@ import {
 } from "lucide-react";
 import { AiCounselorDrawer } from "../ai/AiCounselorDrawer";
 import { AiSearchCommandBar } from "../ai/AiSearchCommandBar";
-
-interface SubItem {
-  label: string;
-  href: string;
-  badge?: string;
-}
-
-interface StreamColumn {
-  title: string;
-  items: SubItem[];
-}
-
-interface NavCategory {
-  key: string;
-  label: string;
-  mainHref: string;
-  columns: StreamColumn[];
-}
-
-const CATEGORIES: NavCategory[] = [
-  {
-    key: "mba",
-    label: "MBA",
-    mainHref: "/colleges/mba",
-    columns: [
-      {
-        title: "Top MBA Colleges",
-        items: [
-          { label: "Top MBA Colleges in India", href: "/colleges/mba" },
-          { label: "Top IIMs in India", href: "/colleges?q=IIM" },
-          { label: "Top MBA in Delhi NCR", href: "/colleges/mba?state=Delhi" },
-          { label: "Top MBA in Mumbai", href: "/colleges/mba?state=Maharashtra" },
-          { label: "Top MBA in Bengaluru", href: "/colleges/mba?state=Karnataka" },
-        ],
-      },
-      {
-        title: "MBA Exams & Cutoffs",
-        items: [
-          { label: "CAT 2026 Exam", href: "/exams/cat" },
-          { label: "XAT 2026 Exam", href: "/exams/cat" },
-          { label: "MAT Exam Details", href: "/exams/cat" },
-          { label: "CAT College Predictor", href: "/college-predictor/cat" },
-          { label: "IIM Cutoff Analysis", href: "/blog/top-10-mba-colleges-in-india-cat-cutoffs-placements" },
-        ],
-      },
-      {
-        title: "Popular Specializations",
-        items: [
-          { label: "MBA in Finance", href: "/colleges/mba" },
-          { label: "MBA in Marketing", href: "/colleges/mba" },
-          { label: "MBA in Human Resources", href: "/colleges/mba" },
-          { label: "MBA in Business Analytics", href: "/colleges/mba" },
-          { label: "Executive MBA Programs", href: "/colleges/mba" },
-        ],
-      },
-    ],
-  },
-  {
-    key: "engineering",
-    label: "ENGINEERING",
-    mainHref: "/colleges/b-tech",
-    columns: [
-      {
-        title: "Top Engineering Colleges",
-        items: [
-          { label: "Top B.Tech Colleges in India", href: "/colleges/b-tech" },
-          { label: "Top IITs in India", href: "/colleges?q=IIT" },
-          { label: "Top NITs in India", href: "/colleges?q=NIT" },
-          { label: "Top IIITs in India", href: "/colleges?q=IIIT" },
-          { label: "Top Colleges in Odisha", href: "/colleges/b-tech/odisha" },
-        ],
-      },
-      {
-        title: "Engineering Exams",
-        items: [
-          { label: "JEE Main 2026", href: "/exams/jee-main", badge: "Live" },
-          { label: "GATE 2026", href: "/exams/gate" },
-          { label: "OJEE Engineering", href: "/exams/ojee" },
-          { label: "JoSAA Cutoffs Predictor", href: "/college-predictor/jee-main" },
-          { label: "NIT Opening & Closing Ranks", href: "/blog/jee-main-2026-cutoff-analysis-for-top-nits" },
-        ],
-      },
-      {
-        title: "Top Branches",
-        items: [
-          { label: "Computer Science (CSE)", href: "/colleges/b-tech" },
-          { label: "Artificial Intelligence & ML", href: "/colleges/b-tech" },
-          { label: "Electronics & Communication", href: "/colleges/b-tech" },
-          { label: "Mechanical Engineering", href: "/colleges/b-tech" },
-          { label: "Civil Engineering", href: "/colleges/b-tech" },
-        ],
-      },
-    ],
-  },
-  {
-    key: "medical",
-    label: "MEDICAL",
-    mainHref: "/colleges/mbbs",
-    columns: [
-      {
-        title: "Top Medical Colleges",
-        items: [
-          { label: "Top MBBS Colleges in India", href: "/colleges/mbbs" },
-          { label: "AIIMS Institutes Across India", href: "/colleges?q=AIIMS" },
-          { label: "Top Govt Medical Colleges", href: "/colleges/mbbs?ownership=PUBLIC_GOVERNMENT" },
-          { label: "Top BDS (Dental) Colleges", href: "/colleges/mbbs" },
-          { label: "Medical Colleges in Delhi", href: "/colleges/mbbs?state=Delhi" },
-        ],
-      },
-      {
-        title: "Medical Exams & Alerts",
-        items: [
-          { label: "NEET UG 2026 Exam", href: "/exams/neet-ug", badge: "Key" },
-          { label: "NEET UG Counseling & Seat Matrix", href: "/blog/neet-ug-2026-counseling-dates-seat-matrix-breakdown" },
-          { label: "NEET College Predictor", href: "/college-predictor/neet-ug" },
-          { label: "MCC 15% AIQ Cutoffs", href: "/colleges/mbbs" },
-        ],
-      },
-      {
-        title: "Healthcare Degrees",
-        items: [
-          { label: "MBBS (Medicine)", href: "/colleges/mbbs" },
-          { label: "BDS (Dental)", href: "/colleges/mbbs" },
-          { label: "B.Pharm (Pharmacy)", href: "/colleges" },
-          { label: "B.Sc Nursing", href: "/colleges" },
-        ],
-      },
-    ],
-  },
-  {
-    key: "design",
-    label: "DESIGN",
-    mainHref: "/colleges",
-    columns: [
-      {
-        title: "Top Design Institutes",
-        items: [
-          { label: "National Institute of Design (NID)", href: "/colleges?q=NID" },
-          { label: "National Institute of Fashion Tech (NIFT)", href: "/colleges?q=NIFT" },
-          { label: "Top Architecture Colleges (B.Arch)", href: "/colleges?q=Architecture" },
-          { label: "Top Private Design Colleges", href: "/colleges" },
-        ],
-      },
-      {
-        title: "Design Entrance Exams",
-        items: [
-          { label: "UCEED Exam 2026", href: "/exams/jee-main" },
-          { label: "NID DAT Exam", href: "/exams/jee-main" },
-          { label: "NATA Architecture Exam", href: "/exams/jee-main" },
-        ],
-      },
-      {
-        title: "Popular Programs",
-        items: [
-          { label: "B.Des (Fashion Design)", href: "/colleges" },
-          { label: "B.Des (UI/UX & Interaction)", href: "/colleges" },
-          { label: "B.Arch (Architecture)", href: "/colleges" },
-          { label: "Animation & Game Design", href: "/colleges" },
-        ],
-      },
-    ],
-  },
-  {
-    key: "more",
-    label: "MORE",
-    mainHref: "/colleges",
-    columns: [
-      {
-        title: "General & Law Streams",
-        items: [
-          { label: "Law Colleges (BA LLB / CLAT)", href: "/colleges?q=Law" },
-          { label: "Top BCA / MCA Colleges", href: "/colleges?q=BCA" },
-          { label: "Commerce & B.Com Colleges", href: "/colleges?q=Commerce" },
-          { label: "Science & B.Sc Colleges", href: "/colleges?q=Science" },
-        ],
-      },
-      {
-        title: "State Direct Hubs",
-        items: [
-          { label: "Colleges in Odisha", href: "/colleges/b-tech/odisha" },
-          { label: "Colleges in Maharashtra", href: "/colleges/b-tech/maharashtra" },
-          { label: "Colleges in Delhi NCR", href: "/colleges?state=Delhi" },
-          { label: "Colleges in Karnataka", href: "/colleges?state=Karnataka" },
-        ],
-      },
-      {
-        title: "Student Tools",
-        items: [
-          { label: "College Compare Tool", href: "/compare/iit-bombay-vs-nit-rourkela" },
-          { label: "JEE Main Predictor", href: "/college-predictor/jee-main" },
-          { label: "Editorial & Live News", href: "/blog" },
-        ],
-      },
-    ],
-  },
-  {
-    key: "study_abroad",
-    label: "STUDY ABROAD",
-    mainHref: "/colleges",
-    columns: [
-      {
-        title: "Top Study Destinations",
-        items: [
-          { label: "Study in USA (Universities & Visas)", href: "/colleges" },
-          { label: "Study in UK (Russell Group)", href: "/colleges" },
-          { label: "Study in Canada (PGWP & Colleges)", href: "/colleges" },
-          { label: "Study in Germany (Tuition-Free)", href: "/colleges" },
-          { label: "Study in Australia", href: "/colleges" },
-        ],
-      },
-      {
-        title: "Abroad Entrance Exams",
-        items: [
-          { label: "IELTS Exam Preparation", href: "/exams/jee-main" },
-          { label: "TOEFL Exam Updates", href: "/exams/jee-main" },
-          { label: "GRE Test Guidelines", href: "/exams/gate" },
-          { label: "GMAT for Global MBA", href: "/exams/cat" },
-        ],
-      },
-      {
-        title: "Admissions Guidance",
-        items: [
-          { label: "International Scholarship Grants", href: "/blog" },
-          { label: "SOP & LOR Writing Guidance", href: "/blog" },
-          { label: "Student Visa Counseling", href: "/login" },
-        ],
-      },
-    ],
-  },
-  {
-    key: "counseling",
-    label: "COUNSELING",
-    mainHref: "/colleges",
-    columns: [
-      {
-        title: "Institutional Counseling",
-        items: [
-          { label: "JoSAA Counseling 2026 Process", href: "/exams/jee-main" },
-          { label: "CSAB Special Rounds", href: "/college-predictor/jee-main" },
-          { label: "MCC NEET Medical Allotment", href: "/blog/neet-ug-2026-counseling-dates-seat-matrix-breakdown" },
-          { label: "State Quota Seat Matrix", href: "/colleges/b-tech/odisha" },
-        ],
-      },
-      {
-        title: "Predictor Tools",
-        items: [
-          { label: "JEE Main College Predictor", href: "/college-predictor/jee-main", badge: "Hot" },
-          { label: "NEET Medical Rank Matcher", href: "/college-predictor/neet-ug" },
-          { label: "CAT Percentile Calculator", href: "/college-predictor/cat" },
-        ],
-      },
-      {
-        title: "Direct Support",
-        items: [
-          { label: "Book 1-on-1 Counselor Call", href: "/login" },
-          { label: "College Fee Waiver Check", href: "/colleges" },
-          { label: "Verified Reviews & Ratings", href: "/colleges" },
-        ],
-      },
-    ],
-  },
-];
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -375,9 +115,10 @@ export function Navbar() {
                 <span className="sm:hidden">Help</span>
               </button>
 
+              <Link href="/student" className="text-xs font-bold text-[#1a3068] px-2 py-2">My account</Link>
               {/* Admin Portal Button */}
               <Link
-                href="/admin"
+                href="/login?callbackUrl=%2Fadmin"
                 className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-[#1a3068] text-[#1a3068] rounded-lg hover:bg-[#1a3068] hover:text-white transition-colors"
               >
                 <UserCheck className="w-3.5 h-3.5" />
@@ -460,7 +201,7 @@ export function Navbar() {
                 {/* 3-Column Structured Grid */}
                 <div className="grid grid-cols-3 gap-8">
                   {activeCategory.columns.map((col, idx) => (
-                    <div key={idx} className="space-y-3">
+                    <div key={idx} data-navbar-section={`column_${idx + 1}`} className="space-y-3">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 pb-1 border-b border-slate-100">
                         {col.title}
                       </h4>
@@ -468,7 +209,7 @@ export function Navbar() {
                         {col.items.map((item, itemIdx) => (
                           <li key={itemIdx}>
                             <Link
-                              href={item.href}
+                              href={navbarFilterHref(activeCategory.key, idx, item)}
                               onClick={() => setActiveCategoryKey(null)}
                               className="text-xs text-slate-700 hover:text-[#0b5858] hover:font-bold transition-colors flex items-center justify-between group"
                             >
@@ -520,14 +261,14 @@ export function Navbar() {
                     {isOpen && (
                       <div className="p-3 pt-0 border-t border-slate-200 bg-white space-y-3">
                         {cat.columns.map((col, idx) => (
-                          <div key={idx} className="space-y-1 pt-2">
+                          <div key={idx} data-navbar-section={`column_${idx + 1}`} className="space-y-1 pt-2">
                             <div className="text-[10px] font-bold text-slate-400 uppercase">
                               {col.title}
                             </div>
                             {col.items.map((sub, sIdx) => (
                               <Link
                                 key={sIdx}
-                                href={sub.href}
+                                href={navbarFilterHref(cat.key, idx, sub)}
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="block py-1 text-xs text-slate-700 hover:text-[#0b5858] font-medium"
                               >
@@ -546,7 +287,7 @@ export function Navbar() {
             {/* Quick Links */}
             <div className="pt-3 border-t border-slate-200 space-y-2">
               <Link
-                href="/admin"
+                href="/login?callbackUrl=%2Fadmin"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800"
               >

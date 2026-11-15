@@ -1,0 +1,353 @@
+{
+  "rows": [
+    {
+      "path": "/colleges/mba",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=IIM",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/mba?state=Delhi",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/mba?state=Maharashtra",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/mba?state=Karnataka",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/exams/cat",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/college-predictor/cat",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/blog/top-10-mba-colleges-in-india-cat-cutoffs-placements",
+      "status": 200,
+      "missing": true,
+      "serverError": true
+    },
+    {
+      "path": "/colleges/b-tech",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=IIT",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=NIT",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=IIIT",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/b-tech/odisha",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/exams/jee-main",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/exams/gate",
+      "status": 200,
+      "missing": true,
+      "serverError": true
+    },
+    {
+      "path": "/exams/ojee",
+      "status": 200,
+      "missing": true,
+      "serverError": true
+    },
+    {
+      "path": "/college-predictor/jee-main",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/blog/jee-main-2026-cutoff-analysis-for-top-nits",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/mbbs",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=AIIMS",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/mbbs?ownership=PUBLIC_GOVERNMENT",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/mbbs?state=Delhi",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/exams/neet-ug",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/blog/neet-ug-2026-counseling-dates-seat-matrix-breakdown",
+      "status": 200,
+      "missing": true,
+      "serverError": true
+    },
+    {
+      "path": "/college-predictor/neet-ug",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=NID",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=NIFT",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Architecture",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Law",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=BCA",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Commerce",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Science",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges/b-tech/maharashtra",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?state=Delhi",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?state=Karnataka",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/compare/iit-bombay-vs-nit-rourkela",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/blog",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/student",
+      "status": 200,
+      "missing": false,
+      "serverError": false,
+      "note": "Anonymous route redirects to login; streamed redirect marker is expected."
+    },
+    {
+      "path": "/login?callbackUrl=%2Fadmin",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/exams/cuet-ug",
+      "status": 200,
+      "missing": true,
+      "serverError": true
+    },
+    {
+      "path": "/colleges?q=Bhubaneswar",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Rourkela",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Cuttack",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/colleges?q=Sambalpur",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/llms.txt",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/llms-full.txt",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "missing": false,
+      "serverError": false
+    },
+    {
+      "path": "/privacy",
+      "status": 404,
+      "missing": true,
+      "serverError": false
+    },
+    {
+      "path": "/terms",
+      "status": 404,
+      "missing": true,
+      "serverError": false
+    },
+    {
+      "path": "/editorial-standards",
+      "status": 404,
+      "missing": true,
+      "serverError": false
+    }
+  ],
+  "extra": [
+    {
+      "path": "/colleges?ownership=INVALID",
+      "status": 200,
+      "serverError": true,
+      "robots": "index, follow",
+      "csp": null
+    },
+    {
+      "path": "/colleges?maxFees=abc",
+      "status": 200,
+      "serverError": true,
+      "robots": "index, follow",
+      "csp": null
+    },
+    {
+      "path": "/blog/category/INVALID",
+      "status": 200,
+      "serverError": true,
+      "robots": "index, follow",
+      "csp": null
+    },
+    {
+      "path": "/images/og-blog.jpg",
+      "status": 404,
+      "serverError": false,
+      "robots": "noindex",
+      "csp": null
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "serverError": false,
+      "csp": null
+    }
+  ]
+}

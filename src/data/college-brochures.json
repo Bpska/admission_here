@@ -1,0 +1,93 @@
+{
+  "nit-rourkela": [
+    {
+      "id": "nitr-ug-2026-27",
+      "year": "2026-27",
+      "title": "UG admission instructions — JoSAA / CSAB",
+      "programs": ["B.Tech", "B.Arch", "Dual Degree", "Integrated M.Sc."],
+      "url": "https://www.nitrkl.ac.in/docs/Announcement/10072026175144558.pdf",
+      "kind": "Admission instructions (PDF)",
+      "checkedAt": "2026-11-13"
+    },
+    {
+      "id": "nitr-mba-2026-27",
+      "year": "2026-27",
+      "title": "MBA admission notice — 2026–28 batch",
+      "programs": ["MBA"],
+      "url": "https://www.nitrkl.ac.in/docs/Announcement/09012026131157261.pdf",
+      "kind": "Admission notice (PDF)",
+      "checkedAt": "2026-11-13"
+    }
+  ],
+  "iit-bombay": [
+    {
+      "id": "iitb-mtech-2026-27",
+      "year": "2026-27",
+      "title": "M.Tech. / M.Tech. + Ph.D. information brochure",
+      "programs": ["M.Tech", "M.Tech + Ph.D."],
+      "url": "https://acad.iitb.ac.in/sites/default/files/MTECH%20BROUCHURE2026-27.pdf",
+      "kind": "Information brochure (PDF)",
+      "checkedAt": "2026-11-13"
+    },
+    {
+      "id": "iitb-bdes-2026-27",
+      "year": "2026-27",
+      "title": "B.Des. — UCEED 2026 information brochure",
+      "programs": ["B.Des."],
+      "url": "https://www.uceed.iitb.ac.in/2026/assets/downloads/docs/UCEED2026_Information_Brochure.pdf",
+      "kind": "Information brochure (PDF)",
+      "checkedAt": "2026-11-13"
+    },
+    {
+      "id": "iitb-bdes-2027-28",
+      "year": "2027-28",
+      "title": "B.Des. — UCEED 2027 information brochure",
+      "programs": ["B.Des."],
+      "url": "https://www.uceed.iitb.ac.in/2027/assets/downloads/docs/UCEED2027_Information_Brochure.pdf",
+      "kind": "Information brochure (PDF)",
+      "checkedAt": "2026-11-13"
+    }
+  ],
+  "iit-bhubaneswar": [
+    {
+      "id": "iitbbs-mtech-2026-27",
+      "year": "2026-27",
+      "title": "M.Tech. admission information",
+      "programs": ["M.Tech"],
+      "url": "https://www.iitbbs.ac.in/wp-content/uploads/2026/03/Mtech-Advertisement-Academic-Year-2026-27.pdf",
+      "kind": "Admission notice (PDF)",
+      "checkedAt": "2026-11-13"
+    }
+  ],
+  "bits-pilani": [
+    {
+      "id": "bits-fd-2026-27",
+      "year": "2026-27",
+      "title": "BITSAT 2026 — Integrated First Degree brochure",
+      "programs": ["B.E.", "B.Pharm.", "M.Sc."],
+      "url": "https://www.bitsadmission.com/FD/downloads/BITSAT-2026_brochure.pdf",
+      "kind": "Information brochure (PDF)",
+      "checkedAt": "2026-11-13"
+    }
+  ],
+  "iim-ahmedabad": [
+    {
+      "id": "iima-pgpx-2026-27",
+      "year": "2026-27",
+      "title": "MBA-PGPX — One Year MBA brochure",
+      "programs": ["MBA-PGPX"],
+      "url": "https://pgpx.iima.ac.in/brochure/PGPX_Brochure_2026-27.pdf",
+      "kind": "Information brochure (PDF)",
+      "checkedAt": "2026-11-13"
+    },
+    {
+      "id": "iima-pgpx-2027-28",
+      "year": "2027-28",
+      "title": "MBA-PGPX — One Year MBA brochure",
+      "programs": ["MBA-PGPX"],
+      "url": "https://pgpx.iima.ac.in/brochure/PGPX_New_Brochure_2027-28.pdf",
+      "kind": "Information brochure (PDF)",
+      "checkedAt": "2026-11-13"
+    }
+  ]
+}

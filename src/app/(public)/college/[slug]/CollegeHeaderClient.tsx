@@ -19,6 +19,7 @@ import { BrochureDownloadModal } from "@/components/public/BrochureDownloadModal
 import { LeadCtaType } from "@prisma/client";
 
 interface CollegeHeaderClientProps {
+  previewBasePath?: string;
   college: {
     id: string;
     slug: string;
@@ -38,21 +39,22 @@ interface CollegeHeaderClientProps {
   };
 }
 
-export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
+export function CollegeHeaderClient({ college, previewBasePath }: CollegeHeaderClientProps) {
   const pathname = usePathname();
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [brochureModalOpen, setBrochureModalOpen] = useState(false);
+  const basePath = previewBasePath || `/college/${college.slug}`;
 
   const tabs = [
-    { label: "Overview", path: `/college/${college.slug}` },
-    { label: "Courses & Fees", path: `/college/${college.slug}/courses-fees` },
-    { label: "Admission 2026", path: `/college/${college.slug}/admission` },
-    { label: "Cutoff", path: `/college/${college.slug}/cutoff` },
-    { label: "Placements", path: `/college/${college.slug}/placements` },
-    { label: "Rankings", path: `/college/${college.slug}/rankings` },
-    { label: "Campus Gallery", path: `/college/${college.slug}/gallery` },
-    { label: "Reviews", path: `/college/${college.slug}/reviews` },
-    { label: "Q&A", path: `/college/${college.slug}/qna` },
+    { label: "Overview", path: `${basePath}` },
+    { label: "Courses & Fees", path: `${basePath}/courses-fees` },
+    { label: "Admission 2026", path: `${basePath}/admission` },
+    { label: "Cutoff", path: `${basePath}/cutoff` },
+    { label: "Placements", path: `${basePath}/placements` },
+    { label: "Rankings", path: `${basePath}/rankings` },
+    { label: "Campus Gallery", path: `${basePath}/gallery` },
+    { label: "Reviews", path: `${basePath}/reviews` },
+    { label: "Q&A", path: `${basePath}/qna` },
   ];
 
   return (
@@ -75,10 +77,10 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
 
         {/* Info Header Bar */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative -mt-14 sm:-mt-20 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 sm:gap-6 pb-5">
-            <div className="flex items-start sm:items-end gap-3.5 sm:gap-5 w-full md:w-auto">
+          <div className="relative flex flex-col xl:flex-row items-start xl:items-end justify-between gap-4 sm:gap-6 pt-5 sm:pt-6 pb-5">
+            <div className="flex flex-col sm:flex-row items-start gap-3.5 sm:gap-5 w-full min-w-0 xl:flex-1">
               {/* College Logo */}
-              <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl border-4 border-background bg-card shadow-lg p-2 flex items-center justify-center shrink-0">
+              <div className="relative -mt-12 sm:-mt-16 w-20 h-20 sm:w-28 sm:h-28 rounded-2xl border-4 border-background bg-card shadow-lg p-2 flex items-center justify-center shrink-0">
                 {college.logoUrl ? (
                   <img
                     src={college.logoUrl}
@@ -91,7 +93,7 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
               </div>
 
               {/* Title & Metadata */}
-              <div className="space-y-1 pt-1 sm:pt-0 min-w-0 flex-1">
+              <div className="space-y-2 min-w-0 w-full flex-1">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {college.nirfRank && (
                     <span className="text-[10px] sm:text-xs font-black px-2 sm:px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/20">
@@ -108,7 +110,7 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
                   </span>
                 </div>
 
-                <h1 className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-tight">
+                <h1 className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-tight break-words">
                   {college.name}
                 </h1>
 
@@ -132,10 +134,11 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
             </div>
 
             {/* Desktop Action Buttons */}
-            <div className="hidden sm:flex items-center gap-2.5 shrink-0 self-end">
+            <div className="hidden sm:flex flex-wrap items-center gap-2.5 shrink-0 xl:max-w-full">
               <button
                 type="button"
-                onClick={() => setBrochureModalOpen(true)}
+                disabled={Boolean(previewBasePath)}
+              onClick={() => setBrochureModalOpen(true)}
                 className="px-4 py-2.5 rounded-xl border font-bold text-xs flex items-center gap-1.5 hover:bg-muted text-foreground transition-colors cursor-pointer shadow-xs"
               >
                 <Download className="w-3.5 h-3.5 text-blue-600" />
@@ -144,7 +147,8 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
 
               <button
                 type="button"
-                onClick={() => setApplyModalOpen(true)}
+                disabled={Boolean(previewBasePath)}
+              onClick={() => setApplyModalOpen(true)}
                 className="px-5 py-2.5 rounded-xl font-bold text-xs text-white flex items-center gap-1.5 shadow-md hover:opacity-95 active:scale-95 transition-all cursor-pointer"
                 style={{ background: "#c41e1e" }}
               >
@@ -181,7 +185,8 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t px-4 py-2.5 flex items-center gap-2.5 mobile-bottom-bar shadow-xl">
         <button
           type="button"
-          onClick={() => setBrochureModalOpen(true)}
+          disabled={Boolean(previewBasePath)}
+              onClick={() => setBrochureModalOpen(true)}
           className="flex-1 py-2.5 px-3 rounded-xl border bg-background font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs text-foreground active:scale-95 transition-all cursor-pointer"
         >
           <Download className="w-4 h-4 text-blue-600" />
@@ -189,7 +194,8 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
         </button>
         <button
           type="button"
-          onClick={() => setApplyModalOpen(true)}
+          disabled={Boolean(previewBasePath)}
+              onClick={() => setApplyModalOpen(true)}
           className="flex-1 py-2.5 px-3 rounded-xl font-bold text-xs text-white flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
           style={{ background: "#c41e1e" }}
         >
@@ -214,7 +220,6 @@ export function CollegeHeaderClient({ college }: CollegeHeaderClientProps) {
         onClose={() => setBrochureModalOpen(false)}
         collegeId={college.id}
         collegeName={college.name}
-        brochureUrl={college.brochurePdfUrl || undefined}
       />
     </>
   );

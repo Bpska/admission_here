@@ -12,18 +12,32 @@ export interface StudentProfileContext {
 }
 
 export async function retrieveCounselingContext(query: string, profile?: StudentProfileContext) {
+  const tokens = query.toLowerCase().split(/[^a-z0-9]+/).filter(word => word.length > 2 && !["the","and","for","with","college","colleges","recommend","best","show","what","which","can","please","want","admission","engineering"].includes(word)).slice(0,12);
+  const courseFilter = {
+    ...(profile?.budgetInr ? {totalFeesInr: {lte: profile.budgetInr}} : {}),
+    ...(profile?.targetStream || profile?.targetDegree ? {course: {
+      ...(profile.targetStream ? {stream: {contains: profile.targetStream, mode: "insensitive" as const}} : {}),
+      ...(profile.targetDegree ? {degree: {contains: profile.targetDegree, mode: "insensitive" as const}} : {})
+    }} : {})
+  };
+  // Query terms select named institutions, locations, and course specializations.
+  const matches = tokens.length ? await db.college.findMany({where:{isPublished:true, OR:tokens.flatMap(token => [{name:{contains:token,mode:"insensitive" as const}}, {shortName:{contains:token,mode:"insensitive" as const}}, {city:{contains:token,mode:"insensitive" as const}}, {state:{contains:token,mode:"insensitive" as const}}, {courses:{some:{specialization:{contains:token,mode:"insensitive" as const}}}}])},select:{id:true}}) : [];
   // 1. Fetch relevant colleges based on stream or query
   const colleges = await db.college.findMany({
     where: {
       isPublished: true,
+      ...(matches.length ? {id:{in:matches.map(c => c.id)}} : {}),
+      ...(Object.keys(courseFilter).length ? {courses:{some:courseFilter}} : {}),
       ...(profile?.homeState ? { state: { contains: profile.homeState, mode: "insensitive" } } : {}),
     },
     take: 5,
     include: {
       courses: {
+        where: courseFilter,
         include: {
           course: true,
           cutoffs: {
+            where: { ...(profile?.entranceExam ? {exam:{slug:profile.entranceExam}} : {}), ...(profile?.category ? {category:profile.category} : {}) },
             take: 3,
             orderBy: { academicYear: "desc" },
           },
@@ -40,6 +54,7 @@ export async function retrieveCounselingContext(query: string, profile?: Student
 
   return {
     colleges: colleges.map((c) => ({
+      slug: c.slug,
       name: c.name,
       city: c.city,
       state: c.state,

@@ -13,8 +13,8 @@ interface CollegeLayoutProps {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const college = await db.college.findUnique({
-    where: { slug },
-    select: { name: true, city: true, state: true, nirfRank: true, overviewHtml: true },
+    where: { slug, isPublished: true },
+    select: { name: true, city: true, state: true, nirfRank: true, overviewHtml: true, metaTitle: true, metaDescription: true },
   });
 
   if (!college) {
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return constructSeoMetadata({
-    title: `${college.name} Admissions 2026: Cutoffs, Fees, Placements & Ranking`,
-    description: `Check complete details for ${college.name}, ${college.city}, ${college.state}. Explore B.Tech/MBA fees, official JoSAA cutoffs, highest packages, and NIRF rank #${college.nirfRank || "N/A"}.`,
+    title: college.metaTitle || `${college.name} Admissions 2026: Cutoffs, Fees, Placements & Ranking`,
+    description: college.metaDescription || `Check complete details for ${college.name}, ${college.city}, ${college.state}. Explore courses, fees, cutoffs, placements, and rankings.`,
     canonicalPath: `/college/${slug}`,
   });
 }
@@ -35,7 +35,7 @@ export default async function CollegeLayout({ children, params }: CollegeLayoutP
   const { slug } = await params;
 
   const college = await db.college.findUnique({
-    where: { slug },
+    where: { slug, isPublished: true },
   });
 
   if (!college) {

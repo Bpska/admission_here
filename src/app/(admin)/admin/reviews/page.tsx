@@ -17,6 +17,7 @@ export default async function AdminReviewsPage() {
   }
 
   const reviews = await db.review.findMany({
+    where: access.isSuperAdmin ? {} : { collegeId: { in: access.assignedCollegeIds || [] } },
     orderBy: { createdAt: "desc" },
     include: {
       college: { select: { name: true, slug: true } },

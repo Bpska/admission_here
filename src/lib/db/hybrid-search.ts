@@ -74,14 +74,24 @@ export async function performHybridCollegeSearch(
         "nirfRank", 
         "ownershipType", 
         "ratingOverall",
-        ts_rank("searchTsv", to_tsquery('english', ${sanitizedQuery})) as ts_rank
-      FROM "College"
+        ts_rank(search_document, to_tsquery('english', ${sanitizedQuery})) as ts_rank
+      FROM (
+        SELECT c.*, coalesce(c."searchTsv", to_tsvector('english',
+          concat_ws(' ', c.name, c."shortName", c.city, c.state,
+            (SELECT string_agg(concat_ws(' ', course."fullName", course.stream, course.degree, course.slug, cc.specialization), ' ')
+             FROM "CollegeCourse" cc JOIN "Course" course ON course.id = cc."courseId"
+             WHERE cc."collegeId" = c.id)
+          ))) AS search_document
+        FROM "College" c
+      ) AS colleges
       WHERE 
         "isPublished" = true 
         AND (
-          "searchTsv" @@ to_tsquery('english', ${sanitizedQuery})
+          search_document @@ to_tsquery('english', ${sanitizedQuery})
           OR name ILIKE ${"%" + query + "%"}
+          OR "shortName" ILIKE ${"%" + query + "%"}
           OR city ILIKE ${"%" + query + "%"}
+          OR state ILIKE ${"%" + query + "%"}
         )
       ORDER BY ts_rank DESC, "ratingOverall" DESC
       LIMIT ${limit * 2}
@@ -123,6 +133,7 @@ export async function performHybridCollegeSearch(
         isPublished: true,
         OR: [
           { name: { contains: query, mode: "insensitive" } },
+          { shortName: { contains: query, mode: "insensitive" } },
           { city: { contains: query, mode: "insensitive" } },
           { state: { contains: query, mode: "insensitive" } },
         ],

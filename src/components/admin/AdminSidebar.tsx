@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { 
   LayoutDashboard, 
   Building2, 
@@ -36,6 +37,7 @@ export type StaffPermission =
 const navItems = [
   { label: "Dashboard",          href: "/admin",              icon: LayoutDashboard, permission: "dashboard"  as const },
   { label: "Colleges Directory", href: "/admin/colleges",     icon: Building2,        permission: "colleges"   as const },
+  { label: "Course Catalog", href: "/admin/courses", icon: BookOpen, permission: "colleges" as const },
   { label: "Staff Approvals",    href: "/admin/approvals",    icon: CheckSquare,      permission: "colleges"   as const },
   { label: "Enquiries Desk",     href: "/admin/enquiries",    icon: MailCheck,        permission: "leads"      as const },
   { label: "B2B Student Leads",  href: "/admin/leads",        icon: Contact2,         permission: "leads"      as const },
@@ -71,6 +73,7 @@ export function AdminSidebar({
       return item.permission !== "blogs-staff";
     }
     if (item.permission === "all" || item.permission === "blogs-staff") return false;
+    if (item.permission === "dashboard") return true;
     // STAFF: show "My Blog Desk" if they have blogs permission (as a separate entry)
     return permissions.includes(item.permission);
   });
@@ -83,7 +86,7 @@ export function AdminSidebar({
 
   return (
     <aside
-      className="w-full h-full flex flex-col justify-between shrink-0 overflow-y-auto"
+      className="w-full h-full flex flex-col justify-between shrink-0 overflow-y-auto overscroll-contain"
       style={{ background: "linear-gradient(180deg, #0f1f4a 0%, #1a3068 100%)" }}
     >
       <div className="space-y-4 pt-4">
@@ -123,7 +126,7 @@ export function AdminSidebar({
             style={{ background: "rgba(31,128,64,0.25)", color: "#6ee7a8" }}
           >
             <ShieldCheck className="w-3 h-3" />
-            {role === "SUPER_ADMIN" ? "SUPER ADMIN" : "STAFF"}
+            {role === "SUPER_ADMIN" ? "SUPER ADMIN" : role === "AUTHOR" ? "AUTHOR" : "STAFF"}
           </span>
         </div>
 
@@ -182,6 +185,9 @@ export function AdminSidebar({
           <LogOut className="w-4 h-4 shrink-0" />
           <span>Exit to Student Portal</span>
         </Link>
+        <button type="button" onClick={() => signOut({ callbackUrl: "/login" })} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-200 hover:bg-white/10 hover:text-white">
+          <LogOut className="w-4 h-4" />Sign out
+        </button>
       </div>
     </aside>
   );

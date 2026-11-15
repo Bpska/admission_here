@@ -3,17 +3,17 @@ import { retrieveCounselingContext, COUNSELOR_SYSTEM_PROMPT } from "@/lib/ai/rag
 import { z } from "zod";
 
 const CounselorRequestSchema = z.object({
-  query: z.string().min(1, "Query is required"),
+  query: z.string().trim().min(1, "Query is required").max(2000),
   profile: z
     .object({
       studentName: z.string().optional(),
       targetStream: z.string().optional(),
       targetDegree: z.string().optional(),
       entranceExam: z.string().optional(),
-      rankOrPercentile: z.number().optional(),
+      rankOrPercentile: z.number().finite().min(0).max(100000000).optional(),
       category: z.string().optional(),
       homeState: z.string().optional(),
-      budgetInr: z.number().optional(),
+      budgetInr: z.number().finite().positive().optional(),
     })
     .optional(),
 });
@@ -49,16 +49,9 @@ export async function POST(req: NextRequest) {
       )
       .join("\n\n");
 
-    const answer = `### 🎯 Admission Counseling Assessment\n\n` +
-      (profile?.entranceExam && profile?.rankOrPercentile
-        ? `Based on your **${profile.entranceExam.toUpperCase()}** rank/score of **${profile.rankOrPercentile.toLocaleString()}** (${profile.category || "General"} Category, ${profile.homeState || "All India"} Quota):\n\n`
-        : `Based on your query "${query}":\n\n`) +
-      `#### 🏫 Recommended Institutions:\n\n` +
-      `${relevantCollegeSummaries}\n\n` +
-      `#### 💡 Expert Counselor Advice:\n` +
-      `1. **Seat Allocation Strategy**: Prioritize institutes where your rank is well within the Round 1-3 historical closing cutoffs.\n` +
-      `2. **State Quota Advantage**: ${profile?.homeState ? `Utilize your 50% Home State quota in ${profile.homeState} for significant rank relaxation.` : "Review state counseling portals in addition to JoSAA/CSAB."}\n` +
-      `3. **ROI & Placements**: Focus on Tier-1 NITs and prestigious autonomous institutes with median packages above ₹12 LPA.`;
+    const answer = `College information for: ${query}\n\n` +
+      (context.colleges.length ? relevantCollegeSummaries : "No published colleges match these filters. Try another location, course, or budget.") +
+      "\n\nThese are database matches, not confirmed admission offers. Use the college predictor to compare your exam rank or percentile with recorded cutoffs. Home-state eligibility and seat allocation rules depend on the institution and counseling authority. Check the college's current admission document before applying.";
 
     return NextResponse.json({
       success: true,

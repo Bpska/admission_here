@@ -4,6 +4,7 @@ import { PostStatus, BlogCategory } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth/config";
+import { validateBlogImages } from "@/lib/blog-images";
 
 const BlogPatchSchema = z.object({
   title: z.string().min(3).optional(),
@@ -15,8 +16,10 @@ const BlogPatchSchema = z.object({
   tldrSummary: z.array(z.string()).optional(),
   contentMdx: z.string().min(10).optional(),
   isLiveBlog: z.boolean().optional(),
+  liveUpdatesJson: z.array(z.object({ id: z.string(), timestamp: z.string().datetime(), headline: z.string().min(1), bodyHtml: z.string(), isPinned: z.boolean().default(false) })).optional(),
   status: z.nativeEnum(PostStatus).optional(),
   authorId: z.string().uuid().optional(),
+  relatedCollegeId: z.string().uuid().nullable().optional(),
 });
 
 async function getSessionUser() {
@@ -27,6 +30,7 @@ async function getSessionUser() {
 function hasPermission(user: any, permission: string) {
   if (!user) return false;
   if (user.role === "SUPER_ADMIN") return true;
+  if (user.role !== "STAFF" && user.role !== "AUTHOR") return false;
   const perms: string[] = user.permissions || [];
   return perms.includes(permission);
 }
@@ -47,7 +51,7 @@ export async function PATCH(
     // Fetch existing post for ownership check
     const existing = await db.blogPost.findUnique({
       where: { id },
-      select: { authorId: true, slug: true },
+      select: { authorId: true, slug: true, contentMdx: true },
     });
 
     if (!existing) {
@@ -55,7 +59,7 @@ export async function PATCH(
     }
 
     // STAFF can only edit own posts
-    if (user.role === "STAFF" && existing.authorId !== user.id) {
+    if ((user.role === "STAFF" || user.role === "AUTHOR") && existing.authorId !== user.id) {
       return NextResponse.json(
         { error: "Forbidden: you can only edit your own posts" },
         { status: 403 }
@@ -72,6 +76,14 @@ export async function PATCH(
       );
     }
 
+    if (parsed.data.contentMdx) {
+      const imageError = await validateBlogImages(parsed.data.contentMdx, user, existing.contentMdx);
+      if (imageError) return NextResponse.json({ error: imageError }, { status: 400 });
+    }
+
+    if (parsed.data.relatedCollegeId && !await db.college.findUnique({ where: { id: parsed.data.relatedCollegeId, isPublished: true }, select: { id: true } })) {
+      return NextResponse.json({ error: "Choose a published college." }, { status: 400 });
+    }
     const updateData: any = { ...parsed.data };
 
     // Only SUPER_ADMIN can change author
@@ -92,13 +104,14 @@ export async function PATCH(
       updateData.status = PostStatus.DRAFT;
     }
 
-    if (updateData.status === PostStatus.PUBLISHED && !existing.slug) {
+    if (updateData.status === PostStatus.PUBLISHED) {
       updateData.publishedAt = new Date();
     }
 
     const post = await db.blogPost.update({ where: { id }, data: updateData });
 
     try {
+      revalidatePath("/", "layout");
       revalidatePath("/blog");
       revalidatePath(`/blog/${post.slug}`);
     } catch {
@@ -127,7 +140,7 @@ export async function DELETE(
 
     const existing = await db.blogPost.findUnique({
       where: { id },
-      select: { authorId: true, slug: true },
+      select: { authorId: true, slug: true, contentMdx: true },
     });
 
     if (!existing) {
@@ -135,7 +148,7 @@ export async function DELETE(
     }
 
     // STAFF: only delete own posts; also need blogs:delete sub-permission
-    if (user.role === "STAFF") {
+    if ((user.role === "STAFF" || user.role === "AUTHOR")) {
       const perms: string[] = user.permissions || [];
       if (existing.authorId !== user.id) {
         return NextResponse.json(
@@ -154,6 +167,7 @@ export async function DELETE(
     await db.blogPost.delete({ where: { id } });
 
     try {
+      revalidatePath("/", "layout");
       revalidatePath("/blog");
       revalidatePath(`/blog/${existing.slug}`);
     } catch {

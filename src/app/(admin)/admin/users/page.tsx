@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { Users, ShieldCheck, UserCheck } from "lucide-react";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
+import { AdminDataEditor } from "@/components/admin/AdminDataEditor";
 
 export const revalidate = 0;
 
@@ -86,6 +87,8 @@ export default async function AdminUsersPage() {
           </table>
         </div>
       </div>
+      <p className="text-sm text-muted-foreground">Manage staff permissions in Staff Management. Other user accounts and roles can be edited below.</p>
+      <AdminDataEditor resource="users" />
     </div>
   );
 }

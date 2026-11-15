@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useScrollLock } from "@/hooks/useScrollLock";
 import { useRouter } from "next/navigation";
 import { Search, Sparkles, Building2, ExternalLink, X, MapPin, Award } from "lucide-react";
 import type { HybridSearchResult } from "@/lib/db/hybrid-search";
@@ -11,6 +12,7 @@ interface AiSearchCommandBarProps {
 }
 
 export function AiSearchCommandBar({ open, onOpenChange }: AiSearchCommandBarProps) {
+  useScrollLock(open);
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -93,7 +95,7 @@ export function AiSearchCommandBar({ open, onOpenChange }: AiSearchCommandBarPro
         </div>
 
         {/* Results Container */}
-        <div className="max-h-[60vh] overflow-y-auto p-2">
+        <div className="max-h-[60vh] min-h-0 overflow-y-auto overscroll-contain p-2">
           {results.length > 0 ? (
             <div className="space-y-1">
               <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground flex items-center justify-between">

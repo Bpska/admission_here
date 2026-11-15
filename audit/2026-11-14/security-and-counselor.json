@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Unpublished college in public hierarchy",
+    "evidence": {
+      "exposed": true
+    }
+  },
+  {
+    "name": "Temporary author authenticated",
+    "evidence": {
+      "role": "AUTHOR"
+    }
+  },
+  {
+    "name": "Author stores HTML via CMS",
+    "evidence": {
+      "status": 200,
+      "published": "PUBLISHED"
+    }
+  },
+  {
+    "name": "Stored HTML executes in browser",
+    "evidence": {
+      "executed": true
+    }
+  },
+  {
+    "name": "Named college with drawer defaults",
+    "evidence": {
+      "colleges": [
+        "Indian Institute of Technology Bhubaneswar"
+      ],
+      "count": 1
+    }
+  },
+  {
+    "name": "Unmatched counselor query",
+    "evidence": {
+      "colleges": [
+        "Indian Institute of Management Ahmedabad",
+        "Indian Institute of Technology Bombay",
+        "National Institute of Technology Rourkela",
+        "Birla Institute of Technology and Science, Pilani",
+        "Indian Institute of Technology Bhubaneswar"
+      ],
+      "count": 5
+    }
+  },
+  {
+    "name": "Default editor content",
+    "evidence": {
+      "textareas": [
+        {
+          "start": "Top NIT CSE opening ranks range between 1,000 to 7,000 AIR.\nHome State quota provides 40-60% rank relaxation.\nNIT Rourke",
+          "literalNewlines": true
+        },
+        {
+          "start": "# Article Heading\n\n<BlogTldrBox />\n\n## Official Cutoff Breakdown\n\nJoSAA counseling statistics indicate heightened compet",
+          "literalNewlines": true
+        },
+        {
+          "start": "",
+          "literalNewlines": false
+        }
+      ]
+    }
+  },
+  {
+    "name": "Isolated fixture cleanup",
+    "evidence": "complete"
+  }
+]

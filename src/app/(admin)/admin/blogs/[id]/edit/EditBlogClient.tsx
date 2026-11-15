@@ -17,7 +17,7 @@ export function EditBlogClient({ post }: { post: any }) {
       router.push("/admin/blogs");
     } else {
       const json = await res.json();
-      alert(json.error || "Failed to update article");
+      throw new Error(json.error || "Failed to update article");
     }
   };
 
@@ -31,9 +31,11 @@ export function EditBlogClient({ post }: { post: any }) {
         featuredImageUrl: post.featuredImageUrl || undefined,
         tldrSummary: post.tldrSummary || [],
         contentMdx: post.contentMdx,
+        relatedCollegeSlug: post.relatedCollege?.slug,
         category: post.category,
         tags: post.tags || [],
         isLiveBlog: post.isLiveBlog,
+        liveUpdatesJson: post.liveUpdatesJson || [],
       }}
       canPublish={true}
       onSave={handleSave}

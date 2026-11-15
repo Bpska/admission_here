@@ -14,9 +14,11 @@ interface Props {
     featuredImageUrl?: string;
     tldrSummary: string[];
     contentMdx: string;
+    relatedCollegeSlug?: string;
     category: string;
     tags: string[];
     isLiveBlog: boolean;
+    liveUpdatesJson?: { id: string; timestamp: string; headline: string; bodyHtml: string; isPinned: boolean }[];
   };
   canPublish: boolean;
 }
@@ -39,7 +41,7 @@ export function StaffEditBlogClient({ post, canPublish }: Props) {
       }
       router.push("/admin/staff-blogs");
     } else {
-      alert(json.error || "Failed to update article");
+      throw new Error(json.error || "Failed to update article");
     }
   };
 
@@ -69,9 +71,11 @@ export function StaffEditBlogClient({ post, canPublish }: Props) {
           featuredImageUrl: post.featuredImageUrl,
           tldrSummary: post.tldrSummary,
           contentMdx: post.contentMdx,
+          relatedCollegeSlug: post.relatedCollegeSlug,
           category: post.category,
           tags: post.tags,
           isLiveBlog: post.isLiveBlog,
+        liveUpdatesJson: post.liveUpdatesJson || [],
         }}
         canPublish={canPublish}
         onSave={handleSave}

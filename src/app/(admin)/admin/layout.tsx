@@ -9,6 +9,8 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
   const user = session?.user as any;
+  if (user?.role === "STUDENT") redirect("/student");
+  if (user?.role === "COLLEGE_ADMIN") redirect(user.managedCollegeId ? `/partner/${user.managedCollegeId}` : "/login");
 
   // Strict Authentication: If user is not logged in or role is not authorized, redirect to /login
   if (!user || (user.role !== "SUPER_ADMIN" && user.role !== "STAFF" && user.role !== "COLLEGE_ADMIN" && user.role !== "AUTHOR")) {

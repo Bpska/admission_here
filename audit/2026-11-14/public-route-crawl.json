@@ -1,0 +1,914 @@
+{
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "location": null,
+      "ms": 297,
+      "title": "Top Colleges, Cutoffs, Admissions &amp; AI Counselor Platform | AdmissionsHub",
+      "canonical": "https://admissionshub.in/"
+    },
+    {
+      "path": "/blog",
+      "status": 200,
+      "location": null,
+      "ms": 679,
+      "title": "AdmissionsHub Editorial &amp; Live Exam Updates 2026 | AdmissionsHub",
+      "canonical": "https://admissionshub.in/blog"
+    },
+    {
+      "path": "/college-predictor/jee-main",
+      "status": 200,
+      "location": null,
+      "ms": 1117,
+      "title": "Joint Entrance Examination (Main) College Predictor 2026: Calculate Your Admission Chances | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college-predictor/jee-main"
+    },
+    {
+      "path": "/colleges/nit-rourkela",
+      "status": 200,
+      "location": null,
+      "ms": 822,
+      "title": "Top NIT ROURKELA Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/nit-rourkela"
+    },
+    {
+      "path": "/colleges",
+      "status": 200,
+      "location": null,
+      "ms": 1119,
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/college/nit-rourkela",
+      "status": 200,
+      "location": null,
+      "ms": 1045,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/admission",
+      "status": 200,
+      "location": null,
+      "ms": 1161,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/placements",
+      "status": 200,
+      "location": null,
+      "ms": 557,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/courses-fees",
+      "status": 200,
+      "location": null,
+      "ms": 1165,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/cutoff",
+      "status": 200,
+      "location": null,
+      "ms": 1164,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/qna",
+      "status": 200,
+      "location": null,
+      "ms": 1087,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/rankings",
+      "status": 200,
+      "location": null,
+      "ms": 1091,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/gallery",
+      "status": 200,
+      "location": null,
+      "ms": 1090,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/college/nit-rourkela/reviews",
+      "status": 200,
+      "location": null,
+      "ms": 1096,
+      "title": "National Institute of Technology Rourkela Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/nit-rourkela"
+    },
+    {
+      "path": "/colleges/iit-bombay",
+      "status": 200,
+      "location": null,
+      "ms": 496,
+      "title": "Top IIT BOMBAY Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/courses-fees",
+      "status": 200,
+      "location": null,
+      "ms": 535,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/admission",
+      "status": 200,
+      "location": null,
+      "ms": 590,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay",
+      "status": 200,
+      "location": null,
+      "ms": 757,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/cutoff",
+      "status": 200,
+      "location": null,
+      "ms": 332,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/placements",
+      "status": 200,
+      "location": null,
+      "ms": 315,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/rankings",
+      "status": 200,
+      "location": null,
+      "ms": 322,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/gallery",
+      "status": 200,
+      "location": null,
+      "ms": 289,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iit-bombay/reviews",
+      "status": 200,
+      "location": null,
+      "ms": 333,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/colleges/iim-ahmedabad",
+      "status": 200,
+      "location": null,
+      "ms": 246,
+      "title": "Top IIM AHMEDABAD Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iit-bombay/qna",
+      "status": 200,
+      "location": null,
+      "ms": 318,
+      "title": "Indian Institute of Technology Bombay Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bombay"
+    },
+    {
+      "path": "/college/iim-ahmedabad/courses-fees",
+      "status": 200,
+      "location": null,
+      "ms": 238,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad",
+      "status": 200,
+      "location": null,
+      "ms": 354,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad/admission",
+      "status": 200,
+      "location": null,
+      "ms": 237,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad/cutoff",
+      "status": 200,
+      "location": null,
+      "ms": 238,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad/placements",
+      "status": 200,
+      "location": null,
+      "ms": 298,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad/rankings",
+      "status": 200,
+      "location": null,
+      "ms": 304,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad/gallery",
+      "status": 200,
+      "location": null,
+      "ms": 304,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/iim-ahmedabad/reviews",
+      "status": 200,
+      "location": null,
+      "ms": 308,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/colleges/test-college",
+      "status": 200,
+      "location": null,
+      "ms": 302,
+      "title": "Top TEST COLLEGE Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/test-college"
+    },
+    {
+      "path": "/college/iim-ahmedabad/qna",
+      "status": 200,
+      "location": null,
+      "ms": 320,
+      "title": "Indian Institute of Management Ahmedabad Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iim-ahmedabad"
+    },
+    {
+      "path": "/college/test-college/courses-fees",
+      "status": 200,
+      "location": null,
+      "ms": 310,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college",
+      "status": 200,
+      "location": null,
+      "ms": 511,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/admission",
+      "status": 200,
+      "location": null,
+      "ms": 294,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/cutoff",
+      "status": 200,
+      "location": null,
+      "ms": 291,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/placements",
+      "status": 200,
+      "location": null,
+      "ms": 290,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/rankings",
+      "status": 200,
+      "location": null,
+      "ms": 298,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/gallery",
+      "status": 200,
+      "location": null,
+      "ms": 285,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/qna",
+      "status": 200,
+      "location": null,
+      "ms": 286,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/college/test-college/reviews",
+      "status": 200,
+      "location": null,
+      "ms": 298,
+      "title": "test college Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/test-college"
+    },
+    {
+      "path": "/colleges/iit-bhubaneswar",
+      "status": 200,
+      "location": null,
+      "ms": 292,
+      "title": "Top IIT BHUBANESWAR Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/courses-fees",
+      "status": 200,
+      "location": null,
+      "ms": 308,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/admission",
+      "status": 200,
+      "location": null,
+      "ms": 304,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar",
+      "status": 200,
+      "location": null,
+      "ms": 341,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/cutoff",
+      "status": 200,
+      "location": null,
+      "ms": 251,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/placements",
+      "status": 200,
+      "location": null,
+      "ms": 311,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/rankings",
+      "status": 200,
+      "location": null,
+      "ms": 311,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/gallery",
+      "status": 200,
+      "location": null,
+      "ms": 304,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/reviews",
+      "status": 200,
+      "location": null,
+      "ms": 287,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/colleges/bits-pilani",
+      "status": 200,
+      "location": null,
+      "ms": 291,
+      "title": "Top BITS PILANI Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/bits-pilani"
+    },
+    {
+      "path": "/college/iit-bhubaneswar/qna",
+      "status": 200,
+      "location": null,
+      "ms": 298,
+      "title": "Indian Institute of Technology Bhubaneswar Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/iit-bhubaneswar"
+    },
+    {
+      "path": "/college/bits-pilani/courses-fees",
+      "status": 200,
+      "location": null,
+      "ms": 310,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani",
+      "status": 200,
+      "location": null,
+      "ms": 444,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/admission",
+      "status": 200,
+      "location": null,
+      "ms": 298,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/cutoff",
+      "status": 200,
+      "location": null,
+      "ms": 293,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/placements",
+      "status": 200,
+      "location": null,
+      "ms": 303,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/rankings",
+      "status": 200,
+      "location": null,
+      "ms": 295,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/gallery",
+      "status": 200,
+      "location": null,
+      "ms": 243,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/reviews",
+      "status": 200,
+      "location": null,
+      "ms": 267,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/college/bits-pilani/qna",
+      "status": 200,
+      "location": null,
+      "ms": 125,
+      "title": "Birla Institute of Technology and Science, Pilani Admissions 2026: Cutoffs, Fees, Placements &amp; Ranking | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college/bits-pilani"
+    },
+    {
+      "path": "/exams/jee-main",
+      "status": 200,
+      "location": null,
+      "ms": 1586,
+      "title": "Joint Entrance Examination (Main) 2026: Exam Dates, Syllabus, Pattern &amp; Cutoffs | AdmissionsHub",
+      "canonical": "https://admissionshub.in/exams/jee-main"
+    },
+    {
+      "path": "/blog/test-blog",
+      "status": 200,
+      "location": null,
+      "ms": 1594,
+      "title": "test blog | AdmissionsHub",
+      "canonical": "https://admissionshub.in/blog/test-blog"
+    },
+    {
+      "path": "/blog/live-jee-main-2026-session-1-results-updates",
+      "status": 200,
+      "location": null,
+      "ms": 1620,
+      "title": "Live JEE Main 2026 Result Updates: Scorecard Link &amp; Rank Predictor | AdmissionsHub",
+      "canonical": "https://admissionshub.in/blog/live-jee-main-2026-session-1-results-updates"
+    },
+    {
+      "path": "/blog/jee-main-2026-cutoff-analysis-for-top-nits",
+      "status": 200,
+      "location": null,
+      "ms": 1704,
+      "title": "JEE Main 2026 Cutoff for Top NITs: Branch-Wise Ranks, Category &amp; Quotas | AdmissionsHub",
+      "canonical": "https://admissionshub.in/blog/jee-main-2026-cutoff-analysis-for-top-nits"
+    },
+    {
+      "path": "/login?callbackUrl=%2Fadmin",
+      "status": 200,
+      "location": null,
+      "ms": 941,
+      "title": "Admission Here | Higher Education Discovery &amp; Cutoff Platform"
+    },
+    {
+      "path": "/student",
+      "status": 200,
+      "location": null,
+      "ms": 1000,
+      "title": "Admission Here | Higher Education Discovery &amp; Cutoff Platform"
+    },
+    {
+      "path": "/exams/neet-ug",
+      "status": 200,
+      "location": null,
+      "ms": 1011,
+      "title": "National Eligibility cum Entrance Test (UG) 2026: Exam Dates, Syllabus, Pattern &amp; Cutoffs | AdmissionsHub",
+      "canonical": "https://admissionshub.in/exams/neet-ug"
+    },
+    {
+      "path": "/exams/cat",
+      "status": 200,
+      "location": null,
+      "ms": 1012,
+      "title": "Common Admission Test 2026: Exam Dates, Syllabus, Pattern &amp; Cutoffs | AdmissionsHub",
+      "canonical": "https://admissionshub.in/exams/cat"
+    },
+    {
+      "path": "/llms-full.txt",
+      "status": 200,
+      "location": null,
+      "ms": 475
+    },
+    {
+      "path": "/llms.txt",
+      "status": 200,
+      "location": null,
+      "ms": 533
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "location": null,
+      "ms": 467
+    },
+    {
+      "path": "/colleges/b-tech",
+      "status": 200,
+      "location": null,
+      "ms": 733,
+      "title": "Top B TECH Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/b-tech"
+    },
+    {
+      "path": "/colleges/b-tech/odisha",
+      "status": 200,
+      "location": null,
+      "ms": 273,
+      "title": "Top B TECH ODISHA Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/b-tech/odisha"
+    },
+    {
+      "path": "/colleges/mba",
+      "status": 200,
+      "location": null,
+      "ms": 275,
+      "title": "Top MBA Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/mba"
+    },
+    {
+      "path": "/colleges/mbbs",
+      "status": 200,
+      "location": null,
+      "ms": 278,
+      "title": "Top MBBS Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/mbbs"
+    },
+    {
+      "path": "/colleges?q=Bhubaneswar",
+      "status": 200,
+      "location": null,
+      "ms": 222,
+      "title": "Search results for Bhubaneswar | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges?q=Rourkela",
+      "status": 200,
+      "location": null,
+      "ms": 218,
+      "title": "Search results for Rourkela | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges?q=Sambalpur",
+      "status": 200,
+      "location": null,
+      "ms": 217,
+      "title": "Search results for Sambalpur | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges?q=Cuttack",
+      "status": 200,
+      "location": null,
+      "ms": 220,
+      "title": "Search results for Cuttack | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges/b-tech/maharashtra",
+      "status": 200,
+      "location": null,
+      "ms": 224,
+      "title": "Top B TECH MAHARASHTRA Colleges in India | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/b-tech/maharashtra"
+    },
+    {
+      "path": "/colleges?state=Delhi",
+      "status": 200,
+      "location": null,
+      "ms": 223,
+      "title": "Top in Delhi Colleges | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges?state=Karnataka",
+      "status": 200,
+      "location": null,
+      "ms": 236,
+      "title": "Top in Karnataka Colleges | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "location": null,
+      "ms": 539,
+      "title": "Admission Here | Higher Education Discovery &amp; Cutoff Platform"
+    },
+    {
+      "path": "/exams/gate",
+      "status": 200,
+      "location": null,
+      "ms": 606,
+      "title": "Exam Not Found | AdmissionsHub",
+      "canonical": "https://admissionshub.in"
+    },
+    {
+      "path": "/exams/cuet-ug",
+      "status": 200,
+      "location": null,
+      "ms": 592,
+      "title": "Exam Not Found | AdmissionsHub",
+      "canonical": "https://admissionshub.in"
+    },
+    {
+      "path": "/exams/ojee",
+      "status": 200,
+      "location": null,
+      "ms": 83,
+      "title": "Exam Not Found | AdmissionsHub",
+      "canonical": "https://admissionshub.in"
+    },
+    {
+      "path": "/terms",
+      "status": 404,
+      "location": null,
+      "ms": 385,
+      "title": "404: This page could not be found."
+    },
+    {
+      "path": "/privacy",
+      "status": 404,
+      "location": null,
+      "ms": 385,
+      "title": "404: This page could not be found."
+    },
+    {
+      "path": "/editorial-standards",
+      "status": 404,
+      "location": null,
+      "ms": 369,
+      "title": "404: This page could not be found."
+    },
+    {
+      "path": "/compare/iit-bombay-vs-nit-rourkela",
+      "status": 200,
+      "location": null,
+      "ms": 1480,
+      "title": "NIT Rourkela vs IIT Bombay: Complete Side-by-Side Comparison 2026 | AdmissionsHub",
+      "canonical": "https://admissionshub.in/compare/iit-bombay-vs-nit-rourkela"
+    },
+    {
+      "path": "/college-predictor/nonexistent-audit-exam",
+      "status": 200,
+      "location": null,
+      "ms": 344,
+      "title": "NONEXISTENT-AUDIT-EXAM College Predictor 2026: Calculate Your Admission Chances | AdmissionsHub",
+      "canonical": "https://admissionshub.in/college-predictor/nonexistent-audit-exam"
+    },
+    {
+      "path": "/colleges?maxFees=abc",
+      "status": 200,
+      "location": null,
+      "ms": 345,
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges?ownership=INVALID",
+      "status": 200,
+      "location": null,
+      "ms": 345,
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/colleges?page=2",
+      "status": 200,
+      "location": null,
+      "ms": 137,
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "canonical": "https://admissionshub.in/colleges/"
+    },
+    {
+      "path": "/blog/nonexistent-audit",
+      "status": 200,
+      "location": null,
+      "ms": 728,
+      "title": "Article Not Found | AdmissionsHub",
+      "canonical": "https://admissionshub.in"
+    },
+    {
+      "path": "/college/nonexistent-audit",
+      "status": 200,
+      "location": null,
+      "ms": 729,
+      "title": "College Not Found | AdmissionsHub",
+      "canonical": "https://admissionshub.in"
+    },
+    {
+      "path": "/exams/nonexistent-audit",
+      "status": 200,
+      "location": null,
+      "ms": 670,
+      "title": "Exam Not Found | AdmissionsHub",
+      "canonical": "https://admissionshub.in"
+    },
+    {
+      "path": "/blog/category/INVALID",
+      "status": 200,
+      "location": null,
+      "ms": 969,
+      "title": "INVALID - AdmissionsHub News | AdmissionsHub",
+      "canonical": "https://admissionshub.in/blog/category/INVALID"
+    }
+  ],
+  "bad": [
+    {
+      "path": "/terms",
+      "status": 404,
+      "location": null,
+      "ms": 385,
+      "title": "404: This page could not be found."
+    },
+    {
+      "path": "/privacy",
+      "status": 404,
+      "location": null,
+      "ms": 385,
+      "title": "404: This page could not be found."
+    },
+    {
+      "path": "/editorial-standards",
+      "status": 404,
+      "location": null,
+      "ms": 369,
+      "title": "404: This page could not be found."
+    }
+  ],
+  "assets": [
+    "/images/campuses/nit-rourkela/homi-bhabha-hall-of-residence.jpg",
+    "/images/campuses/nit-rourkela/nit-rourkela-main-building.jpg",
+    "/images/campuses/nit-rourkela/nit-rourkela-main-gate.jpg",
+    "/images/campuses/iit-bombay/iitbconvocationhall.jpg",
+    "/images/campuses/iit-bombay/iitbmainbuildingcrop.jpg",
+    "/images/campuses/iit-bombay/iitb-library-building.jpg",
+    "/images/campuses/iim-ahmedabad/iim-ahmedabad-new-campus.jpg",
+    "/images/campuses/iim-ahmedabad/indian-institute-of-management-ahmedabad-entrance.jpg",
+    "/images/campuses/iim-ahmedabad/vikram-sarabhai-library-reading-room.jpg",
+    "/images/campuses/iit-bhubaneswar/936-acre-campus-a-view-from-the-barunei-hill.jpg",
+    "/images/campuses/iit-bhubaneswar/campus-view-1-.jpg",
+    "/images/campuses/iit-bhubaneswar/main-gate-of-iitbbs.jpg",
+    "/images/campuses/bits-pilani/bits-pilani.jpg"
+  ],
+  "api": [],
+  "sitemapCount": 70,
+  "started": "2026-11-14T05:48:34.404Z",
+  "securityHeaders": {
+    "content-security-policy": null,
+    "x-content-type-options": null,
+    "x-frame-options": null,
+    "strict-transport-security": null,
+    "referrer-policy": null
+  },
+  "assetResults": [
+    {
+      "path": "/images/campuses/nit-rourkela/homi-bhabha-hall-of-residence.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/nit-rourkela/nit-rourkela-main-building.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/nit-rourkela/nit-rourkela-main-gate.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iit-bombay/iitbconvocationhall.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iit-bombay/iitbmainbuildingcrop.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iit-bombay/iitb-library-building.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iim-ahmedabad/iim-ahmedabad-new-campus.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iim-ahmedabad/indian-institute-of-management-ahmedabad-entrance.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iim-ahmedabad/vikram-sarabhai-library-reading-room.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iit-bhubaneswar/936-acre-campus-a-view-from-the-barunei-hill.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iit-bhubaneswar/campus-view-1-.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/iit-bhubaneswar/main-gate-of-iitbbs.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/campuses/bits-pilani/bits-pilani.jpg",
+      "status": 200
+    },
+    {
+      "path": "/images/og-default.jpg",
+      "status": 404
+    }
+  ]
+}

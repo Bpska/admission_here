@@ -1,0 +1,1 @@
+ALTER TABLE "College" ADD COLUMN IF NOT EXISTS "navbarSection" TEXT NOT NULL DEFAULT 'featured';

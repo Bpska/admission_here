@@ -1,5 +1,6 @@
 "use client";
 
+import { useCollegeComparison } from "./CollegeComparison";
 import Link from "next/link";
 import { useState } from "react";
 import { 
@@ -15,6 +16,7 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { LeadCaptureModal } from "./LeadCaptureModal";
+import { BrochureDownloadModal } from "./BrochureDownloadModal";
 import { LeadCtaType } from "@prisma/client";
 import { formatInr } from "@/lib/utils";
 
@@ -53,6 +55,9 @@ interface CollegeCardProps {
 }
 
 export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCardProps) {
+  const comparison = useCollegeComparison();
+  onToggleCompare = onToggleCompare || comparison?.toggle;
+  isCompared = isCompared ?? comparison?.selected.some(c => c.id === college.id);
   const [modalOpen, setModalOpen] = useState(false);
   const [ctaType, setCtaType] = useState<LeadCtaType>(LeadCtaType.APPLY_NOW);
 
@@ -97,7 +102,10 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
               </span>
             </div>
 
-            <Link href={`/college/${college.slug}`}>
+            <Link
+              href={`/college/${college.slug}`}
+              className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary focus-visible:after:ring-inset"
+            >
               <h3 className="font-bold text-base sm:text-lg text-foreground hover:text-primary transition-colors line-clamp-1">
                 {college.name}
               </h3>
@@ -132,7 +140,7 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
                   <Briefcase className="w-3 h-3 mr-1" />
                   {college.latestPlacement
                     ? formatInr(college.latestPlacement.averagePackageInr)
-                    : "₹14.2 Lakh"}
+                    : "Not available"}
                 </span>
               </div>
             </div>
@@ -144,8 +152,9 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
           {/* Compare Checkbox */}
           {onToggleCompare && (
             <button
-              onClick={() => onToggleCompare(college)}
-              className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium cursor-pointer"
+              aria-pressed={Boolean(isCompared)}
+              onClick={() => onToggleCompare!(college)}
+              className="relative z-10 flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium cursor-pointer"
             >
               {isCompared ? (
                 <CheckSquare className="w-4 h-4 text-primary" />
@@ -160,7 +169,7 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
           <div className="flex items-center gap-2 ml-auto">
             <button
               onClick={() => openModal(LeadCtaType.DOWNLOAD_BROCHURE)}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+              className="relative z-10 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold transition-colors flex items-center gap-1 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-[#1a3068]" />
               <span className="hidden sm:inline">Brochure</span>
@@ -168,7 +177,7 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
 
             <button
               onClick={() => openModal(LeadCtaType.APPLY_NOW)}
-              className="px-3.5 py-1.5 rounded-lg bg-[#C41E1E] text-white font-bold hover:bg-[#a81919] transition-colors flex items-center gap-1 cursor-pointer shadow-xs active:scale-95"
+              className="relative z-10 px-3.5 py-1.5 rounded-lg bg-[#C41E1E] text-white font-bold hover:bg-[#a81919] transition-colors flex items-center gap-1 cursor-pointer shadow-xs active:scale-95"
             >
               <span>Apply Now</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -177,8 +186,9 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
         </div>
       </div>
 
+      <BrochureDownloadModal open={modalOpen && ctaType === LeadCtaType.DOWNLOAD_BROCHURE} onClose={() => setModalOpen(false)} collegeId={college.id} collegeName={college.name} />
       <LeadCaptureModal
-        open={modalOpen}
+        open={modalOpen && ctaType !== LeadCtaType.DOWNLOAD_BROCHURE}
         onClose={() => setModalOpen(false)}
         collegeId={college.id}
         collegeName={college.name}

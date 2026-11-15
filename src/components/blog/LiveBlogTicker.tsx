@@ -1,5 +1,6 @@
 "use client";
 
+import { BlogProse } from "./BlogProse";
 import { Pin, Radio, Clock } from "lucide-react";
 
 export interface LiveUpdateItem {
@@ -71,10 +72,7 @@ export function LiveBlogTicker({ updates }: LiveBlogTickerProps) {
               {item.headline}
             </h5>
 
-            <div
-              className="text-xs sm:text-sm text-muted-foreground leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: item.bodyHtml }}
-            />
+            <BlogProse content={item.bodyHtml} />
           </div>
         ))}
       </div>

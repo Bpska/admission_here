@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 import { SeoGeoChecklist } from "./SeoGeoChecklist";
 import { RichBlogRenderer } from "../blog/RichBlogRenderer";
+import { RichBlogEditor } from "./RichBlogEditor";
+import { BlogCollegeSelector } from "./BlogCollegeSelector";
+import { blogCollegeSlugs } from "@/lib/blog-content";
 
 interface BlogMdxEditorProps {
   initialData?: {
@@ -27,6 +30,7 @@ interface BlogMdxEditorProps {
     category: string;
     tags?: string[];
     isLiveBlog?: boolean;
+    liveUpdatesJson?: { id: string; timestamp: string; headline: string; bodyHtml: string; isPinned: boolean }[];
     relatedCollegeSlug?: string;
   };
   /** When false, the Publish button is hidden (staff without publish permission). */
@@ -41,20 +45,17 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
   const [featuredImageUrl, setFeaturedImageUrl] = useState(initialData?.featuredImageUrl || "");
   const [category, setCategory] = useState(initialData?.category || "CUTOFF_ANALYSIS");
   const [tagsText, setTagsText] = useState((initialData?.tags || []).join(", "));
-  const [tldrText, setTldrText] = useState(
-    (initialData?.tldrSummary || [
-      "Top NIT CSE opening ranks range between 1,000 to 7,000 AIR.",
-      "Home State quota provides 40-60% rank relaxation.",
-      "NIT Rourkela Round 1 CSE closed at 6,420 rank.",
-      "Session 2 registration window remains open until March 5, 2026.",
-    ]).join("\n")
-  );
-  const [contentMdx, setContentMdx] = useState(
-    initialData?.contentMdx ||
-      `# Article Heading\n\n<BlogTldrBox />\n\n## Official Cutoff Breakdown\n\nJoSAA counseling statistics indicate heightened competition for Tier-1 engineering seats.\n\n<EmbeddedCollegeCTA slug="nit-rourkela" />\n\n## Summary & Strategy Advice\n\nEnsure your choice preferences are locked prior to the Round 1 deadline.`
-  );
+  const [tldrText, setTldrText] = useState((initialData?.tldrSummary || []).join("\n"));
+  const [contentMdx, setContentMdx] = useState(() => {
+    const content = initialData?.contentMdx || "";
+    const slug = initialData?.relatedCollegeSlug;
+    return slug && !blogCollegeSlugs(content).includes(slug) ? `${content}\n\n<EmbeddedCollegeCTA slug="${slug}" />` : content;
+  });
+  const [mediaBusy, setMediaBusy] = useState(false);
   const [isLiveBlog, setIsLiveBlog] = useState(initialData?.isLiveBlog || false);
-  const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
+  const [liveUpdates, setLiveUpdates] = useState(initialData?.liveUpdatesJson || []);
+  const [saveError, setSaveError] = useState("");
+  const [activeTab, setActiveTab] = useState<"write" | "source" | "preview">("write");
   const [saving, setSaving] = useState(false);
 
   const insertShortcode = (shortcode: string) => {
@@ -62,7 +63,9 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
   };
 
   const handleFormSubmit = async (publish: boolean) => {
+    if (saving || mediaBusy) return;
     setSaving(true);
+    setSaveError("");
     try {
       const tldrArray = tldrText
         .split("\n")
@@ -85,10 +88,14 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
           tags: tagsArray,
           tldrSummary: tldrArray,
           contentMdx,
+          relatedCollegeId: null,
           isLiveBlog,
+          liveUpdatesJson: liveUpdates,
         },
         publish
       );
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Unable to save article.");
     } finally {
       setSaving(false);
     }
@@ -100,6 +107,18 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Editor Col */}
       <div className="lg:col-span-2 space-y-5">
+        {saveError && <p role="alert" className="p-3 rounded-lg bg-red-50 text-red-700">{saveError}</p>}
+        {isLiveBlog && <section className="bg-card border rounded-xl p-5 space-y-4">
+          <h2 className="font-bold">Live updates</h2>
+          {liveUpdates.map((update, index) => <fieldset key={update.id} className="border rounded-lg p-3 space-y-2">
+            <label className="block text-xs">Headline<input aria-label={`Update ${index + 1} headline`} className="block w-full p-2 border rounded" value={update.headline} onChange={event => setLiveUpdates(items => items.map(item => item.id === update.id ? { ...item, headline: event.target.value } : item))} /></label>
+            <label className="block text-xs">Date and time<input type="datetime-local" className="block w-full p-2 border rounded" value={new Date(new Date(update.timestamp).getTime() - new Date(update.timestamp).getTimezoneOffset() * 60000).toISOString().slice(0, 16)} onChange={event => { if (event.target.value) setLiveUpdates(items => items.map(item => item.id === update.id ? { ...item, timestamp: new Date(event.target.value).toISOString() } : item)); }} /></label>
+            <label className="block text-xs">Update text<textarea className="block w-full p-2 border rounded" value={update.bodyHtml} onChange={event => setLiveUpdates(items => items.map(item => item.id === update.id ? { ...item, bodyHtml: event.target.value } : item))} /></label>
+            <label className="text-xs flex gap-2"><input type="checkbox" checked={update.isPinned} onChange={event => setLiveUpdates(items => items.map(item => item.id === update.id ? { ...item, isPinned: event.target.checked } : item))} />Pin this update</label>
+            <button type="button" className="text-xs text-red-700 underline" onClick={() => setLiveUpdates(items => items.filter(item => item.id !== update.id))}>Remove update</button>
+          </fieldset>)}
+          <button type="button" className="border px-3 py-2 rounded text-sm" onClick={() => setLiveUpdates(items => [...items, { id: crypto.randomUUID(), timestamp: new Date().toISOString(), headline: "", bodyHtml: "", isPinned: false }])}>Add live update</button>
+        </section>}
         {/* Title Input */}
         <div className="bg-card border rounded-xl p-5 space-y-4">
           <div>
@@ -211,22 +230,27 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
           />
         </div>
 
+        <BlogCollegeSelector content={contentMdx} onChange={setContentMdx} />
+
         {/* MDX & Shortcode Toolbar */}
         <div className="bg-card border rounded-xl overflow-hidden">
           <div className="p-3 border-b bg-muted/30 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1">
               <button
                 type="button"
+                disabled={mediaBusy}
                 onClick={() => setActiveTab("write")}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                   activeTab === "write" ? "bg-background border shadow-2xs text-primary" : "text-muted-foreground"
                 }`}
               >
                 <Edit3 className="w-3.5 h-3.5" />
-                <span>Write MDX</span>
+                <span>Visual editor</span>
               </button>
+              <button type="button" disabled={mediaBusy} onClick={() => setActiveTab("source")} className={`rounded-md px-3 py-1.5 text-xs font-semibold ${activeTab === "source" ? "bg-background border text-primary" : "text-muted-foreground"}`}>Source</button>
               <button
                 type="button"
+                disabled={mediaBusy}
                 onClick={() => setActiveTab("preview")}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
                   activeTab === "preview" ? "bg-background border shadow-2xs text-primary" : "text-muted-foreground"
@@ -240,14 +264,6 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
             {/* Shortcode Inserters */}
             <div className="flex items-center gap-1.5 text-xs">
               <span className="text-muted-foreground text-[11px] mr-1 hidden sm:inline">Insert Block:</span>
-              <button
-                type="button"
-                onClick={() => insertShortcode('<EmbeddedCollegeCTA slug="nit-rourkela" />')}
-                className="px-2 py-1 rounded border bg-background hover:bg-accent text-[11px] font-medium flex items-center gap-1 cursor-pointer"
-              >
-                <Building2 className="w-3 h-3 text-blue-600" />
-                <span>+ College CTA</span>
-              </button>
               <button
                 type="button"
                 onClick={() => insertShortcode("<BlogTldrBox />")}
@@ -268,7 +284,10 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
           </div>
 
           {activeTab === "write" ? (
+            <RichBlogEditor value={contentMdx} onChange={setContentMdx} onBusyChange={setMediaBusy} />
+          ) : activeTab === "source" ? (
             <textarea
+              aria-label="Article source"
               rows={16}
               value={contentMdx}
               onChange={(e) => setContentMdx(e.target.value)}
@@ -281,6 +300,7 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
                 content={contentMdx}
                 tldrSummary={tldrBullets}
                 isLiveBlog={isLiveBlog}
+                liveUpdates={liveUpdates}
                 blogId={initialData?.id || "preview-id"}
               />
             </div>
@@ -291,7 +311,7 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
         <div className="flex items-center justify-end gap-3 pt-2">
           <button
             type="button"
-            disabled={saving}
+            disabled={saving || mediaBusy}
             onClick={() => handleFormSubmit(false)}
             className="px-4 py-2 rounded-lg border bg-background hover:bg-accent text-xs font-bold text-foreground flex items-center gap-1.5 cursor-pointer"
           >
@@ -301,7 +321,7 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
           {canPublish ? (
             <button
               type="button"
-              disabled={saving}
+              disabled={saving || mediaBusy}
               onClick={() => handleFormSubmit(true)}
               className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-xs cursor-pointer"
             >
@@ -360,7 +380,7 @@ export function BlogMdxEditor({ initialData, canPublish = true, onSave }: BlogMd
           metaDescription={metaDescription}
           tldrBullets={tldrBullets}
           contentLength={contentMdx.length}
-          hasShortcodes={contentMdx.includes("<EmbeddedCollegeCTA")}
+          hasShortcodes={blogCollegeSlugs(contentMdx).length > 0}
         />
       </div>
     </div>

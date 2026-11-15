@@ -2,6 +2,7 @@ import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { StaffManagementClient } from "./StaffManagementClient";
 import { db } from "@/lib/db";
+import { StaffAssignmentsEditor } from "@/components/admin/StaffAssignmentsEditor";
 import { UserRole } from "@prisma/client";
 
 export const metadata = {
@@ -46,6 +47,6 @@ export default async function StaffManagementPage() {
     assignedCollegeIds: s.staffPermission?.assignedCollegeIds || [],
   }));
 
-  return <StaffManagementClient initialStaff={formattedStaff} />;
+  return <div className="space-y-6"><StaffManagementClient initialStaff={formattedStaff} /><StaffAssignmentsEditor /></div>;
 }
 

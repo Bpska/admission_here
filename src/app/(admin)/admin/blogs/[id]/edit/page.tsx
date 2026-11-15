@@ -3,19 +3,24 @@ import { db } from "@/lib/db";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { EditBlogClient } from "./EditBlogClient";
+import { checkAdminAccess } from "@/lib/auth/staff-guard";
 
 interface EditBlogPageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function EditBlogPage({ params }: EditBlogPageProps) {
+  const access = await checkAdminAccess("blogs");
+  if (!access.allowed) notFound();
   const { id } = await params;
 
   const post = await db.blogPost.findUnique({
     where: { id },
+    include: { relatedCollege: { select: { slug: true } } },
   });
 
   if (!post) notFound();
+  if (!access.isSuperAdmin && post.authorId !== access.userId) notFound();
 
   return (
     <div className="space-y-6 max-w-7xl">

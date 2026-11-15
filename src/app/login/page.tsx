@@ -6,11 +6,12 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { Lock, Mail, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { portalDestination } from "@/lib/portal-navigation";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,12 +33,11 @@ function LoginForm() {
       if (res?.error) {
         setError("Invalid email address or password.");
       } else {
-        // Direct students to public portal/colleges instead of admin
-        const target =
-          email.toLowerCase().includes("student") && callbackUrl === "/admin"
-            ? "/colleges"
-            : callbackUrl;
-        router.push(target);
+        const response = await fetch("/api/auth/session", { cache: "no-store" });
+        const session = await response.json();
+        if (!session?.user) throw new Error("Sign-in could not be completed.");
+        router.replace(portalDestination(session.user.role, session.user.managedCollegeId, callbackUrl));
+        router.refresh();
       }
     } catch (err) {
       setError("An unexpected error occurred during login.");

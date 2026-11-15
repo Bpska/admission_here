@@ -18,7 +18,7 @@ export default async function StaffEditBlogPage({ params }: Props) {
   const user = session?.user as any;
   const permissions: string[] = user?.permissions || [];
 
-  const post = await db.blogPost.findUnique({ where: { id } });
+  const post = await db.blogPost.findUnique({ where: { id }, include: { relatedCollege: { select: { slug: true } } } });
   if (!post) notFound();
 
   // STAFF may only edit their own posts
@@ -41,8 +41,10 @@ export default async function StaffEditBlogPage({ params }: Props) {
         featuredImageUrl: post.featuredImageUrl ?? undefined,
         tldrSummary: post.tldrSummary,
         contentMdx: post.contentMdx,
+        relatedCollegeSlug: post.relatedCollege?.slug,
         category: post.category,
         tags: post.tags,
+        liveUpdatesJson: (post.liveUpdatesJson as any) || [],
         isLiveBlog: post.isLiveBlog,
       }}
       canPublish={canPublish}

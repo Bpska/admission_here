@@ -1,0 +1,190 @@
+[
+  {
+    "route": "/admin",
+    "path": "/admin",
+    "heading": "Platform Governance & KPI Dashboard",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/colleges",
+    "path": "/admin/colleges",
+    "heading": "Colleges Master Directory",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/colleges/new",
+    "path": "/admin/colleges/new",
+    "heading": "Onboard New Institutional Profile",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/blogs",
+    "path": "/admin/blogs",
+    "heading": "Editorial Blog CMS Desk",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/blogs/new",
+    "path": "/admin/blogs/new",
+    "heading": "Author New SEO & GEO Editorial Article",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/staff-blogs",
+    "path": "/admin/staff-blogs",
+    "heading": "All Blogs Overview",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/staff-blogs/new",
+    "path": "/admin/staff-blogs/new",
+    "heading": "Write New Blog Article",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/approvals",
+    "path": "/admin/approvals",
+    "heading": "Staff Activity & Approval Dashboard",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/enquiries",
+    "path": "/admin/enquiries",
+    "heading": "Enquiry Management Dashboard",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/leads",
+    "path": "/admin/leads",
+    "heading": "B2B Student Lead CRM & Attribution Desk",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/exams",
+    "path": "/admin/exams",
+    "heading": "Entrance Exams & Cutoff Matrix Manager",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/courses",
+    "path": "/admin/courses",
+    "heading": "Course catalog",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/reviews",
+    "path": "/admin/reviews",
+    "heading": "Student Review & ID Proof Moderation Queue",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/users",
+    "path": "/admin/users",
+    "heading": "User & RBAC Role Directory",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/staff",
+    "path": "/admin/staff",
+    "heading": "Staff & Role Access Control",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/staff/new",
+    "path": "/admin/staff/new",
+    "heading": "Create New Staff Member",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/admin/seo-geo",
+    "path": "/admin/seo-geo",
+    "heading": "SEO & Generative Engine Optimization (GEO) Control Panel",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/partner/iit-bombay",
+    "path": "/partner/iit-bombay",
+    "heading": "Assigned Student Applications & Leads",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "route": "/partner/iit-bombay/profile",
+    "path": "/partner/iit-bombay/profile",
+    "heading": "Propose Institutional Profile & Fee Updates",
+    "error": false,
+    "width": 756,
+    "scroll": 756
+  },
+  {
+    "mobile": "/admin",
+    "width": 390,
+    "scroll": 390,
+    "overflow": false
+  },
+  {
+    "mobile": "/admin/colleges",
+    "width": 390,
+    "scroll": 390,
+    "overflow": false
+  },
+  {
+    "mobile": "/admin/enquiries",
+    "width": 390,
+    "scroll": 390,
+    "overflow": false
+  },
+  {
+    "mobile": "/admin/blogs/new",
+    "width": 390,
+    "scroll": 390,
+    "overflow": false
+  },
+  {
+    "mobile": "/partner/iit-bombay",
+    "width": 390,
+    "scroll": 390,
+    "overflow": false
+  },
+  {
+    "mobile": "/partner/iit-bombay/profile",
+    "width": 390,
+    "scroll": 390,
+    "overflow": false
+  }
+]

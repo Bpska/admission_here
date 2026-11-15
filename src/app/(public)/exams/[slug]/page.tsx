@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: ExamPageProps) {
   }
 
   return constructSeoMetadata({
-    title: `${exam.name} 2026: Exam Dates, Syllabus, Pattern & Cutoffs`,
+    title: `${exam.name}${exam.examDate ? ` ${new Date(exam.examDate).getFullYear()}` : ""}: Exam Dates, Syllabus, Pattern & Cutoffs`,
     description: `Complete guide for ${exam.name} conducted by ${exam.conductingBody}. Check application deadlines, syllabus, exam pattern, and participating colleges.`,
     canonicalPath: `/exams/${slug}`,
   });
@@ -38,6 +38,7 @@ export default async function ExamHubPage({ params }: ExamPageProps) {
     where: { slug },
     include: {
       cutoffs: {
+        where: { collegeCourse: { college: { isPublished: true } } },
         take: 5,
         include: {
           collegeCourse: {
@@ -88,8 +89,8 @@ export default async function ExamHubPage({ params }: ExamPageProps) {
           <div className="p-3 rounded-xl bg-muted/40 border">
             <span className="text-muted-foreground block text-[11px]">Application Window</span>
             <span className="font-bold text-foreground">
-              {exam.applicationStart ? new Date(exam.applicationStart).toLocaleDateString() : "Nov 2025"} –{" "}
-              {exam.applicationEnd ? new Date(exam.applicationEnd).toLocaleDateString() : "Dec 2025"}
+              {exam.applicationStart ? new Date(exam.applicationStart).toLocaleDateString() : "TBA"} –{" "}
+              {exam.applicationEnd ? new Date(exam.applicationEnd).toLocaleDateString() : "TBA"}
             </span>
           </div>
 
@@ -103,7 +104,7 @@ export default async function ExamHubPage({ params }: ExamPageProps) {
           <div className="p-3 rounded-xl bg-muted/40 border">
             <span className="text-muted-foreground block text-[11px]">Result Announcement</span>
             <span className="font-bold text-emerald-600">
-              {exam.resultDate ? new Date(exam.resultDate).toLocaleDateString() : "Feb 2026"}
+              {exam.resultDate ? new Date(exam.resultDate).toLocaleDateString() : "TBA"}
             </span>
           </div>
 
@@ -131,6 +132,7 @@ export default async function ExamHubPage({ params }: ExamPageProps) {
             />
           </div>
 
+          {pattern.counselingSchedule && <section className="bg-card border rounded-2xl p-6 space-y-3"><h2 className="text-lg font-bold">Counseling schedule</h2><p className="text-sm whitespace-pre-wrap">{String(pattern.counselingSchedule)}</p></section>}
           {/* Syllabus */}
           {exam.syllabusHtml && (
             <div className="bg-card border rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
@@ -148,7 +150,7 @@ export default async function ExamHubPage({ params }: ExamPageProps) {
           <div className="bg-card border rounded-2xl p-6 shadow-xs space-y-4">
             <h3 className="font-bold text-sm text-foreground">Exam Pattern Highlights</h3>
             <div className="space-y-3 text-xs">
-              {Object.entries(pattern).map(([k, v]) => (
+              {Object.entries(pattern).filter(([key]) => key !== "counselingSchedule").map(([k, v]) => (
                 <div key={k} className="flex justify-between py-1.5 border-b">
                   <span className="text-muted-foreground capitalize">
                     {k.replace(/([A-Z])/g, " $1")}

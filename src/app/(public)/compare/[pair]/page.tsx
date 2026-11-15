@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: ComparePageProps) {
   const slugs = pair.split("-vs-").map((s) => s.trim());
 
   const colleges = await db.college.findMany({
-    where: { slug: { in: slugs } },
+    where: { slug: { in: slugs }, isPublished: true },
     select: { name: true, shortName: true },
   });
 
@@ -35,7 +35,7 @@ export default async function CollegeComparisonPage({ params }: ComparePageProps
   const slugs = pair.split("-vs-").map((s) => s.trim());
 
   const colleges = await db.college.findMany({
-    where: { slug: { in: slugs } },
+    where: { slug: { in: slugs }, isPublished: true },
     include: {
       courses: {
         include: { course: true },

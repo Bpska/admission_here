@@ -21,7 +21,7 @@ interface BlogPostPageProps {
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const post = await db.blogPost.findUnique({
-    where: { slug },
+    where: { slug, status: "PUBLISHED" },
     select: { title: true, metaTitle: true, metaDescription: true, category: true },
   });
 
@@ -44,7 +44,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
   const post = await db.blogPost.findUnique({
-    where: { slug },
+    where: { slug, status: "PUBLISHED" },
     include: {
       author: { select: { name: true } },
       relatedCollege: {
@@ -57,6 +57,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           nirfRank: true,
           ratingOverall: true,
           logoUrl: true,
+          isPublished: true,
         },
       },
     },
@@ -142,7 +143,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         tldrSummary={post.tldrSummary}
         isLiveBlog={post.isLiveBlog}
         liveUpdates={(post.liveUpdatesJson as unknown as LiveUpdateItem[]) || undefined}
-        relatedCollege={post.relatedCollege}
+        relatedCollege={post.relatedCollege?.isPublished ? post.relatedCollege : null}
         blogId={post.id}
       />
 

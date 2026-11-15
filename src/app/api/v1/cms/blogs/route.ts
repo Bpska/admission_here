@@ -5,6 +5,7 @@ import { PostStatus, BlogCategory } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/lib/auth/config";
+import { validateBlogImages } from "@/lib/blog-images";
 
 const BlogSaveSchema = z.object({
   id: z.string().uuid().optional(),
@@ -17,8 +18,10 @@ const BlogSaveSchema = z.object({
   tldrSummary: z.array(z.string()).default([]),
   contentMdx: z.string().min(10),
   isLiveBlog: z.boolean().default(false),
+  liveUpdatesJson: z.array(z.object({ id: z.string(), timestamp: z.string().datetime(), headline: z.string().min(1), bodyHtml: z.string(), isPinned: z.boolean().default(false) })).default([]),
   publish: z.boolean().default(false),
   authorId: z.string().uuid().optional(), // Admin can override author
+  relatedCollegeId: z.string().uuid().nullable().optional(),
 });
 
 /** GET — list blogs. SUPER_ADMIN sees all; STAFF sees own. */
@@ -30,12 +33,12 @@ export async function GET(req: NextRequest) {
     const permissions: string[] = user?.permissions || [];
 
     // Must be SUPER_ADMIN or STAFF with blogs permission
-    if (role !== "SUPER_ADMIN" && !(role === "STAFF" && permissions.includes("blogs"))) {
+    if (role !== "SUPER_ADMIN" && !((role === "STAFF" || role === "AUTHOR") && permissions.includes("blogs"))) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const where =
-      role === "STAFF"
+      (role === "STAFF" || role === "AUTHOR")
         ? { authorId: user.id }
         : undefined;
 
@@ -64,7 +67,7 @@ export async function POST(req: NextRequest) {
     const permissions: string[] = user?.permissions || [];
 
     // Auth guard
-    if (role !== "SUPER_ADMIN" && !(role === "STAFF" && permissions.includes("blogs"))) {
+    if (role !== "SUPER_ADMIN" && !((role === "STAFF" || role === "AUTHOR") && permissions.includes("blogs"))) {
       return NextResponse.json({ error: "Unauthorized: blogs permission required" }, { status: 401 });
     }
 
@@ -89,7 +92,9 @@ export async function POST(req: NextRequest) {
       tldrSummary,
       contentMdx,
       isLiveBlog,
+      liveUpdatesJson,
       publish,
+      relatedCollegeId,
       authorId: overrideAuthorId,
     } = parsed.data;
 
@@ -127,8 +132,11 @@ export async function POST(req: NextRequest) {
       resolvedAuthorId = fallbackAuthor.id;
     }
 
+    let previousContent = "";
+    if (id) previousContent = (await db.blogPost.findUnique({ where: { id }, select: { contentMdx: true } }))?.contentMdx || "";
+
     // If STAFF is editing, verify they own the post
-    if (id && role === "STAFF") {
+    if (id && (role === "STAFF" || role === "AUTHOR")) {
       const existing = await db.blogPost.findUnique({ where: { id }, select: { authorId: true } });
       if (!existing) {
         return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
@@ -139,6 +147,13 @@ export async function POST(req: NextRequest) {
           { status: 403 }
         );
       }
+    }
+
+    const imageError = await validateBlogImages(contentMdx, user, previousContent);
+    if (imageError) return NextResponse.json({ error: imageError }, { status: 400 });
+
+    if (relatedCollegeId && !await db.college.findUnique({ where: { id: relatedCollegeId, isPublished: true }, select: { id: true } })) {
+      return NextResponse.json({ error: "Choose a published college." }, { status: 400 });
     }
 
     // Generate embedding if publishing
@@ -159,6 +174,8 @@ export async function POST(req: NextRequest) {
       tldrSummary,
       contentMdx,
       isLiveBlog,
+      liveUpdatesJson,
+      ...(relatedCollegeId !== undefined ? { relatedCollegeId } : {}),
       status: effectivePublish ? PostStatus.PUBLISHED : PostStatus.DRAFT,
       publishedAt: effectivePublish ? new Date() : undefined,
     };
@@ -179,11 +196,7 @@ export async function POST(req: NextRequest) {
     // Store vector embedding
     if (effectivePublish && embedding) {
       try {
-        await db.$executeRaw`
-          UPDATE "BlogPost" 
-          SET embedding = ${embedding}::vector 
-          WHERE id = ${post.id}::uuid
-        `;
+        await db.blogPost.update({ where: { id: post.id }, data: { embedding } });
       } catch (embErr) {
         console.warn("Vector embedding storage note:", embErr);
       }
@@ -191,6 +204,7 @@ export async function POST(req: NextRequest) {
 
     // Revalidate public caches
     try {
+      revalidatePath("/", "layout");
       revalidatePath("/blog");
       revalidatePath(`/blog/${post.slug}`);
       revalidatePath("/sitemap.xml");

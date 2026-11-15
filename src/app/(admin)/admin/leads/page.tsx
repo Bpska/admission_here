@@ -1,7 +1,8 @@
+import { LeadExportButton } from "@/components/admin/LeadExportButton";
 import { db } from "@/lib/db";
 import { LeadCrmKanban } from "@/components/admin/LeadCrmKanban";
 import { Contact2, TrendingUp, Users } from "lucide-react";
-import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { checkAdminAccess, collegeScope } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 
 export const revalidate = 0;
@@ -18,6 +19,7 @@ export default async function AdminLeadsPage() {
   }
 
   const leads = await db.lead.findMany({
+      where: access.isSuperAdmin ? {} : { targetCollegeId: { in: access.assignedCollegeIds || [] } },
     orderBy: { createdAt: "desc" },
     include: {
       targetCollege: { select: { name: true, slug: true } },
@@ -37,7 +39,8 @@ export default async function AdminLeadsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <LeadExportButton />
           <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5" />
             <span>{leads.length} Active Leads</span>

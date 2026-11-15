@@ -1,431 +1,126 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { 
-  X, 
-  CheckCircle2, 
-  FileText, 
-  Download, 
-  Sparkles, 
-  Phone, 
-  User, 
-  Mail, 
-  MapPin, 
-  GraduationCap, 
-  Users, 
-  AlertCircle 
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, CheckCircle2, FileText, Download } from "lucide-react";
 import { LeadCtaType } from "@prisma/client";
+import { useScrollLock } from "@/hooks/useScrollLock";
+import type { CollegeBrochure } from "@/lib/brochures";
+import { INDIAN_STATES, getDistricts, isValidStateDistrict } from "@/lib/india-locations";
 
-interface BrochureDownloadModalProps {
-  open: boolean;
-  onClose: () => void;
-  collegeId: string;
-  collegeName: string;
-  brochureUrl?: string | null;
-  defaultCourse?: string;
-}
+interface Props { open: boolean; onClose: () => void; collegeId: string; collegeName: string; blogId?: string }
+const fieldClass = "w-full min-w-0 px-3 py-2.5 text-sm border rounded-xl bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-60";
 
-export function BrochureDownloadModal({
-  open,
-  onClose,
-  collegeId,
-  collegeName,
-  brochureUrl,
-  defaultCourse = "B.Tech Computer Science",
-}: BrochureDownloadModalProps) {
-  const [step, setStep] = useState<"form" | "success" | "already_submitted">("form");
+export function BrochureDownloadModal({ open, onClose, collegeId, collegeName, blogId }: Props) {
+  useScrollLock(open);
+  const [brochures, setBrochures] = useState<CollegeBrochure[]>([]);
+  const [websiteUrl, setWebsiteUrl] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [fetchError, setFetchError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const [unlocked, setUnlocked] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [state, setState] = useState("");
   const [district, setDistrict] = useState("");
-  const [targetCourse, setTargetCourse] = useState(defaultCourse);
+  const [targetCourse, setTargetCourse] = useState("");
   const [parentPhone, setParentPhone] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const courses = Array.from(new Set(brochures.flatMap(item => item.programs)));
+  const course = courses.includes(targetCourse) ? targetCourse : courses[0] || "";
+  const selected = brochures.filter(item => item.programs.includes(course))
+    .sort((a, b) => b.year.localeCompare(a.year))[0];
+  const year = selected?.year;
+  const storageKey = `admission_brochure_${collegeId}_${selected?.id || ""}`;
 
-  const storageKey = `admision_brochure_${collegeId}`;
-  const effectiveBrochureUrl = brochureUrl || `/brochures/${collegeName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-2026.pdf`;
-
-  // Check if user already submitted the brochure form for this college
   useEffect(() => {
-    if (open && typeof window !== "undefined") {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        setStep("already_submitted");
-      } else {
-        setStep("form");
-      }
-    }
-  }, [open, collegeId, storageKey]);
+    if (!open) return;
+    const controller = new AbortController();
+    setFetching(true); setFetchError(""); setBrochures([]); setWebsiteUrl(null);
+    fetch(`/api/v1/colleges/${collegeId}/brochures`, { signal: controller.signal })
+      .then(async response => {
+        if (!response.ok) throw new Error("Unable to load brochures. Please try again.");
+        return response.json();
+      })
+      .then(data => { setBrochures(data.brochures); setWebsiteUrl(data.websiteUrl); })
+      .catch(error => { if (!controller.signal.aborted) setFetchError(error.message); })
+      .finally(() => { if (!controller.signal.aborted) setFetching(false); });
+    return () => controller.abort();
+  }, [open, collegeId, retry]);
+
+  useEffect(() => {
+    if (!open) return;
+    setError("");
+    try { setUnlocked(Boolean(localStorage.getItem(storageKey))); }
+    catch { setUnlocked(false); }
+  }, [open, storageKey]);
 
   if (!open) return null;
 
-  const validatePhone = (phoneNumber: string): boolean => {
-    const cleaned = phoneNumber.replace(/[\s\-()]/g, "");
-    return /^(\+?\d{1,3})?[6-9]\d{9}$|^[0-9]{10,14}$/.test(cleaned);
-  };
-
-  const validateEmail = (mail: string): boolean => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail);
-  };
-
-  const handleDownload = () => {
-    // Open/download PDF
-    window.open(effectiveBrochureUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-
-    const trimmedName = name.trim();
-    const trimmedPhone = phone.trim();
-    const trimmedEmail = email.trim();
-    const trimmedState = state.trim();
-    const trimmedDistrict = district.trim();
-    const trimmedCourse = targetCourse.trim();
-    const trimmedParentPhone = parentPhone.trim();
-
-    if (!trimmedName || trimmedName.length < 2) {
-      setError("Please enter your full name.");
-      return;
-    }
-
-    if (!trimmedPhone || !validatePhone(trimmedPhone)) {
-      setError("Please enter a valid 10-digit mobile contact number.");
-      return;
-    }
-
-    if (!trimmedEmail || !validateEmail(trimmedEmail)) {
-      setError("Please enter a valid email address to receive brochure updates.");
-      return;
-    }
-
-    if (!trimmedState) {
-      setError("Please enter your home state.");
-      return;
-    }
-
-    if (!trimmedDistrict) {
-      setError("Please enter your district.");
-      return;
-    }
-
-    if (!trimmedCourse) {
-      setError("Please select or enter your target course.");
-      return;
-    }
-
-    if (!trimmedParentPhone || !validatePhone(trimmedParentPhone)) {
-      setError("Please enter a valid 10-digit parent or guardian contact number.");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (loading || !selected) return;
+    if (!isValidStateDistrict(state, district)) { setError("Select a district belonging to your chosen state."); return; }
+    const validPhone = (value: string) => /^(?:\+91|91|0)?[6-9]\d{9}$/.test(value.replace(/[\s()-]/g, ""));
+    if (!validPhone(phone) || !validPhone(parentPhone)) { setError("Enter valid Indian mobile numbers for you and your parent or guardian."); return; }
+    if (name.trim().length < 2) { setError("Enter your full name."); return; }
+    setLoading(true); setError("");
     try {
-      const res = await fetch("/api/v1/leads/capture", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          studentName: trimmedName,
-          phone: trimmedPhone,
-          email: trimmedEmail,
-          state: trimmedState,
-          district: trimmedDistrict,
-          parentPhone: trimmedParentPhone,
-          targetCourse: trimmedCourse,
-          targetStream: trimmedCourse.split(" ")[0] || "General",
-          targetCollegeId: collegeId,
-          sourceUrl: typeof window !== "undefined" ? window.location.pathname : "/",
-          ctaType: LeadCtaType.DOWNLOAD_BROCHURE,
-        }),
+      const response = await fetch("/api/v1/leads/capture", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentName: name.trim(), phone: phone.trim(), email: email.trim(), state, district,
+          parentPhone: parentPhone.trim(), targetCourse: course, targetStream: course,
+          targetCollegeId: collegeId, brochureId: selected.id, sourceUrl: window.location.pathname,
+          sourceBlogId: blogId && blogId !== "preview-id" ? blogId : undefined,
+          ctaType: LeadCtaType.DOWNLOAD_BROCHURE }),
       });
-
-      const json = await res.json();
-
-      if (res.ok && json.success) {
-        // Cache submission in localStorage to avoid repeated prompts
-        if (typeof window !== "undefined") {
-          localStorage.setItem(storageKey, JSON.stringify({ submittedAt: new Date().toISOString(), phone: trimmedPhone }));
-        }
-        setStep("success");
-        // Automatically trigger download
-        handleDownload();
-      } else {
-        setError(json.error || "Failed to submit enquiry. Please try again.");
-      }
-    } catch {
-      setError("Network error. Please check your internet connection.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || "Unable to submit your details.");
+      try { localStorage.setItem(storageKey, JSON.stringify({ submittedAt: new Date().toISOString() })); }
+      catch { /* Downloads still work without browser storage. */ }
+      setUnlocked(true);
+    } catch (error) { setError(error instanceof Error ? error.message : "Please check your connection and try again."); }
+    finally { setLoading(false); }
+  }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-lg bg-background rounded-2xl shadow-2xl border overflow-hidden animate-in zoom-in-95 duration-150 max-h-[92vh] flex flex-col">
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b bg-gradient-to-r from-blue-900/10 via-indigo-900/10 to-transparent flex items-start justify-between shrink-0">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary mb-1">
-              <FileText className="w-3 h-3" />
-              <span>Official 2026 Institutional Brochure</span>
-            </div>
-            <h3 className="font-extrabold text-sm sm:text-base text-foreground leading-snug">
-              Download Brochure: {collegeName}
-            </h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-md text-muted-foreground hover:text-foreground shrink-0 ml-2 cursor-pointer"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+      <section role="dialog" aria-modal="true" aria-labelledby={`brochure-title-${collegeId}`} className="w-full max-w-lg bg-background rounded-2xl shadow-2xl border max-h-[92dvh] overflow-hidden flex flex-col">
+        <div className="p-4 sm:p-5 border-b flex items-start justify-between gap-3 shrink-0">
+          <div className="min-w-0"><p className="text-xs font-bold text-primary flex items-center gap-2 mb-1"><FileText className="w-4 h-4" />Official admission documents</p><h3 id={`brochure-title-${collegeId}`} className="font-extrabold text-base break-words">Brochures: {collegeName}</h3></div>
+          <button type="button" onClick={onClose} aria-label="Close brochure dialog" className="p-1 shrink-0"><X className="w-5 h-5" /></button>
         </div>
-
-        {/* Content */}
-        <div className="p-4 sm:p-6 overflow-y-auto">
-          {/* Step 1: Already Submitted Mode */}
-          {step === "already_submitted" && (
-            <div className="text-center py-6 space-y-4">
-              <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto">
-                <FileText className="w-6 h-6" />
-              </div>
-              <div className="space-y-1">
-                <h4 className="font-bold text-base text-foreground">Brochure Already Unlocked!</h4>
-                <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                  You previously requested the brochure for <strong>{collegeName}</strong>. You can download the PDF copy directly below without resubmitting your details.
-                </p>
-              </div>
-
-              <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
-                <button
-                  type="button"
-                  onClick={handleDownload}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download PDF Brochure Now</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep("form")}
-                  className="px-4 py-2.5 rounded-xl border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                >
-                  Update Details &amp; Resubmit
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Brochure Enquiry Form */}
-          {step === "form" && (
-            <form onSubmit={handleSubmit} className="space-y-3.5">
-              <p className="text-xs text-muted-foreground">
-                Please complete this verification form to instantly download the comprehensive fee structure, cutoff handbook, and admission syllabus.
-              </p>
-
-              {error && (
-                <div className="p-3 text-xs bg-red-500/10 border border-red-500/20 text-red-600 rounded-lg flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{error}</span>
+        <div className="p-4 sm:p-6 min-h-0 overflow-y-auto overscroll-contain space-y-4">
+          {fetching ? <p role="status" className="text-sm text-muted-foreground">Loading official documents…</p> : fetchError ? (
+            <div role="alert" className="text-sm space-y-2"><p>{fetchError}</p><button type="button" className="underline text-primary" onClick={() => setRetry(value => value + 1)}>Try again</button></div>
+          ) : !selected ? (
+            <div className="rounded-xl border bg-muted/40 p-4 space-y-2 text-sm"><p className="font-semibold">No verified brochure available yet</p><p className="text-muted-foreground">Check the college website for admission updates.</p>{websiteUrl && <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="inline-block text-primary underline">Visit official college website</a>}</div>
+          ) : <>
+            {unlocked ? (
+              <div className="text-center py-4 space-y-4"><CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" /><h4 className="font-bold">Your document is ready</h4><p className="text-sm text-muted-foreground">{selected.title} · {year}</p><a href={selected.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 bg-primary text-primary-foreground text-sm font-bold"><Download className="w-4 h-4" />Open official document</a><button type="button" className="block mx-auto text-xs underline text-muted-foreground" onClick={() => setUnlocked(false)}>Update my details</button></div>
+            ) : <form onSubmit={handleSubmit} className="space-y-3.5">
+              <p className="text-xs text-muted-foreground">Complete your details to continue to the selected {year} document.</p>
+              {error && <p role="alert" className="text-xs text-red-600 bg-red-500/10 p-3 rounded-lg">{error}</p>}
+              <fieldset disabled={loading} className="space-y-3.5">
+                <label className="block text-xs font-bold space-y-1"><span>Full name *</span><input className={fieldClass} required minLength={2} maxLength={100} autoComplete="name" value={name} onChange={event => setName(event.target.value)} /></label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="block text-xs font-bold space-y-1"><span>Contact number *</span><input className={fieldClass} type="tel" autoComplete="tel" required value={phone} onChange={event => setPhone(event.target.value)} /></label>
+                  <label className="block text-xs font-bold space-y-1"><span>Email address *</span><input className={fieldClass} type="email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} /></label>
                 </div>
-              )}
-
-              {/* 1. Full Name */}
-              <div>
-                <label className="block text-xs font-bold text-foreground mb-1">
-                  1. Full Name *
-                </label>
-                <div className="relative">
-                  <User className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Rahul Sharma"
-                    className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label className="block text-xs font-bold space-y-1"><span>State / union territory *</span><select aria-label="State / union territory" className={fieldClass} required value={state} onChange={event => { setState(event.target.value); setDistrict(""); }}><option value="">Select state / UT</option>{INDIAN_STATES.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+                  <label className="block text-xs font-bold space-y-1"><span>District *</span><select aria-label="District" className={fieldClass} required disabled={!state} value={district} onChange={event => setDistrict(event.target.value)}><option value="">{state ? "Select district" : "Select a state first"}</option>{getDistricts(state).map(value => <option key={value} value={value}>{value}</option>)}</select></label>
                 </div>
-              </div>
-
-              {/* 2 & 3: Contact & Email */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">
-                    2. Contact Number *
-                  </label>
-                  <div className="relative">
-                    <Phone className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="e.g. 9876543210"
-                      className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">
-                    3. Email Address *
-                  </label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@example.com"
-                      className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 4 & 5: State & District */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">
-                    4. State *
-                  </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                    <input
-                      type="text"
-                      required
-                      value={state}
-                      onChange={(e) => setState(e.target.value)}
-                      placeholder="e.g. Odisha / Maharashtra"
-                      className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">
-                    5. District *
-                  </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                    <input
-                      type="text"
-                      required
-                      value={district}
-                      onChange={(e) => setDistrict(e.target.value)}
-                      placeholder="e.g. Khordha / Sundargarh"
-                      className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 6. Target Course */}
-              <div>
-                <label className="block text-xs font-bold text-foreground mb-1">
-                  6. Target Course *
-                </label>
-                <div className="relative">
-                  <GraduationCap className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                  <input
-                    type="text"
-                    required
-                    value={targetCourse}
-                    onChange={(e) => setTargetCourse(e.target.value)}
-                    placeholder="e.g. B.Tech Computer Science / MBA Marketing"
-                    className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                  />
-                </div>
-              </div>
-
-              {/* 7. Parent / Guardian Contact Number */}
-              <div>
-                <label className="block text-xs font-bold text-foreground mb-1">
-                  7. Parent / Guardian Contact Number *
-                </label>
-                <div className="relative">
-                  <Users className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
-                  <input
-                    type="tel"
-                    required
-                    value={parentPhone}
-                    onChange={(e) => setParentPhone(e.target.value)}
-                    placeholder="e.g. 9812345678"
-                    className="w-full pl-9 pr-3 py-2 text-xs border rounded-xl bg-background outline-hidden focus:border-primary font-medium"
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-3 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-md active:scale-98 cursor-pointer disabled:opacity-60"
-                style={{ background: "#1a3068" }}
-              >
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Verifying Details &amp; Preparing PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    <span>Submit &amp; Download Official Brochure (PDF)</span>
-                  </>
-                )}
-              </button>
-
-              <p className="text-[10px] text-center text-muted-foreground">
-                Your information is safely stored for official counseling communication only.
-              </p>
-            </form>
-          )}
-
-          {/* Step 3: Success State */}
-          {step === "success" && (
-            <div className="text-center py-6 space-y-4">
-              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-xs">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <div className="space-y-1.5">
-                <h4 className="font-extrabold text-lg text-foreground">Brochure Request Confirmed!</h4>
-                <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                  Thank you, <strong>{name}</strong>! Your inquiry for <strong>{targetCourse}</strong> at <strong>{collegeName}</strong> has been received and verified.
-                </p>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={handleDownload}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-colors shadow-xs"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Download PDF Brochure Again</span>
-                </button>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="mt-4 px-5 py-2 rounded-lg border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                Close Window
-              </button>
-            </div>
-          )}
+                <label className="block text-xs font-bold space-y-1"><span>Target course *</span><select aria-label="Target course" className={fieldClass} required value={course} onChange={event => setTargetCourse(event.target.value)}>{courses.map(program => <option key={program} value={program}>{program}</option>)}</select></label>
+                <label className="block text-xs font-bold space-y-1"><span>Parent / guardian contact number *</span><input className={fieldClass} type="tel" required value={parentPhone} onChange={event => setParentPhone(event.target.value)} /></label>
+                <button type="submit" className="w-full rounded-xl bg-primary text-primary-foreground px-4 py-3 text-sm font-bold disabled:opacity-60">{loading ? "Submitting…" : "Submit & continue to document"}</button>
+              </fieldset>
+              <p className="text-[10px] text-center text-muted-foreground">Your details are used for admissions counseling communication.</p>
+            </form>}
+          </>}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
-

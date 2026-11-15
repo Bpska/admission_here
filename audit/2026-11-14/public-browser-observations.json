@@ -1,0 +1,94 @@
+[
+  {
+    "name": "Compare navigation",
+    "evidence": {
+      "path": "/compare/iim-ahmedabad-vs-iit-bombay",
+      "heading": "IIT Bombay vs IIM Ahmedabad Comparison"
+    }
+  },
+  {
+    "name": "Invalid route /colleges?ownership=INVALID",
+    "evidence": {
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "text": "Application error: a server-side exception has occurred while loading localhost (see the server logs for more information).\n\nDigest: 3468356700"
+    }
+  },
+  {
+    "name": "Invalid route /colleges?maxFees=abc",
+    "evidence": {
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "text": "Application error: a server-side exception has occurred while loading localhost (see the server logs for more information).\n\nDigest: 3271674172"
+    }
+  },
+  {
+    "name": "Invalid route /blog/category/INVALID",
+    "evidence": {
+      "title": "INVALID - AdmissionsHub News | AdmissionsHub",
+      "text": "Application error: a server-side exception has occurred while loading localhost (see the server logs for more information).\n\nDigest: 1376022439"
+    }
+  },
+  {
+    "name": "Invalid route /exams/gate",
+    "evidence": {
+      "title": "Exam Not Found | AdmissionsHub",
+      "text": "Search for colleges, exams, courses, degrees...\n\u2318K\nFree Counseling\nMy account\nAdmin\nMBA\nENGINEERING\nMEDICAL\nDESIGN\nMORE\nSTUDY ABROAD\nCOUNSELING\n404\nThis page could not be found.\n\nAdmission Here is India's authoritative higher education discovery directory, cutoff analytics engine, and official counseling portal. Built for students navigating JoSAA, CSAB, NEET, OJEE, and CAT seat allotments.\n\n100% Verified JoSAA & NEET Cutoffs\nOdisha & Pan-India University Data\nNIRF, NAAC & AICTE Certified\nMACHINE & AI DISCOVERY (GEO / AEO)\n/llms.txt\n/llms-full.txt\nsitemap.xml\nPROGRAMS & DEGREES\nB.Tech / B.E (Engineering)\nM.Tech / ME (Postgraduate)\nMBBS (Medic"
+    }
+  },
+  {
+    "name": "Invalid route /exams/ojee",
+    "evidence": {
+      "title": "Exam Not Found | AdmissionsHub",
+      "text": "Search for colleges, exams, courses, degrees...\n\u2318K\nFree Counseling\nMy account\nAdmin\nMBA\nENGINEERING\nMEDICAL\nDESIGN\nMORE\nSTUDY ABROAD\nCOUNSELING\n404\nThis page could not be found.\n\nAdmission Here is India's authoritative higher education discovery directory, cutoff analytics engine, and official counseling portal. Built for students navigating JoSAA, CSAB, NEET, OJEE, and CAT seat allotments.\n\n100% Verified JoSAA & NEET Cutoffs\nOdisha & Pan-India University Data\nNIRF, NAAC & AICTE Certified\nMACHINE & AI DISCOVERY (GEO / AEO)\n/llms.txt\n/llms-full.txt\nsitemap.xml\nPROGRAMS & DEGREES\nB.Tech / B.E (Engineering)\nM.Tech / ME (Postgraduate)\nMBBS (Medic"
+    }
+  },
+  {
+    "name": "Invalid route /exams/cuet-ug",
+    "evidence": {
+      "title": "Exam Not Found | AdmissionsHub",
+      "text": "Search for colleges, exams, courses, degrees...\n\u2318K\nFree Counseling\nMy account\nAdmin\nMBA\nENGINEERING\nMEDICAL\nDESIGN\nMORE\nSTUDY ABROAD\nCOUNSELING\n404\nThis page could not be found.\n\nAdmission Here is India's authoritative higher education discovery directory, cutoff analytics engine, and official counseling portal. Built for students navigating JoSAA, CSAB, NEET, OJEE, and CAT seat allotments.\n\n100% Verified JoSAA & NEET Cutoffs\nOdisha & Pan-India University Data\nNIRF, NAAC & AICTE Certified\nMACHINE & AI DISCOVERY (GEO / AEO)\n/llms.txt\n/llms-full.txt\nsitemap.xml\nPROGRAMS & DEGREES\nB.Tech / B.E (Engineering)\nM.Tech / ME (Postgraduate)\nMBBS (Medic"
+    }
+  },
+  {
+    "name": "Invalid route /college-predictor/nonexistent-audit-exam",
+    "evidence": {
+      "title": "NONEXISTENT-AUDIT-EXAM College Predictor 2026: Calculate Your Admission Chances | AdmissionsHub",
+      "text": "Search for colleges, exams, courses, degrees...\n\u2318K\nFree Counseling\nMy account\nAdmin\nMBA\nENGINEERING\nMEDICAL\nDESIGN\nMORE\nSTUDY ABROAD\nCOUNSELING\nHome\nCollege Predictor\nNONEXISTENT-AUDIT-EXAM\nJoSAA & CSAB Verified Historical Cutoff Engine\nNONEXISTENT-AUDIT-EXAM College Predictor 2026\n\nPredict your admission chances at top NITs, IIITs, CFTIs, and state universities using official previous year closing ranks, reservation categories, and home state quotas.\n\nAI Rank Predictor & College Chance Calculator\n\nCompare your score against official JoSAA, CSAB, and institutional cutoff closing ranks.\n\n1. ENTRANCE EXAM *\nJEE Main (B.Tech / NITs / IIITs)\nCAT "
+    }
+  },
+  {
+    "name": "Search dialog accessibility",
+    "evidence": {
+      "dialogs": 0,
+      "focused": "<input placeholder=\"Search by college name, city, stream, or cutoffs (e.g., IIT Bombay, NIT CSE, Odisha)...\" class=\"flex-1 bg-transparent border-0 outline-hidde"
+    }
+  },
+  {
+    "name": "Search Escape",
+    "evidence": {
+      "searchVisible": false
+    }
+  },
+  {
+    "name": "Apply dialog keyboard/accessibility",
+    "evidence": {
+      "dialogs": 0,
+      "stillOpen": true,
+      "inputLabels": [
+        {
+          "placeholder": "e.g. Rahul Sharma",
+          "labelCount": 0,
+          "ariaLabel": null
+        },
+        {
+          "placeholder": "e.g. 9876543210 or +91 9876543210",
+          "labelCount": 0,
+          "ariaLabel": null
+        }
+      ]
+    }
+  },
+  {
+    "name": "Temporary fixture cleanup",
+    "evidence": "complete"
+  }
+]

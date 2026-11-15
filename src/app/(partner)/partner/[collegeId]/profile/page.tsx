@@ -1,4 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { auth } from "@/lib/auth/config";
 import { db } from "@/lib/db";
 import Link from "next/link";
 import { ArrowLeft, Save, Building2, UploadCloud, CheckCircle } from "lucide-react";
@@ -8,6 +9,9 @@ interface ProfilePageProps {
 }
 
 export default async function PartnerProfilePage({ params }: ProfilePageProps) {
+  const session = await auth();
+  const user = session?.user as any;
+  if (!user) redirect("/login");
   const { collegeId } = await params;
 
   const college = await db.college.findFirst({
@@ -21,6 +25,7 @@ export default async function PartnerProfilePage({ params }: ProfilePageProps) {
   });
 
   if (!college) notFound();
+  if (user.role !== "SUPER_ADMIN" && !(user.role === "COLLEGE_ADMIN" && user.managedCollegeId === college.id)) notFound();
 
   return (
     <div className="max-w-4xl mx-auto p-6 sm:p-8 space-y-6">

@@ -5,6 +5,9 @@ import { db } from "../db";
 import { UserRole } from "@prisma/client";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Auth.js rewrites requests to this configured canonical URL. Explicitly
+  // support NEXTAUTH_URL in production as well as its AUTH_URL replacement.
+  trustHost: Boolean(process.env.AUTH_URL || process.env.NEXTAUTH_URL || process.env.NODE_ENV !== "production"),
   providers: [
     Credentials({
       name: "credentials",
@@ -22,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email },
         });
 
-        if (!user || !user.passwordHash) {
+        if (!user || !user.passwordHash || !user.isActive) {
           return null;
         }
 
@@ -41,6 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             where: { userId: user.id },
           });
           permissions = staffPerm?.permissions || [];
+          if (!staffPerm?.isActive) return null;
         }
 
         return {
@@ -66,10 +70,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (token && session.user) {
-        session.user.id = token.id as string;
-        (session.user as any).role = token.role as UserRole;
-        (session.user as any).managedCollegeId = token.managedCollegeId as string | null;
-        (session.user as any).permissions = (token.permissions as string[]) || [];
+        // Read current access on every request: disabling an account or changing
+        // its permissions must also affect sessions issued before the change.
+        const current = await db.user.findUnique({ where: { id: token.id as string }, include: { staffPermission: true } });
+        if (!current?.isActive || (current.role === "STAFF" && !current.staffPermission?.isActive)) {
+          (session as any).user = undefined;
+          return session;
+        }
+        session.user.id = current.id;
+        session.user.name = current.name;
+        session.user.email = current.email;
+        (session.user as any).role = current.role;
+        (session.user as any).managedCollegeId = current.managedCollegeId;
+        (session.user as any).permissions = current.role === "AUTHOR" ? ["blogs", "dashboard"] : current.role === "STAFF" ? current.staffPermission?.permissions || [] : [];
+        (session.user as any).assignedCollegeIds = current.staffPermission?.assignedCollegeIds || [];
       }
       return session;
     },

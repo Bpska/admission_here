@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Building2, Award, Download, ChevronRight, CheckCircle } from "lucide-react";
 import { LeadCaptureModal } from "../public/LeadCaptureModal";
 import { LeadCtaType } from "@prisma/client";
+import { BrochureDownloadModal } from "../public/BrochureDownloadModal";
 
 interface EmbeddedCollegeCTAProps {
   college: {
@@ -88,8 +89,9 @@ export function EmbeddedCollegeCTA({ college, blogId }: EmbeddedCollegeCTAProps)
         </div>
       </div>
 
+      <BrochureDownloadModal open={modalOpen && ctaType === LeadCtaType.DOWNLOAD_BROCHURE} onClose={() => setModalOpen(false)} collegeId={college.id} collegeName={college.name} blogId={blogId} />
       <LeadCaptureModal
-        open={modalOpen}
+        open={modalOpen && ctaType !== LeadCtaType.DOWNLOAD_BROCHURE}
         onClose={() => setModalOpen(false)}
         collegeId={college.id}
         collegeName={college.name}

@@ -7,6 +7,7 @@ import { BrochureDownloadModal } from "./BrochureDownloadModal";
 import { LeadCtaType } from "@prisma/client";
 
 interface CollegeApplyButtonProps {
+  disabled?: boolean;
   collegeId: string;
   collegeName: string;
   defaultStream?: string;
@@ -18,6 +19,7 @@ interface CollegeApplyButtonProps {
 }
 
 export function CollegeApplyButton({
+  disabled = false,
   collegeId,
   collegeName,
   defaultStream = "Engineering",
@@ -55,6 +57,7 @@ export function CollegeApplyButton({
     <>
       <button
         type="button"
+        disabled={disabled}
         onClick={handleClick}
         className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${getVariantStyles()} ${className}`}
         style={variant === "primary" ? { background: isBrochure ? "#1a3068" : "#c41e1e" } : {}}
@@ -84,8 +87,6 @@ export function CollegeApplyButton({
         onClose={() => setBrochureModalOpen(false)}
         collegeId={collegeId}
         collegeName={collegeName}
-        brochureUrl={brochureUrl}
-        defaultCourse={`${defaultStream}`}
       />
     </>
   );

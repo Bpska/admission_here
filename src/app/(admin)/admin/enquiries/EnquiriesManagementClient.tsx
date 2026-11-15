@@ -1,5 +1,6 @@
 "use client";
 
+import { LeadExportButton } from "@/components/admin/LeadExportButton";
 import { useState } from "react";
 import { 
   Search, 
@@ -47,6 +48,7 @@ interface LeadItem {
 }
 
 interface EnquiriesManagementClientProps {
+  selectedLeadId?: string;
   initialLeads: LeadItem[];
   colleges: { id: string; name: string }[];
 }
@@ -54,15 +56,16 @@ interface EnquiriesManagementClientProps {
 export function EnquiriesManagementClient({
   initialLeads,
   colleges,
+  selectedLeadId,
 }: EnquiriesManagementClientProps) {
   const [leads, setLeads] = useState<LeadItem[]>(initialLeads);
   const [searchTerm, setSearchTerm] = useState("");
   const [collegeFilter, setCollegeFilter] = useState("ALL");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [selectedLead, setSelectedLead] = useState<LeadItem | null>(null);
+  const [selectedLead, setSelectedLead] = useState<LeadItem | null>(() => initialLeads.find(lead => lead.id === selectedLeadId) || null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [notesDraft, setNotesDraft] = useState("");
+  const [notesDraft, setNotesDraft] = useState(() => initialLeads.find(lead => lead.id === selectedLeadId)?.counselorNotes || "");
 
   // Filtering
   const filteredLeads = leads.filter((item) => {
@@ -171,6 +174,7 @@ export function EnquiriesManagementClient({
             />
           </div>
 
+          <LeadExportButton />
           {/* Export CSV Button */}
           <button
             type="button"
@@ -178,7 +182,7 @@ export function EnquiriesManagementClient({
             className="px-4 py-2 rounded-xl border bg-background hover:bg-muted font-bold text-xs flex items-center justify-center gap-2 text-foreground transition-colors cursor-pointer shrink-0 shadow-xs"
           >
             <Download className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Export Enquiries (CSV)</span>
+            <span>Export filtered leads (CSV)</span>
           </button>
         </div>
 
