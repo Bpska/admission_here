@@ -6,18 +6,19 @@ const db = new PrismaClient();
 async function main() {
   console.log("Adding default superadmin and sample staff account...");
   const defaultPasswordHash = await bcrypt.hash("Password@123", 10);
+  const superAdminPasswordHash = await bcrypt.hash("admission2026", 10);
 
   // 1. Super Admin
   await db.user.upsert({
     where: { email: "superadmin@admissionhere.in" },
     update: {
-      passwordHash: defaultPasswordHash,
+      passwordHash: superAdminPasswordHash,
       role: UserRole.SUPER_ADMIN,
     },
     create: {
       name: "Super Administrator",
       email: "superadmin@admissionhere.in",
-      passwordHash: defaultPasswordHash,
+      passwordHash: superAdminPasswordHash,
       role: UserRole.SUPER_ADMIN,
     },
   });

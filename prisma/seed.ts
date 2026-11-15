@@ -25,6 +25,7 @@ async function main() {
 
   // 2. Create Users with RBAC
   const defaultPasswordHash = await bcrypt.hash("Password@123", 10);
+  const superAdminPasswordHash = await bcrypt.hash("admission2026", 10);
 
   const superAdmin = await db.user.create({
     data: {
@@ -32,7 +33,7 @@ async function main() {
       email: "superadmin@admissionhere.in",
       phone: "+919876543210",
       phoneVerified: true,
-      passwordHash: defaultPasswordHash,
+      passwordHash: superAdminPasswordHash,
       role: UserRole.SUPER_ADMIN,
     },
   });

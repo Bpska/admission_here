@@ -46,11 +46,6 @@ function LoginForm() {
     }
   };
 
-  const setTestAccount = (testEmail: string) => {
-    setEmail(testEmail);
-    setPassword("Password@123");
-  };
-
   return (
     <div className="w-full max-w-md bg-card border rounded-2xl p-4 sm:p-8 shadow-xl space-y-5 sm:space-y-6">
       <div className="text-center space-y-2">
@@ -87,7 +82,7 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@admissionshub.in"
+              placeholder="name@admissionhere.in"
               className="w-full pl-9 pr-3 py-2 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
             />
           </div>
@@ -125,73 +120,6 @@ function LoginForm() {
           )}
         </button>
       </form>
-
-      {/* Quick Test Accounts for Demonstration */}
-      <div className="border-t pt-4 space-y-2.5">
-        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-          Quick 1-Click RBAC Test Logins:
-        </p>
-
-        <div className="grid grid-cols-1 gap-2 text-xs">
-          <button
-            type="button"
-            onClick={() => {
-              setTestAccount("superadmin@admissionhere.in");
-            }}
-            className="p-2.5 rounded-lg border bg-muted/40 hover:bg-accent text-left flex items-center justify-between group transition-colors"
-          >
-            <div>
-              <strong className="block text-foreground group-hover:text-primary">
-                Super Admin
-              </strong>
-              <span className="text-[11px] text-muted-foreground">
-                superadmin@admissionhere.in
-              </span>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ background: "#1a3068" }}>
-              FULL ADMIN ACCESS
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setTestAccount("staff_leads@admissionhere.in");
-            }}
-            className="p-2.5 rounded-lg border bg-muted/40 hover:bg-accent text-left flex items-center justify-between group transition-colors"
-          >
-            <div>
-              <strong className="block text-foreground group-hover:text-primary">
-                Staff (Lead Counselor)
-              </strong>
-              <span className="text-[11px] text-muted-foreground">
-                staff_leads@admissionhere.in
-              </span>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ background: "#c41e1e" }}>
-              RESTRICTED STAFF
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setTestAccount("student@example.com");
-            }}
-            className="p-2.5 rounded-lg border bg-muted/40 hover:bg-accent text-left flex items-center justify-between group transition-colors"
-          >
-            <div>
-              <strong className="block text-foreground group-hover:text-primary">
-                Student Aspirant
-              </strong>
-              <span className="text-[11px] text-muted-foreground">student@example.com</span>
-            </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded text-white" style={{ background: "#1f8040" }}>
-              STUDENT
-            </span>
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
