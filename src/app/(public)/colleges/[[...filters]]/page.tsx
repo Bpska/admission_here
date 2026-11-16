@@ -11,7 +11,7 @@ import { redirect, notFound } from "next/navigation";
 import { NAVBAR_FILTERS, defaultNavbarFilter } from "@/lib/navbar-filters";
 import type { Prisma } from "@prisma/client";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 interface CollegesPageProps {
   params: Promise<{ filters?: string[] }>;
