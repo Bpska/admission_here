@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
-export const revalidate = 3600; // 1 hour cache
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const colleges = await db.college.findMany({
