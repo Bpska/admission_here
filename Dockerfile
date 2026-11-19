@@ -19,6 +19,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# Dummy DATABASE_URL for build time
+ENV DATABASE_URL="postgresql://postgres:bps@localhost:5432/admission_db?schema=public"
+ENV AUTH_SECRET="build-secret-dummy-key"
 RUN npx prisma generate
 RUN npm run build
 
