@@ -67,14 +67,14 @@ export default async function PartnerProfilePage({ params }: ProfilePageProps) {
                     {c.course.degree} in {c.specialization}
                   </h4>
                   <p className="text-muted-foreground">
-                    Current Listed Fee: ₹{(c.totalFeesInr / 100000).toFixed(2)} Lakh
+                    Current Listed Fee: {c.totalFeesInr == null ? "Not published" : `₹${(c.totalFeesInr / 100000).toFixed(2)} Lakh`}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
-                    defaultValue={c.totalFeesInr}
+                    defaultValue={c.totalFeesInr ?? ""}
                     className="w-32 text-xs border rounded-lg px-3 py-1.5 bg-background font-mono"
                   />
                   <span className="text-[11px] text-muted-foreground">INR</span>

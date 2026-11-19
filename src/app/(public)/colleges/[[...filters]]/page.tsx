@@ -1,3 +1,4 @@
+import { programKey } from "@/lib/college-programs";
 import { db } from "@/lib/db";
 import { CollegeCard } from "@/components/public/CollegeCard";
 import { FacetedFilterSidebar } from "@/components/public/FacetedFilterSidebar";
@@ -8,6 +9,7 @@ import { generateBreadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { Building2 } from "lucide-react";
 import { Suspense } from "react";
 import { redirect, notFound } from "next/navigation";
+import { findNavbarFilter } from "@/lib/custom-navbar-filters";
 import { NAVBAR_FILTERS, defaultNavbarFilter } from "@/lib/navbar-filters";
 import type { Prisma } from "@prisma/client";
 
@@ -32,7 +34,7 @@ export async function generateMetadata({ params, searchParams }: CollegesPagePro
   const { filters = [] } = await params;
   const sParams = await searchParams;
   const query = sParams.q?.trim() || "";
-  const selectedFilter = NAVBAR_FILTERS.find(filter => filter.id === sParams.navFilter);
+  const selectedFilter = await findNavbarFilter(sParams.navFilter);
 
   let title = "Top Colleges in India 2026";
   let description =
@@ -52,8 +54,8 @@ export async function generateMetadata({ params, searchParams }: CollegesPagePro
 
   return constructSeoMetadata({
     title: selectedFilter?.label || title,
-    description,
-    canonicalPath: `/colleges/${filters.join("/")}${selectedFilter ? `?navFilter=${encodeURIComponent(selectedFilter.id)}` : ""}`,
+    description: selectedFilter?.custom ? `Explore ${selectedFilter.label}: compare available colleges, courses, fees and admission information.` : description,
+    canonicalPath: selectedFilter?.custom ? selectedFilter.href : `/colleges/${filters.join("/")}${selectedFilter ? `?navFilter=${encodeURIComponent(selectedFilter.id)}` : ""}`,
   });
 }
 
@@ -63,7 +65,7 @@ export default async function CollegesDirectoryPage({
 }: CollegesPageProps) {
   const { filters = [] } = await params;
   const sParams = await searchParams;
-  const selectedFilter = NAVBAR_FILTERS.find(filter => filter.id === sParams.navFilter);
+  const selectedFilter = await findNavbarFilter(sParams.navFilter);
   const filterUrl = selectedFilter ? new URL(selectedFilter.href, "https://local.invalid") : null;
   const query = sParams.q?.trim() || filterUrl?.searchParams.get("q") || "";
   if (sParams.navFilter && !selectedFilter) notFound();
@@ -92,10 +94,17 @@ export default async function CollegesDirectoryPage({
     targetState = filters[1].replace(/-/g, " ");
   }
 
-  if (filters.length === 0 && filterUrl) {
+  if (filters.length === 0 && filterUrl && !selectedFilter?.custom) {
     const baseFilters = filterUrl.pathname.split("/").slice(2);
     targetStream = sParams.stream || sParams.course || baseFilters[0] || "";
     targetState = sParams.state || baseFilters[1]?.replace(/-/g, " ") || filterUrl.searchParams.get("state") || "";
+  }
+
+  // A programme named in a search should open that programme's college profile.
+  if (!targetStream) {
+    const degree = query.match(/\b(mca|mba|bba|bca|mbbs|diploma)\b/i)?.[1];
+    const discipline = query.match(/\b(engineering|management|medical)\b/i)?.[1];
+    targetStream = degree || discipline || "";
   }
 
   // Build Prisma Where Clause
@@ -104,7 +113,7 @@ export default async function CollegesDirectoryPage({
   };
 
   if (query) {
-    whereClause.AND = query.split(/\s+/).map((term) => ({
+    whereClause.AND = query.split(/\s+/).filter(term => !/^(best|top|college|colleges|in)$/i.test(term)).map((term) => ({
       OR: [
         { name: { contains: term, mode: "insensitive" } },
         { shortName: { contains: term, mode: "insensitive" } },
@@ -132,7 +141,7 @@ export default async function CollegesDirectoryPage({
   }
 
   if (targetStream || targetLevel) {
-    const streamName = ({ "b-tech": "B.Tech", mba: "MBA", mbbs: "MBBS" } as Record<string, string>)[targetStream] || targetStream.replace(/-/g, " ");
+    const streamName = ({ "b-tech": "B.Tech", mba: "MBA", mca: "MCA", bba: "BBA", bca: "BCA", diploma: "Diploma", mbbs: "MBBS" } as Record<string, string>)[targetStream] || targetStream.replace(/-/g, " ");
     whereClause.courses = {
       some: {
         course: {
@@ -190,7 +199,11 @@ export default async function CollegesDirectoryPage({
         ...(sParams.level ? { course: { level: { equals: sParams.level, mode: "insensitive" } } } : {}),
       } } } : {}),
     };
-    directoryWhere = { isPublished: true, OR: [whereClause, assigned] };
+    directoryWhere = selectedFilter.custom ? { AND: [whereClause, { showInNavbar: true, navbarFilter: selectedFilter.id }] } : { isPublished: true, OR: [whereClause, assigned] };
+  }
+
+  if (targetStream && /^(engineering|management|medical|computer applications|computer-applications|mca|mba|bba|bca|diploma|b-tech|mbbs)$/i.test(targetStream)) {
+    directoryWhere = { AND: [directoryWhere, { courses: whereClause.courses }] };
   }
 
   const colleges = await db.college.findMany({
@@ -198,7 +211,9 @@ export default async function CollegesDirectoryPage({
     orderBy: [{ nirfRank: "asc" }, { ratingOverall: "desc" }],
     include: {
       courses: {
+        where: whereClause.courses?.some,
         include: { course: true },
+        orderBy: { totalFeesInr: "asc" },
         take: 1,
       },
       placements: {
@@ -211,6 +226,7 @@ export default async function CollegesDirectoryPage({
 
   const breadcrumbs = [
     { label: "Colleges", href: "/colleges" },
+    ...(selectedFilter?.custom ? [{ label: selectedFilter.label, href: selectedFilter.href }] : []),
     ...(targetStream ? [{ label: targetStream, href: `/colleges/${targetStream}` }] : []),
     ...(targetState ? [{ label: targetState }] : []),
   ];
@@ -251,6 +267,7 @@ export default async function CollegesDirectoryPage({
                   college={{
                     id: c.id,
                     slug: c.slug,
+                    programKey: targetStream && c.courses[0] ? programKey(c.courses[0].course.degree) : undefined,
                     name: c.name,
                     shortName: c.shortName,
                     logoUrl: c.logoUrl,
@@ -267,11 +284,12 @@ export default async function CollegesDirectoryPage({
                     featuredCourse: c.courses[0]
                       ? {
                           degree: c.courses[0].course.degree,
+                          stream: c.courses[0].course.stream,
                           specialization: c.courses[0].specialization,
                           totalFeesInr: c.courses[0].totalFeesInr,
                         }
                       : null,
-                    latestPlacement: c.placements[0] || null,
+                    latestPlacement: targetStream ? null : c.placements[0] || null,
                   }}
                 />
               ))}

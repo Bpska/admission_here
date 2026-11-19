@@ -1,5 +1,12 @@
 "use client";
 
+import { InitialCollegeBlogEditor, emptyCollegeBlog } from "@/components/admin/InitialCollegeBlogEditor";
+import { CollegeOnboardingSections, emptyOnboardingDraft, serializeOnboarding } from "@/components/admin/CollegeOnboardingSections";
+import { CollegeSectionNavigation } from "@/components/admin/CollegeSectionNavigation";
+import { CollegeQuestionsEditor, type CollegeQuestion } from "@/components/admin/CollegeQuestionsEditor";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Save, ArrowLeft, MapPin, Globe, Phone, Mail, Home, GraduationCap, ImageIcon } from "lucide-react";
@@ -11,18 +18,26 @@ import { slugifyCollegeName } from "@/lib/college-slug";
 export function NewCollegeClient({ requiresApproval }: { requiresApproval: boolean }) {
   const router = useRouter();
 
+  const [initialBlog, setInitialBlog] = useState(emptyCollegeBlog);
+  const [onboarding, setOnboarding] = useState(emptyOnboardingDraft);
+  const [questions, setQuestions] = useState<CollegeQuestion[]>([]);
+  const [affiliatedTo, setAffiliatedTo] = useState("");
+  const [approvedBy, setApprovedBy] = useState("");
+
   // Basic Information
   const [name, setName] = useState("");
   const [shortName, setShortName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
+  const [uploads, setUploads] = useState(0);
+  const onUploadBusy = (busy: boolean) => setUploads(count => count + (busy ? 1 : -1));
   const [logoUrl, setLogoUrl] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [brochurePdfUrl, setBrochurePdfUrl] = useState("");
   const [ownershipType, setOwnershipType] = useState("PUBLIC_GOVERNMENT");
   const [estYear, setEstYear] = useState("");
   const [nirfRank, setNirfRank] = useState("");
-  const [naacGrade, setNaacGrade] = useState("A++");
+  const [naacGrade, setNaacGrade] = useState("");
   const [campusAreaAcres, setCampusAreaAcres] = useState("");
 
   // Location & Contact
@@ -36,13 +51,13 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
 
   // Descriptions & Details
   const [overviewHtml, setOverviewHtml] = useState(
-    "<p>Enter comprehensive institutional overview and history here...</p>"
+    ""
   );
   const [admissionHtml, setAdmissionHtml] = useState("");
   const [hostelInfo, setHostelInfo] = useState("");
   const [scholarshipInfo, setScholarshipInfo] = useState("");
   const [facilitiesText, setFacilitiesText] = useState(
-    "Central Library with digital catalog\nAdvanced Laboratories\nHigh-Speed Campus Wi-Fi\nResidential Hostels for Boys & Girls\nMulti-cuisine Mess & Cafeteria\nSports Arena & Gymnasium"
+    ""
   );
   const [galleryText, setGalleryText] = useState("");
 
@@ -65,6 +80,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploads > 0) return;
     if (loading) return;
     setLoading(true);
     setError(null);
@@ -84,6 +100,11 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          initialBlog: initialBlog.enabled ? { title: initialBlog.title, contentMdx: initialBlog.contentMdx, category: initialBlog.category, showOnWebsiteBlog: initialBlog.showOnWebsiteBlog, featuredImageUrl: initialBlog.featuredImageUrl || null, metaDescription: initialBlog.metaDescription, publish: initialBlog.publish } : undefined,
+          onboardingData: serializeOnboarding(onboarding),
+          faqsJson: questions,
+          affiliatedTo: affiliatedTo.trim() || null,
+          approvedBy: approvedBy.split(",").map(item => item.trim()).filter(Boolean),
           name: name.trim(),
           shortName: shortName.trim() || null,
           slug: slug.trim().toLowerCase(),
@@ -114,7 +135,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
           showInNavbar,
           navbarCategory: navbarCategory || null,
           navbarSection,
-          navbarFilter: navbarFilter || defaultNavbarFilter(navbarCategory, navbarSection)?.id || null,
+          navbarFilter: navbarFilter || null,
         }),
       });
 
@@ -123,7 +144,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
       if (res.ok && json.success) {
         router.push(json.pendingApproval
           ? `/admin/colleges?submitted=${encodeURIComponent(json.requestId)}`
-          : "/admin/colleges");
+          : `/admin/colleges/${json.college.id}/edit`);
         router.refresh();
       } else {
         setError(json.error || "Failed to create college profile");
@@ -156,6 +177,8 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
         </div>
       </div>
 
+      <CollegeSectionNavigation />
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
           <div className="p-3 text-xs bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl">
@@ -164,7 +187,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
         )}
 
         {/* BASIC INFORMATION */}
-        <div className="bg-card border rounded-2xl p-6 sm:p-7 space-y-4 shadow-xs">
+        <div id="college-overview" className="scroll-mt-6 bg-card border rounded-2xl p-6 sm:p-7 space-y-4 shadow-xs">
           <h2 className="text-xs font-bold text-foreground uppercase tracking-wider text-muted-foreground border-b pb-2 flex items-center gap-1.5">
             <Building2 className="w-4 h-4 text-primary" />
             <span>1. Basic Profile</span>
@@ -268,6 +291,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
                 onChange={(e) => setNaacGrade(e.target.value)}
                 className="w-full border rounded-lg px-3 py-2 bg-background"
               >
+                <option value="">Not specified</option>
                 <option value="A++">A++</option>
                 <option value="A+">A+</option>
                 <option value="A">A</option>
@@ -277,6 +301,8 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
               </select>
             </div>
 
+            <label className="block space-y-1"><span className="font-semibold text-muted-foreground">Affiliated university / board</span><input value={affiliatedTo} onChange={event => setAffiliatedTo(event.target.value)} className="w-full rounded-lg border bg-background p-2" /></label>
+            <label className="block space-y-1"><span className="font-semibold text-muted-foreground">Approvals (comma separated)</span><input value={approvedBy} onChange={event => setApprovedBy(event.target.value)} placeholder="AICTE, UGC" className="w-full rounded-lg border bg-background p-2" /></label>
             <div>
               <label className="block font-semibold text-muted-foreground mb-1">
                 Campus Size (in Acres)
@@ -301,40 +327,12 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="block font-semibold text-muted-foreground mb-1">Logo URL</label>
-              <input
-                type="url"
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://example.com/logo.png"
-                className="w-full border rounded-lg px-3 py-2 bg-background outline-hidden focus:border-primary"
-              />
-            </div>
+            <ImageUploadField label="College logo" values={logoUrl ? [logoUrl] : []} onChange={values => setLogoUrl(values[0] || "")} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} />
 
-            <div>
-              <label className="block font-semibold text-muted-foreground mb-1">Cover Image URL</label>
-              <input
-                type="url"
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
-                className="w-full border rounded-lg px-3 py-2 bg-background outline-hidden focus:border-primary"
-              />
-            </div>
+            <ImageUploadField label="Campus cover photo" values={coverImageUrl ? [coverImageUrl] : []} onChange={values => setCoverImageUrl(values[0] || "")} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} />
 
-            <div className="sm:col-span-2">
-              <label className="block font-semibold text-muted-foreground mb-1">
-                Gallery Photos (1 URL per line)
-              </label>
-              <textarea
-                rows={3}
-                value={galleryText}
-                onChange={(e) => setGalleryText(e.target.value)}
-                placeholder="https://images.unsplash.com/photo-1&#10;https://images.unsplash.com/photo-2"
-                className="w-full p-2.5 font-mono text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">Only the photo URLs listed here will appear in the gallery. Leave empty to show no campus photos.</p>
+            <div id="college-gallery" className="sm:col-span-2 scroll-mt-6">
+              <ImageUploadField label="Campus gallery photos" multiple values={galleryText.split("\n").filter(Boolean)} onChange={values => setGalleryText(values.join("\n"))} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} />
             </div>
           </div>
         </div>
@@ -438,14 +436,9 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
           <div className="space-y-4 text-xs">
             <div>
               <label className="block font-bold text-foreground mb-1">
-                Overview &amp; History HTML
+                Overview &amp; History
               </label>
-              <textarea
-                rows={4}
-                value={overviewHtml}
-                onChange={(e) => setOverviewHtml(e.target.value)}
-                className="w-full p-3 font-mono border rounded-lg bg-background outline-hidden focus:border-primary"
-              />
+              <RichTextEditor label="Institutional overview" value={overviewHtml} onChange={setOverviewHtml} disabled={loading} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -453,35 +446,46 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
                 <label className="block font-semibold text-muted-foreground mb-1">
                   Hostel &amp; Mess Information
                 </label>
-                <textarea
-                  rows={3}
-                  value={hostelInfo}
-                  onChange={(e) => setHostelInfo(e.target.value)}
-                  placeholder="Furnished hostels with Wi-Fi, 24x7 security, and mess dining..."
-                  className="w-full p-2.5 border rounded-lg bg-background outline-hidden focus:border-primary"
-                />
+                <RichTextEditor label="Hostel and mess information" value={hostelInfo} onChange={setHostelInfo} disabled={loading} />
               </div>
 
               <div>
                 <label className="block font-semibold text-muted-foreground mb-1">
                   Scholarships &amp; Concessions
                 </label>
-                <textarea
-                  rows={3}
-                  value={scholarshipInfo}
-                  onChange={(e) => setScholarshipInfo(e.target.value)}
-                  placeholder="Government NSP scholarships and merit-cum-means fee waivers..."
-                  className="w-full p-2.5 border rounded-lg bg-background outline-hidden focus:border-primary"
-                />
+                <RichTextEditor label="Scholarships and concessions" value={scholarshipInfo} onChange={setScholarshipInfo} disabled={loading} />
               </div>
             </div>
           </div>
         </div>
 
+        <section id="college-admission" className="scroll-mt-6 space-y-4 rounded-2xl border bg-card p-6">
+          <h2 className="text-lg font-bold">Admission</h2>
+          <div className="space-y-1 text-xs font-semibold"><p>Admission procedure, eligibility and important dates</p><RichTextEditor label="Admission procedure and eligibility" value={admissionHtml} onChange={setAdmissionHtml} disabled={loading} /></div>
+          <label className="block space-y-1 text-xs font-semibold"><span>Official brochure PDF URL</span><input type="url" value={brochurePdfUrl} onChange={event => setBrochurePdfUrl(event.target.value)} className="w-full rounded-lg border bg-background p-2 text-sm" /></label>
+        </section>
+        <section className="space-y-4 rounded-2xl border bg-card p-6">
+          <h2 className="text-lg font-bold">Facilities</h2>
+          <label className="block space-y-1 text-xs font-semibold"><span>Facilities (one per line)</span><textarea rows={5} value={facilitiesText} onChange={event => setFacilitiesText(event.target.value)} className="w-full rounded-lg border bg-background p-3 text-sm" /></label>
+        </section>
+        <CollegeOnboardingSections value={onboarding} onChange={setOnboarding} disabled={loading} onBusyChange={onUploadBusy} />
+        <section id="college-reviews" className="scroll-mt-6 space-y-2 rounded-2xl border bg-card p-6">
+          <h2 className="text-lg font-bold">Reviews</h2>
+          <p className="text-sm text-muted-foreground">Once the college is created, students can submit reviews. Review and approve their submissions from this college’s editor or the review moderation queue.</p>
+        </section>
+        <InitialCollegeBlogEditor value={initialBlog} onChange={setInitialBlog} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} requiresApproval={requiresApproval} />
+        <CollegeQuestionsEditor value={questions} onChange={setQuestions} disabled={loading} />
+        <section className="space-y-4 rounded-2xl border bg-card p-6">
+          <h2 className="text-lg font-bold">SEO & publication</h2>
+          <label className="block space-y-1 text-xs font-semibold"><span>SEO title</span><input value={metaTitle} onChange={event => setMetaTitle(event.target.value)} className="w-full rounded-lg border bg-background p-2 text-sm" /></label>
+          <label className="block space-y-1 text-xs font-semibold"><span>SEO description</span><textarea rows={3} value={metaDescription} onChange={event => setMetaDescription(event.target.value)} className="w-full rounded-lg border bg-background p-2 text-sm" /></label>
+          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={isPublished} onChange={event => setIsPublished(event.target.checked)} />Publish college after saving{requiresApproval ? " and administrator approval" : ""}</label>
+        </section>
+
         <CollegeNavbarFields enabled={showInNavbar} category={navbarCategory} section={navbarSection} filter={navbarFilter} onFilterChange={setNavbarFilter} onSectionChange={setNavbarSection} onEnabledChange={setShowInNavbar} onCategoryChange={setNavbarCategory} />
 
         {/* SUBMIT BUTTONS */}
-        <div className="flex justify-end gap-3 pt-3 border-t">
+        <div className="admin-form-actions flex flex-wrap justify-end gap-3 pt-3 border-t">
           <Link
             href="/admin/colleges"
             className="px-4 py-2.5 rounded-xl border text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
@@ -490,7 +494,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
           </Link>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploads > 0}
             className="px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-md flex items-center gap-2 hover:opacity-95 active:scale-98 transition-all cursor-pointer"
             style={{ background: "#1a3068" }}
           >

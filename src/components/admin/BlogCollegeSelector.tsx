@@ -40,8 +40,8 @@ export function BlogCollegeSelector({ content, onChange }: { content: string; on
   }, [query]);
 
   return <section className="rounded-xl border bg-card p-5 space-y-3">
-    <h2 className="text-sm font-bold">College recommendations (optional)</h2>
-    <p className="text-xs text-muted-foreground">Choose colleges relevant to this article. No college is added automatically.</p>
+    <h2 className="text-sm font-bold">Colleges linked to this article (optional)</h2>
+    <p className="text-xs text-muted-foreground">Choose colleges relevant to this article. Choose College blogs only to list the article in these colleges’ Blogs tabs. Website articles stay on the main Blog page. Selected colleges also get recommendation cards in the article.</p>
     {slugs.length === 0 ? <p className="text-xs text-muted-foreground">No colleges selected.</p> : <ul className="divide-y">
       {slugs.map(slug => <li key={slug} className="flex items-center justify-between gap-3 py-2 text-sm">
         <div className="min-w-0"><p className="font-semibold break-words">{selected[slug]?.name || slug}</p>{selected[slug] === null && <p className="text-xs text-amber-700">This college is not currently published.</p>}</div>

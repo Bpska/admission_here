@@ -32,7 +32,7 @@ export async function GET() {
     if (c.courses.length > 0) {
       markdown += `### Key Courses & Fee Structure:\n`;
       for (const cr of c.courses) {
-        markdown += `- **${cr.course.degree} in ${cr.specialization}**: Total Fees ₹${(cr.totalFeesInr / 100000).toFixed(2)} Lakh | Seats: ${cr.intakeSeats || "N/A"} | Accepted Exams: ${cr.acceptedExamSlugs.join(", ")}\n`;
+        markdown += `- **${cr.course.degree} in ${cr.specialization}**: Total Fees ${cr.totalFeesInr == null ? "Not published" : `₹${(cr.totalFeesInr / 100000).toFixed(2)} Lakh`} | Seats: ${cr.intakeSeats || "N/A"} | Accepted Exams: ${cr.acceptedExamSlugs.join(", ")}\n`;
         if (cr.cutoffs.length > 0) {
           markdown += `  - Cutoffs: ${cr.cutoffs.map((ct) => `${ct.category} (${ct.quota}) Round ${ct.counselingRound}: Closing Rank ${ct.closingRank}`).join("; ")}\n`;
         }
@@ -43,9 +43,11 @@ export async function GET() {
     if (c.placements.length > 0) {
       const p = c.placements[0];
       markdown += `### Placements (${p.batchYear}):\n`;
-      markdown += `- Average CTC: ₹${(Number(p.averagePackageInr) / 100000).toFixed(2)} LPA\n`;
-      markdown += `- Highest CTC: ₹${(Number(p.highestPackageInr) / 100000).toFixed(2)} LPA\n`;
-      markdown += `- Placement Rate: ${p.placementPercentage}%\n`;
+      markdown += `- Average CTC: ${p.averagePackageInr == null ? "Not reported" : `₹${(Number(p.averagePackageInr) / 100000).toFixed(2)} LPA`}\n`;
+      markdown += `- Highest CTC: ${p.highestPackageInr == null ? "Not reported" : `₹${(Number(p.highestPackageInr) / 100000).toFixed(2)} LPA`}\n`;
+      markdown += `- Placement Rate: ${p.placementPercentage == null ? "Not reported" : `${p.placementPercentage}%`}\n`;
+      if (p.sourceNote) markdown += `- Source note: ${p.sourceNote}\n`;
+      if (p.sourceUrl) markdown += `- Official source: ${p.sourceUrl}\n`;
       markdown += `- Top Recruiters: ${p.topRecruiters.join(", ")}\n\n`;
     }
 

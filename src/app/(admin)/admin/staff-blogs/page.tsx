@@ -1,3 +1,10 @@
+import { BlogMobileList } from "@/components/admin/BlogMobileList";
+import { BlogCmsFilters } from "@/components/admin/BlogCmsFilters";
+import { filterBlogArticles, type BlogCmsFilters as Filters } from "@/lib/blog-cms";
+import { canonicalBlogHref } from "@/lib/blog-destination";
+import { BlogDestinationTabs } from "@/components/admin/BlogDestinationTabs";
+import { getBlogStats } from "@/lib/blog-analytics";
+import { BlogAnalyticsCards } from "@/components/admin/BlogAnalyticsCards";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { db } from "@/lib/db";
@@ -25,7 +32,11 @@ const STATUS_STYLES: Record<string, string> = {
   ARCHIVED: "bg-gray-100 text-gray-700",
 };
 
-export default async function StaffBlogDashboardPage() {
+export default async function StaffBlogDashboardPage({ searchParams }: { searchParams: Promise<Filters> }) {
+  const requestedFilters = await searchParams;
+  const filters = { ...requestedFilters, destination: requestedFilters.destination === "college" ? "college" : "website" };
+  const { destination } = filters;
+  const sectionPath = `/admin/staff-blogs/${destination}`;
   // Must have blogs permission
   const access = await checkAdminAccess("blogs");
   if (!access.allowed) {
@@ -55,7 +66,7 @@ export default async function StaffBlogDashboardPage() {
     permissions.includes("blogs");
 
   // Fetch only posts authored by this staff member (or all for SUPER_ADMIN)
-  const posts = await db.blogPost.findMany({
+  const allPosts = await db.blogPost.findMany({
     where: isSuperAdmin ? undefined : { authorId: userId },
     orderBy: { createdAt: "desc" },
     include: {
@@ -63,10 +74,16 @@ export default async function StaffBlogDashboardPage() {
     },
   });
 
-  const totalPosts = posts.length;
-  const publishedPosts = posts.filter((p) => p.status === "PUBLISHED").length;
-  const draftPosts = posts.filter((p) => p.status === "DRAFT").length;
-  const livePosts = posts.filter((p) => p.isLiveBlog).length;
+  const { matching, posts, page, pages } = filterBlogArticles(allPosts, filters);
+  const publicHrefs = new Map(await Promise.all(posts.map(async post => [post.id, await canonicalBlogHref(post)] as const)));
+
+
+  const totalPosts = matching.length;
+  const publishedPosts = matching.filter((p) => p.status === "PUBLISHED").length;
+  const draftPosts = matching.filter((p) => p.status === "DRAFT").length;
+  const livePosts = matching.filter((p) => p.isLiveBlog).length;
+
+  const analytics = await getBlogStats(matching.map(post => post.id));
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -81,7 +98,7 @@ export default async function StaffBlogDashboardPage() {
               <FileText className="w-4 h-4" />
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-              {isSuperAdmin ? "All Blogs Overview" : "My Blog Desk"}
+              {destination === "college" ? "College Blogs" : "Website Blogs"}
             </h1>
           </div>
           <p className="text-xs text-muted-foreground">
@@ -92,12 +109,12 @@ export default async function StaffBlogDashboardPage() {
         </div>
 
         <Link
-          href="/admin/staff-blogs/new"
+          href={`/admin/staff-blogs/new?destination=${destination}`}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold text-white shadow-xs transition-opacity"
           style={{ background: "#b45309" }}
         >
           <Plus className="w-4 h-4" />
-          <span>Write New Blog</span>
+          <span>{destination === "college" ? "Write college blog" : "Write website blog"}</span>
         </Link>
       </div>
 
@@ -140,6 +157,12 @@ export default async function StaffBlogDashboardPage() {
         </div>
       </div>
 
+      <BlogDestinationTabs basePath="/admin/staff-blogs" selected={destination} />
+
+      <BlogCmsFilters filters={filters} categories={Array.from(new Set(allPosts.map(post => post.category)))} basePath={sectionPath} count={matching.length} page={page} pages={pages} />
+
+      <BlogAnalyticsCards stats={analytics} />
+
       {/* Permission Badges */}
       {!isSuperAdmin && (
         <div className="flex flex-wrap gap-2 items-center">
@@ -163,7 +186,7 @@ export default async function StaffBlogDashboardPage() {
       )}
 
       {/* Blog Table */}
-      {posts.length === 0 ? (
+      {matching.length === 0 ? (
         <div className="rounded-2xl border bg-card p-12 text-center space-y-4">
           <div className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center bg-muted/40">
             <FileText className="w-7 h-7 text-muted-foreground" />
@@ -173,7 +196,7 @@ export default async function StaffBlogDashboardPage() {
             You haven&apos;t written any articles yet. Start writing your first blog post now.
           </p>
           <Link
-            href="/admin/staff-blogs/new"
+            href={`/admin/staff-blogs/new?destination=${destination}`}
             className="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-lg text-xs font-bold text-white"
             style={{ background: "#b45309" }}
           >
@@ -183,7 +206,8 @@ export default async function StaffBlogDashboardPage() {
         </div>
       ) : (
         <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
+        <BlogMobileList posts={posts} stats={analytics.perPost} hrefs={publicHrefs} staff isSuperAdmin={isSuperAdmin} canPublish={canPublish} canDelete={canDelete} />
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-muted/50 border-b font-bold text-muted-foreground uppercase text-[10px] tracking-wider">
                 <tr>
@@ -191,6 +215,8 @@ export default async function StaffBlogDashboardPage() {
                   <th className="p-4">Category</th>
                   {isSuperAdmin && <th className="p-4">Author</th>}
                   <th className="p-4">Status</th>
+                  <th className="p-4">Views</th>
+                  <th className="p-4">Unique visitors</th>
                   <th className="p-4">Date</th>
                   <th className="p-4 text-right">Actions</th>
                 </tr>
@@ -201,10 +227,11 @@ export default async function StaffBlogDashboardPage() {
                     <td className="p-4 max-w-sm">
                       <div className="font-bold text-sm text-foreground line-clamp-1">
                         {post.title}
+                      <span className="ml-2 text-xs font-normal text-muted-foreground">{post.showOnWebsiteBlog ? "Website blog" : "College blog"}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[11px] text-muted-foreground font-mono">
-                          /blog/{post.slug}
+                          {publicHrefs.get(post.id) || post.slug}
                         </span>
                         {post.isLiveBlog && (
                           <span className="text-[10px] font-extrabold text-red-600 flex items-center gap-0.5">
@@ -228,6 +255,8 @@ export default async function StaffBlogDashboardPage() {
                         {post.status}
                       </span>
                     </td>
+                    <td className="p-4 font-semibold">{(analytics.perPost[post.id]?.views || 0).toLocaleString("en-IN")}</td>
+                    <td className="p-4">{(analytics.perPost[post.id]?.visitors || 0).toLocaleString("en-IN")}</td>
                     <td className="p-4 text-muted-foreground">
                       {new Date(post.publishedAt || post.createdAt).toLocaleDateString("en-IN", {
                         day: "numeric",
@@ -239,7 +268,7 @@ export default async function StaffBlogDashboardPage() {
                       <div className="flex items-center justify-end gap-2">
                         {post.status === "PUBLISHED" && (
                           <Link
-                            href={`/blog/${post.slug}`}
+                            href={publicHrefs.get(post.id) || `/blog/${post.slug}`}
                             target="_blank"
                             className="p-1.5 rounded-lg border hover:bg-accent text-muted-foreground"
                             title="View Live"
@@ -254,6 +283,7 @@ export default async function StaffBlogDashboardPage() {
                           <Edit className="w-3.5 h-3.5" />
                           <span>Edit</span>
                         </Link>
+<Link href={`/admin/blogs/${post.id}/engagement`} className="rounded-lg border px-2 py-1.5 text-xs font-semibold">Likes &amp; comments</Link>
                         <StaffBlogActions
                           postId={post.id}
                           status={post.status}

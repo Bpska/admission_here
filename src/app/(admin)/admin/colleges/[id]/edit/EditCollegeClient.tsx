@@ -1,5 +1,13 @@
 "use client";
 
+import { CollegeBlogsSection } from "@/components/admin/CollegeBlogsSection";
+import { AdminDataEditor } from "@/components/admin/AdminDataEditor";
+import { CollegeSectionNavigation } from "@/components/admin/CollegeSectionNavigation";
+import { CollegeQuestionsEditor } from "@/components/admin/CollegeQuestionsEditor";
+import { CollegeReviewSection } from "@/components/admin/CollegeReviewSection";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -31,6 +39,8 @@ interface EditCollegeClientProps {
     id: string;
     name: string;
     shortName?: string | null;
+    affiliatedTo?: string | null;
+    approvedBy?: string[];
     slug: string;
     logoUrl?: string | null;
     coverImageUrl?: string | null;
@@ -63,6 +73,7 @@ interface EditCollegeClientProps {
     navbarSection?: string;
     navbarFilter?: string | null;
     courses: any[];
+    onboardingData?: { offerings: any[]; cutoffs: any[]; placements: any[]; rankings: any[] };
   };
 }
 
@@ -74,13 +85,15 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
   const [name, setName] = useState(college.name || "");
   const [shortName, setShortName] = useState(college.shortName || "");
   const [slug, setSlug] = useState(college.slug || "");
+  const [uploads, setUploads] = useState(0);
+  const onUploadBusy = (busy: boolean) => setUploads(count => count + (busy ? 1 : -1));
   const [logoUrl, setLogoUrl] = useState(college.logoUrl || "");
   const [coverImageUrl, setCoverImageUrl] = useState(college.coverImageUrl || "");
   const [brochurePdfUrl, setBrochurePdfUrl] = useState(college.brochurePdfUrl || "");
   const [ownershipType, setOwnershipType] = useState(college.ownershipType || "PUBLIC_GOVERNMENT");
   const [estYear, setEstYear] = useState(college.estYear ? String(college.estYear) : "");
   const [nirfRank, setNirfRank] = useState(college.nirfRank ? String(college.nirfRank) : "");
-  const [naacGrade, setNaacGrade] = useState(college.naacGrade || "A++");
+  const [naacGrade, setNaacGrade] = useState(college.naacGrade || "");
   const [campusAreaAcres, setCampusAreaAcres] = useState(college.campusAreaAcres ? String(college.campusAreaAcres) : "");
 
   // Location & Contact
@@ -101,25 +114,17 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
   // Facilities & Gallery
   const initialFacilities: string[] = Array.isArray(college.facilitiesJson)
     ? (college.facilitiesJson as string[])
-    : [
-        "Central Library with 1,00,000+ volumes",
-        "Advanced Research Laboratories",
-        "High-Speed Campus Wi-Fi",
-        "Separate Boys & Girls Hostels",
-        "Sports Complex & Gymnasium",
-      ];
+    : [];
   const [facilitiesText, setFacilitiesText] = useState(initialFacilities.join("\n"));
   const [galleryText, setGalleryText] = useState((college.galleryUrls || []).join("\n"));
+
+  const [affiliatedTo, setAffiliatedTo] = useState(college.affiliatedTo || "");
+  const [approvedBy, setApprovedBy] = useState((college.approvedBy || []).join(", "));
 
   // Q&A / FAQs Management
   const initialFaqs = Array.isArray(college.faqsJson)
     ? (college.faqsJson as Array<{ question: string; answer: string }>)
-    : [
-        {
-          question: `What are the eligibility criteria for admissions at ${college.name}?`,
-          answer: "Candidates must qualify with minimum 60% in board examinations and appear for the designated entrance test.",
-        },
-      ];
+    : [];
   const [faqsList, setFaqsList] = useState<Array<{ question: string; answer: string }>>(initialFaqs);
 
   // SEO & Status
@@ -138,6 +143,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploads > 0) return;
     setLoading(true);
     setSuccessMsg(null);
     setErrorMsg(null);
@@ -178,14 +184,16 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
           scholarshipInfo: scholarshipInfo.trim() || null,
           facilitiesJson: facilitiesArray,
           galleryUrls: galleryArray,
-          faqsJson: faqsList.filter((f) => f.question.trim() && f.answer.trim()),
+          faqsJson: faqsList,
+          affiliatedTo: affiliatedTo.trim() || null,
+          approvedBy: approvedBy.split(",").map(item => item.trim()).filter(Boolean),
           metaTitle: metaTitle.trim() || null,
           metaDescription: metaDescription.trim() || null,
           isPublished,
           showInNavbar,
           navbarCategory: navbarCategory || null,
           navbarSection,
-          navbarFilter: navbarFilter || defaultNavbarFilter(navbarCategory, navbarSection)?.id || null,
+          navbarFilter: navbarFilter || null,
         };
       const res = await fetch(approvalRequest
         ? `/api/v1/admin/approvals/${approvalRequest.id}`
@@ -269,10 +277,11 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
       )}
 
       {/* Main Edit Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <CollegeSectionNavigation />
+      <form id="college-profile-form" onSubmit={handleSubmit} className="space-y-6">
         
         {/* CARD 1: BASIC INFORMATION */}
-        <div className="bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
+        <div id="college-overview" className="scroll-mt-6 bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
           <h2 className="text-sm font-bold text-foreground flex items-center gap-2 uppercase tracking-wider text-muted-foreground border-b pb-2">
             <Building2 className="w-4 h-4 text-primary" />
             <span>1. Basic Institutional Profile</span>
@@ -323,6 +332,8 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
               <p className="mt-1 text-xs text-muted-foreground">Use a name like nit-rourkela. Enter the external website in Website URL.</p>
             </div>
 
+            <label className="block space-y-1"><span className="font-semibold text-muted-foreground">Affiliated university / board</span><input value={affiliatedTo} onChange={event => setAffiliatedTo(event.target.value)} className="w-full rounded-lg border bg-background p-2" /></label>
+            <label className="block space-y-1"><span className="font-semibold text-muted-foreground">Approvals (comma separated)</span><input value={approvedBy} onChange={event => setApprovedBy(event.target.value)} className="w-full rounded-lg border bg-background p-2" /></label>
             <div>
               <label className="block font-semibold text-muted-foreground mb-1">
                 Ownership Type
@@ -374,6 +385,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
                 onChange={(e) => setNaacGrade(e.target.value)}
                 className="w-full px-3 py-2 border rounded-lg bg-background"
               >
+                <option value="">Not specified</option>
                 <option value="A++">A++ (Highest)</option>
                 <option value="A+">A+</option>
                 <option value="A">A</option>
@@ -409,42 +421,9 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="block font-semibold text-muted-foreground mb-1">
-                Logo Image URL
-              </label>
-              <input
-                type="url"
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://example.com/logo.png"
-                className="w-full px-3 py-2 border rounded-lg bg-background outline-hidden focus:border-primary"
-              />
-              {logoUrl && (
-                <div className="mt-2 flex items-center gap-2 p-2 rounded-lg border bg-muted/20">
-                  <img src={logoUrl} alt="Logo Preview" className="h-10 w-10 object-contain" />
-                  <span className="text-[11px] text-muted-foreground">Logo preview</span>
-                </div>
-              )}
-            </div>
+            <ImageUploadField label="College logo" values={logoUrl ? [logoUrl] : []} onChange={values => setLogoUrl(values[0] || "")} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} />
 
-            <div>
-              <label className="block font-semibold text-muted-foreground mb-1">
-                Campus Cover Image URL
-              </label>
-              <input
-                type="url"
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
-                className="w-full px-3 py-2 border rounded-lg bg-background outline-hidden focus:border-primary"
-              />
-              {coverImageUrl && (
-                <div className="mt-2 rounded-lg overflow-hidden border h-16 w-32 bg-muted/20">
-                  <img src={coverImageUrl} alt="Cover Preview" className="h-full w-full object-cover" />
-                </div>
-              )}
-            </div>
+            <ImageUploadField label="Campus cover photo" values={coverImageUrl ? [coverImageUrl] : []} onChange={values => setCoverImageUrl(values[0] || "")} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} />
 
             <div className="sm:col-span-2">
               <label className="block font-semibold text-muted-foreground mb-1">
@@ -459,18 +438,8 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
               />
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block font-semibold text-muted-foreground mb-1">
-                Campus Gallery Image URLs <span className="font-normal">(1 URL per line)</span>
-              </label>
-              <textarea
-                rows={4}
-                value={galleryText}
-                onChange={(e) => setGalleryText(e.target.value)}
-                placeholder="https://images.unsplash.com/photo-1&#10;https://images.unsplash.com/photo-2"
-                className="w-full p-3 font-mono text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
-              />
-              <p className="mt-1 text-xs text-muted-foreground">Only the photo URLs listed here will appear in the gallery. Leave empty to show no campus photos.</p>
+            <div id="college-gallery" className="sm:col-span-2 scroll-mt-6">
+              <ImageUploadField label="Campus gallery photos" multiple values={galleryText.split("\n").filter(Boolean)} onChange={values => setGalleryText(values.join("\n"))} disabled={loading || uploads > 0} onBusyChange={onUploadBusy} />
             </div>
           </div>
         </div>
@@ -574,54 +543,31 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
           <div className="space-y-4 text-xs">
             <div>
               <label className="block font-bold text-foreground mb-1">
-                Institutional Description &amp; Overview (HTML supported)
+                Institutional Description &amp; Overview
               </label>
-              <textarea
-                rows={5}
-                value={overviewHtml}
-                onChange={(e) => setOverviewHtml(e.target.value)}
-                className="w-full p-3 font-mono border rounded-lg bg-background outline-hidden focus:border-primary"
-              />
+              <RichTextEditor label="Institutional overview" value={overviewHtml} onChange={setOverviewHtml} disabled={loading} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+              <div id="college-admission" className="scroll-mt-6">
                 <label className="block font-semibold text-muted-foreground mb-1">
                   Admission Procedure &amp; Eligibility Criteria
                 </label>
-                <textarea
-                  rows={4}
-                  value={admissionHtml}
-                  onChange={(e) => setAdmissionHtml(e.target.value)}
-                  placeholder="Admission is conducted via centralized JoSAA / state counseling..."
-                  className="w-full p-3 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
-                />
+                <RichTextEditor label="Admission procedure and eligibility" value={admissionHtml} onChange={setAdmissionHtml} disabled={loading} />
               </div>
 
               <div>
                 <label className="block font-semibold text-muted-foreground mb-1">
                   Hostel Facilities &amp; Mess Details
                 </label>
-                <textarea
-                  rows={4}
-                  value={hostelInfo}
-                  onChange={(e) => setHostelInfo(e.target.value)}
-                  placeholder="Separate hostel facilities for boys and girls with 24x7 security, Wi-Fi, and mess dining..."
-                  className="w-full p-3 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
-                />
+                <RichTextEditor label="Hostel and mess information" value={hostelInfo} onChange={setHostelInfo} disabled={loading} />
               </div>
 
               <div>
                 <label className="block font-semibold text-muted-foreground mb-1">
                   Scholarships &amp; Financial Concessions
                 </label>
-                <textarea
-                  rows={3}
-                  value={scholarshipInfo}
-                  onChange={(e) => setScholarshipInfo(e.target.value)}
-                  placeholder="Merit-cum-means fee waivers and government NSP scholarships are available..."
-                  className="w-full p-3 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
-                />
+                <RichTextEditor label="Scholarships and concessions" value={scholarshipInfo} onChange={setScholarshipInfo} disabled={loading} />
               </div>
 
               <div>
@@ -640,67 +586,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
           </div>
         </div>
 
-        {/* CARD 4.5: QUESTIONS & ANSWERS (Q&A) MANAGEMENT */}
-        <div className="bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b pb-2">
-            <h2 className="text-sm font-bold text-foreground flex items-center gap-2 uppercase tracking-wider text-muted-foreground">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span>Questions &amp; Answers (Q&amp;A / FAQs)</span>
-            </h2>
-            <button
-              type="button"
-              onClick={() => setFaqsList([...faqsList, { question: "", answer: "" }])}
-              className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add FAQ</span>
-            </button>
-          </div>
-
-          <div className="space-y-3">
-            {faqsList.map((faq, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl border bg-muted/20 space-y-2 relative">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    FAQ #{idx + 1}
-                  </span>
-                  {faqsList.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => setFaqsList(faqsList.filter((_, i) => i !== idx))}
-                      className="text-red-500 hover:text-red-700 text-xs flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                      <span>Remove</span>
-                    </button>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  value={faq.question}
-                  onChange={(e) => {
-                    const updated = [...faqsList];
-                    updated[idx].question = e.target.value;
-                    setFaqsList(updated);
-                  }}
-                  placeholder="Question: e.g. What is the average placement CTC?"
-                  className="w-full px-3 py-1.5 text-xs border rounded-lg bg-background outline-hidden focus:border-primary font-semibold"
-                />
-                <textarea
-                  rows={2}
-                  value={faq.answer}
-                  onChange={(e) => {
-                    const updated = [...faqsList];
-                    updated[idx].answer = e.target.value;
-                    setFaqsList(updated);
-                  }}
-                  placeholder="Answer: e.g. The average annual package for the graduating batch was ₹18.5 LPA..."
-                  className="w-full p-2.5 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <CollegeQuestionsEditor value={faqsList} onChange={setFaqsList} disabled={loading} />
 
         {/* CARD 5: SEO METADATA & PUBLISHING TOGGLE */}
         <div className="bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
@@ -761,10 +647,23 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
           </div>
         </div>
 
-        <CollegeNavbarFields enabled={showInNavbar} category={navbarCategory} section={navbarSection} filter={navbarFilter} onFilterChange={setNavbarFilter} onSectionChange={setNavbarSection} onEnabledChange={setShowInNavbar} onCategoryChange={setNavbarCategory} />
+      </form>
+      {!approvalRequest && <>
+        <p className="text-sm text-muted-foreground">Each section below saves its records separately. Profile changes use Save College Profile at the bottom.</p>
+        {(["offerings", "cutoffs", "placements", "rankings"] as const).map(resource => <div key={resource} id={`college-${resource}`} className="scroll-mt-6"><AdminDataEditor resource={resource} collegeId={college.id} /></div>)}
+        <CollegeReviewSection collegeId={college.id} />
+        <CollegeBlogsSection collegeId={college.id} />
+      </>}
+      {approvalRequest && college.onboardingData && (["offerings", "cutoffs", "placements", "rankings"] as const).map(resource => <section key={resource} id={`college-${resource}`} className="scroll-mt-6 space-y-3 rounded-xl border bg-card p-6">
+        <h2 className="text-lg font-bold">{{ offerings: "Courses & Fees", cutoffs: "Cutoff", placements: "Placements", rankings: "Rankings" }[resource]}</h2>
+        <p className="text-sm text-muted-foreground">{college.onboardingData![resource].length} submitted record(s). These records are included when the college is approved. Use Preview Submission to inspect the public sections.</p>
+      </section>)}
+      {approvalRequest && <section id="college-blogs" className="rounded-xl border p-4 text-sm text-muted-foreground">College articles can be managed after this submission is approved.</section>}
+      {approvalRequest && <section id="college-reviews" className="rounded-xl border p-4 text-sm text-muted-foreground">Reviews are managed after the college has been approved.</section>}
+        <CollegeNavbarFields formId="college-profile-form" enabled={showInNavbar} category={navbarCategory} section={navbarSection} filter={navbarFilter} onFilterChange={setNavbarFilter} onSectionChange={setNavbarSection} onEnabledChange={setShowInNavbar} onCategoryChange={setNavbarCategory} />
 
         {/* BOTTOM ACTION BUTTONS */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t">
+        <div className="admin-form-actions flex flex-wrap items-center justify-end gap-3 pt-3 border-t">
           <Link
             href={approvalRequest ? "/admin/approvals" : "/admin/colleges"}
             className="px-4 py-2.5 rounded-xl border bg-background hover:bg-muted text-xs font-semibold text-foreground transition-colors"
@@ -774,7 +673,8 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
 
           <button
             type="submit"
-            disabled={loading}
+            form="college-profile-form"
+            disabled={loading || uploads > 0}
             className="px-6 py-2.5 rounded-xl font-bold text-xs text-white shadow-md flex items-center gap-2 hover:opacity-95 active:scale-98 transition-all cursor-pointer"
             style={{ background: "#1a3068" }}
           >
@@ -791,7 +691,6 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
             )}
           </button>
         </div>
-      </form>
     </div>
   );
 }

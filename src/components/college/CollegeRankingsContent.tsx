@@ -1,4 +1,4 @@
-import { Award, ShieldCheck, Trophy, Globe } from "lucide-react";
+import { ShieldCheck, Trophy } from "lucide-react";
 
 import type { Prisma } from "@prisma/client";
 
@@ -12,38 +12,23 @@ export function CollegeRankingsContent({ college }: { college: Prisma.CollegeGet
           {college.name} Rankings & Accreditations 2026
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
-          National and international ranking trends from NIRF, IIRF, India Today, and NAAC accreditation grades.
+          Institutional rankings and accreditation details.
         </p>
       </div>
 
-      {/* NIRF Hero Card */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-transparent border border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-md">
-            #{college.nirfRank || "Top"}
-          </div>
-          <div>
-            <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider block">
-              Ministry of Education, Govt. of India
-            </span>
-            <h3 className="font-extrabold text-lg text-foreground">
-              NIRF India Rankings 2025: Engineering
-            </h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Ranked among India&apos;s elite technical and research universities.
-            </p>
-          </div>
-        </div>
-
-        <div className="text-right">
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800">
-            NAAC Grade {college.naacGrade || "A++"}
-          </span>
-        </div>
-      </div>
+      {(college.nirfRank || college.naacGrade) && <div className={`grid gap-4 ${college.nirfRank && college.naacGrade ? "sm:grid-cols-2" : ""}`}>
+        {college.nirfRank && <section aria-label="NIRF ranking" className="flex items-center gap-4 rounded-2xl border bg-card p-6 shadow-xs">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-xl font-bold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">#{college.nirfRank}</div>
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Ministry of Education, Govt. of India</p><h3 className="mt-1 text-lg font-bold">NIRF Ranking</h3></div>
+        </section>}
+        {college.naacGrade && <section aria-label="NAAC accreditation" className="flex items-center gap-4 rounded-2xl border bg-card p-6 shadow-xs">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"><ShieldCheck className="h-7 w-7" /></div>
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Accreditation</p><h3 className="mt-1 text-lg font-bold">NAAC Grade {college.naacGrade}</h3></div>
+        </section>}
+      </div>}
 
       {/* Rankings Table */}
-      <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
+      {college.rankings.length > 0 && <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
         <div className="p-4 bg-muted/40 border-b">
           <h3 className="font-bold text-sm text-foreground">
             Historical Ranking Benchmarks
@@ -80,7 +65,7 @@ export function CollegeRankingsContent({ college }: { college: Prisma.CollegeGet
             </tbody>
           </table>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

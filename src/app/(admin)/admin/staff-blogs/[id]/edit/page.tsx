@@ -35,6 +35,10 @@ export default async function StaffEditBlogPage({ params }: Props) {
     <StaffEditBlogClient
       post={{
         id: post.id,
+        status: post.status,
+        likesEnabled: post.likesEnabled,
+        commentsEnabled: post.commentsEnabled,
+        faqsJson: (post.faqsJson as { question: string; answer: string }[]) || [],
         title: post.title,
         metaTitle: post.metaTitle ?? undefined,
         metaDescription: post.metaDescription ?? undefined,
@@ -45,6 +49,7 @@ export default async function StaffEditBlogPage({ params }: Props) {
         category: post.category,
         tags: post.tags,
         liveUpdatesJson: (post.liveUpdatesJson as any) || [],
+        showOnWebsiteBlog: post.showOnWebsiteBlog,
         isLiveBlog: post.isLiveBlog,
       }}
       canPublish={canPublish}

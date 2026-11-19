@@ -30,6 +30,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
   const posts = await db.blogPost.findMany({
     where: {
       status: "PUBLISHED",
+      showOnWebsiteBlog: true,
       category: normalizedCategory as BlogCategory,
     },
     orderBy: { publishedAt: "desc" },

@@ -5,7 +5,7 @@ import { BlogMdxEditor } from "@/components/admin/BlogMdxEditor";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default function StaffNewBlogPage({canPublish}: {canPublish: boolean}) {
+export default function StaffNewBlogPage({canPublish, initialCollegeSlug, initialDestination}: {canPublish: boolean; initialCollegeSlug?: string; initialDestination?: "website" | "college"}) {
   const router = useRouter();
 
 
@@ -23,7 +23,7 @@ export default function StaffNewBlogPage({canPublish}: {canPublish: boolean}) {
       if (json.message && json.message.includes("Draft saved")) {
         alert(json.message);
       }
-      router.push("/admin/staff-blogs");
+      router.push(`/admin/staff-blogs/${data.showOnWebsiteBlog ? "website" : "college"}`);
     } else {
       throw new Error(json.error || "Failed to save article");
     }
@@ -33,14 +33,14 @@ export default function StaffNewBlogPage({canPublish}: {canPublish: boolean}) {
     <div className="space-y-6 max-w-7xl">
       <div className="flex items-center gap-3">
         <Link
-          href="/admin/staff-blogs"
+          href={`/admin/staff-blogs/${initialDestination || "website"}`}
           className="p-2 rounded-lg border hover:bg-accent text-muted-foreground"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div>
           <h1 className="text-2xl font-extrabold text-foreground">
-            Write New Blog Article
+            {initialDestination === "college" ? "Write a college blog" : "Write a website blog"}
           </h1>
           <p className="text-xs text-muted-foreground">
             Create a new blog post. Save as draft first, then publish when ready.
@@ -48,7 +48,7 @@ export default function StaffNewBlogPage({canPublish}: {canPublish: boolean}) {
         </div>
       </div>
 
-      <BlogMdxEditor canPublish={canPublish} onSave={handleSave} />
+      <BlogMdxEditor initialDestination={initialDestination} initialCollegeSlug={initialCollegeSlug} canPublish={canPublish} onSave={handleSave} />
     </div>
   );
 }

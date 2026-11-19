@@ -1,0 +1,1984 @@
+{
+  "verifiedAt": "2026-11-19",
+  "colleges": [
+    {
+      "key": "iit",
+      "verifiedAt": "2026-11-19",
+      "name": "Indian Institute of Technology Bhubaneswar",
+      "slug": "iit-bhubaneswar",
+      "shortName": "IIT Bhubaneswar",
+      "websiteUrl": "https://www.iitbbs.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PUBLIC_GOVERNMENT",
+      "summary": "IIT Bhubaneswar was established in 2008. Its Argul campus offers engineering and science education, postgraduate study and doctoral research.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Civil Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Engineering Physics",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mathematics and Computing",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Metallurgical and Materials Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-ug/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Climate Science and Technology",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Signal Processing and Communication Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Power System Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Power Electronics and Drives",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Semiconductor Technology and Chip Design",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Artificial Intelligence",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Structural Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Transportation Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Environmental Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Water Resources Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Geotechnical Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Mechanical Systems Design",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Thermal Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Manufacturing Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Robotics and Artificial Intelligence",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Metallurgical and Materials Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+        }
+      ],
+      "estYear": 2008,
+      "fullAddress": "Argul, Khordha, Odisha, India \u2014 752051",
+      "pincode": "752051",
+      "contactPhone": "+91 674 7134560",
+      "contactEmail": "registrar.office@iitbbs.ac.in",
+      "sources": [
+        "https://www.iitbbs.ac.in/",
+        "https://www.iitbbs.ac.in/index.php/home/about/",
+        "https://www.iitbbs.ac.in/index.php/home/academics-ug/",
+        "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+      ],
+      "admissionSource": "https://www.iitbbs.ac.in/index.php/home/academics/admission/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://www.iitbbs.ac.in/wp-content/uploads/2024/04/IIT_Bhubaneswar_Logo-768x225.png",
+          "file": "iit-logo.png",
+          "mimeType": "image/png",
+          "size": 117696
+        }
+      ]
+    },
+    {
+      "key": "kiit",
+      "verifiedAt": "2026-11-19",
+      "name": "Kalinga Institute of Industrial Technology (KIIT University)",
+      "slug": "kiit-university-bhubaneswar",
+      "shortName": "KIIT University",
+      "websiteUrl": "https://kiit.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PRIVATE",
+      "summary": "KIIT is a multidisciplinary deemed-to-be university in Patia, Bhubaneswar. The institution identifies 1997 as its university base year and offers engineering, computer applications, business and other professional programmes.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Aerospace Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Chemical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Civil Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Construction Technology",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical and Computer Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Information Technology",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Telecommunication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Construction Engineering and Management",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Environmental Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Geotechnical Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Structural Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Transportation Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Water Resources Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "MCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "BCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "BBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "MBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        },
+        {
+          "degree": "B.Arch",
+          "specialization": "Architecture",
+          "stream": "Architecture",
+          "level": "UG",
+          "durationYrs": 5,
+          "acceptedExamSlugs": [],
+          "source": "https://kiitee.kiit.ac.in/courses-available/"
+        }
+      ],
+      "estYear": 1997,
+      "fullAddress": "Patia, Bhubaneswar, Odisha, India \u2014 751024",
+      "pincode": "751024",
+      "contactPhone": "8080735735",
+      "naacGrade": "A++",
+      "approvedBy": [
+        "UGC"
+      ],
+      "sources": [
+        "https://kiit.ac.in/about/",
+        "https://kiit.ac.in/contact/",
+        "https://kiitee.kiit.ac.in/courses-available/"
+      ],
+      "admissionSource": "https://kiitee.kiit.ac.in/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": []
+    },
+    {
+      "key": "soa",
+      "verifiedAt": "2026-11-19",
+      "name": "Siksha 'O' Anusandhan (SOA / ITER)",
+      "slug": "siksha-o-anusandhan-soa-iter-bhubaneswar",
+      "shortName": "SOA / ITER",
+      "websiteUrl": "https://www.soa.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PRIVATE",
+      "summary": "Siksha O Anusandhan is a multidisciplinary university in Bhubaneswar. ITER is its engineering and technology institute; IBCS provides business programmes. These constituent institutes are maintained within one SOA profile.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Civil Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical and Electronics Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Information Technology",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Internet of Things)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Cyber Security)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "BCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "MCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Structural Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Embedded System and VLSI Design",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Electric Vehicle Technology",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Machine Design and Robotics",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Physics",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Chemistry",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Mathematics",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/iter"
+        },
+        {
+          "degree": "BBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "UG",
+          "durationYrs": 3,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/ibcs"
+        },
+        {
+          "degree": "MBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/ibcs"
+        },
+        {
+          "degree": "MBA",
+          "specialization": "Hospital Administration",
+          "stream": "Management",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/ibcs"
+        },
+        {
+          "degree": "Integrated MBA",
+          "specialization": "Integrated Business Administration",
+          "stream": "Management",
+          "level": "UG",
+          "durationYrs": 5,
+          "acceptedExamSlugs": [],
+          "source": "https://www.soa.ac.in/ibcs"
+        }
+      ],
+      "naacGrade": "A++",
+      "sources": [
+        "https://www.soa.ac.in/",
+        "https://www.soa.ac.in/academics-at-soa",
+        "https://www.soa.ac.in/iter",
+        "https://www.soa.ac.in/ibcs"
+      ],
+      "admissionSource": "https://www.admission.soa.ac.in/",
+      "rankings": [
+        {
+          "agencyName": "NIRF",
+          "category": "University",
+          "rankingYear": 2025,
+          "rankNumber": 15
+        },
+        {
+          "agencyName": "NIRF",
+          "category": "Engineering",
+          "rankingYear": 2025,
+          "rankNumber": 22
+        },
+        {
+          "agencyName": "NIRF",
+          "category": "Medical",
+          "rankingYear": 2025,
+          "rankNumber": 15
+        },
+        {
+          "agencyName": "NIRF",
+          "category": "Dental",
+          "rankingYear": 2025,
+          "rankNumber": 9
+        },
+        {
+          "agencyName": "NIRF",
+          "category": "Law",
+          "rankingYear": 2025,
+          "rankNumber": 10
+        },
+        {
+          "agencyName": "NIRF",
+          "category": "Management",
+          "rankingYear": 2025,
+          "rankNumber": 66
+        },
+        {
+          "agencyName": "NIRF",
+          "category": "Research",
+          "rankingYear": 2025,
+          "rankNumber": 49
+        }
+      ],
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://static1.squarespace.com/static/57713a8e2994cae381dd86fe/t/5a06f38af9619a1bb0d41f1a/1510405003944/SOA-PNG.png?format=1000w",
+          "file": "soa-logo.webp",
+          "mimeType": "image/webp",
+          "size": 36688
+        },
+        {
+          "usage": "cover",
+          "source": "https://images.squarespace-cdn.com/content/v1/57713a8e2994cae381dd86fe/1706003156365-1ISMFJWBRMP75F81UR6C/DJI_0937+Web.jpg?format=1600w",
+          "file": "soa-cover.webp",
+          "mimeType": "image/webp",
+          "size": 537926
+        }
+      ]
+    },
+    {
+      "key": "outr",
+      "verifiedAt": "2026-11-19",
+      "name": "Odisha University of Technology and Research (OUTR)",
+      "slug": "odisha-university-of-technology-and-research-outr-bhubaneswar",
+      "shortName": "OUTR Bhubaneswar",
+      "websiteUrl": "https://www.outr.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PUBLIC_GOVERNMENT",
+      "summary": "OUTR is a state technical university established in 2021 by upgrading the former College of Engineering and Technology, Bhubaneswar. It operates from the Techno Campus in Ghatikia and offers engineering, planning, architecture and postgraduate programmes.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Information Technology",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Biotechnology",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Civil Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Textile Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Instrumentation Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Robotics and Artificial Intelligence",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Arch",
+          "specialization": "Architecture",
+          "stream": "Architecture",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "B.Plan",
+          "specialization": "Planning",
+          "stream": "Planning",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "MCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/public/uploads/Academic%20Regulation_PG%20Programme_2023-24.pdf"
+        },
+        {
+          "degree": "MBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/public/uploads/Academic%20Regulation_PG%20Programme_2023-24.pdf"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Chemistry",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Mathematics and Computing",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Physics",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Information Technology",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Energy System and Management",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Power Electronics and Drives",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Power System Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Instrumentation and Control Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "VLSI Design",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Geotechnical Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Structural Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Water Resources Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Industrial Engineering and Management",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Robotics and Artificial Intelligence",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Design and Dynamics",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Thermal Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Biotechnology",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Textile Chemical Processing",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Textile Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.outr.ac.in/syllabus-12"
+        }
+      ],
+      "estYear": 2021,
+      "fullAddress": "Techno Campus, Mahalaxmi Vihar, Ghatikia, Bhubaneswar, Odisha \u2014 751029",
+      "pincode": "751029",
+      "contactPhone": "0674-2386075",
+      "contactEmail": "info@outr.ac.in",
+      "campusAreaAcres": 100,
+      "sources": [
+        "https://www.outr.ac.in/about-outr",
+        "https://www.outr.ac.in/contact-us",
+        "https://www.outr.ac.in/syllabus-12",
+        "https://www.outr.ac.in/public/uploads/Academic%20Regulation_PG%20Programme_2023-24.pdf"
+      ],
+      "admissionSource": "https://www.outr.ac.in/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://www.outr.ac.in/public/design/front/assets/img/logo.png",
+          "file": "outr-logo.png",
+          "mimeType": "image/png",
+          "size": 46591
+        },
+        {
+          "usage": "cover",
+          "source": "https://www.outr.ac.in/public/design/front/assets/img/college1.jpg",
+          "file": "outr-cover.jpeg",
+          "mimeType": "image/jpeg",
+          "size": 438780
+        }
+      ]
+    },
+    {
+      "key": "iiit",
+      "verifiedAt": "2026-11-19",
+      "name": "International Institute of Information Technology Bhubaneswar",
+      "slug": "iiit-bhubaneswar",
+      "shortName": "IIIT Bhubaneswar",
+      "websiteUrl": "https://www.iiit-bh.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PUBLIC_GOVERNMENT",
+      "summary": "IIIT Bhubaneswar was established by the Government of Odisha in 2006 and became a unitary university in 2014. Its Gothapatna campus offers engineering degrees and postgraduate research.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Information Technology",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Telecommunication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical and Electronics Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Signal Processing and VLSI Technology",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://www.iiit-bh.ac.in/academics/"
+        }
+      ],
+      "fullAddress": "Gothapatna, PO: Malipada, Bhubaneswar, Odisha \u2014 751003",
+      "pincode": "751003",
+      "contactPhone": "0674-2653300",
+      "contactEmail": "info@iiit-bh.ac.in",
+      "sources": [
+        "https://www.iiit-bh.ac.in/academics/",
+        "https://www.iiit-bh.ac.in/Admission/b-tech/",
+        "https://www.iiit-bh.ac.in/about-iiit/about/"
+      ],
+      "admissionSource": "https://www.iiit-bh.ac.in/Admission/b-tech/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "estYear": 2006,
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://www.iiit-bh.ac.in/wp-content/uploads/2024/06/iiit-logo.jpg",
+          "file": "iiit-logo.jpeg",
+          "mimeType": "image/jpeg",
+          "size": 25242
+        }
+      ]
+    },
+    {
+      "key": "cgu",
+      "verifiedAt": "2026-11-19",
+      "name": "C.V. Raman Global University",
+      "slug": "c-v-raman-global-university-bhubaneswar",
+      "shortName": "CGU Odisha",
+      "websiteUrl": "https://cgu-odisha.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PRIVATE",
+      "summary": "C.V. Raman Global University was established through Odisha Act 01 of 2020. Its institutional history builds on C.V. Raman College of Engineering, founded in 1997. The university lists diploma, undergraduate, postgraduate and doctoral study across several faculties.",
+      "offerings": [
+        {
+          "degree": "Diploma",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "Diploma",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "Diploma",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "Diploma",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "Diploma",
+          "specialization": "Civil Engineering",
+          "stream": "Engineering",
+          "level": "Diploma",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "Diploma",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "Diploma",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "D.Pharm",
+          "specialization": "Pharmacy",
+          "stream": "Pharmacy",
+          "level": "Diploma",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Chemical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Civil and Environmental Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Marine Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Chemical Engineering (Research)",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Civil Engineering (Research)",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Mechatronics Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Heat Power Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Electronics and Communication (Signal Processing and Communication)",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Mechanical Engineering (Research)",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "BBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "MBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "BCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "MCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Sc",
+          "specialization": "Agriculture (Honours)",
+          "stream": "Science",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Sc",
+          "specialization": "Forensic Science",
+          "stream": "Science",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Applied Mathematics and Computing",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Biotechnology",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Chemistry",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Physics",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Botany",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Computer Science and IT (Artificial Intelligence and Machine Learning)",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Computer Science and IT (Internet of Things and Cyber Security)",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Zoology",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Computer Science (Cloud Computing)",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Forensic Sciences",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "B.Pharm",
+          "specialization": "Pharmacy",
+          "stream": "Pharmacy",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "MA",
+          "specialization": "English",
+          "stream": "Arts",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "BHMCT",
+          "specialization": "Hotel Management and Catering Technology",
+          "stream": "Hospitality",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        },
+        {
+          "degree": "MTH",
+          "specialization": "Tourism and Hospitality",
+          "stream": "Hospitality",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+        }
+      ],
+      "estYear": 2020,
+      "fullAddress": "Bidyanagar, Mahura, Janla, Bhubaneswar, Odisha \u2014 752054",
+      "pincode": "752054",
+      "contactPhone": "0674-6636555",
+      "contactEmail": "admission@cgu-odisha.ac.in",
+      "sources": [
+        "https://cgu-odisha.ac.in/inventing-the-future-with-learning/",
+        "https://cgu-odisha.ac.in/contact-us/",
+        "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+      ],
+      "admissionSource": "https://admission.cgu-odisha.ac.in/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://cgu-odisha.ac.in/wp-content/uploads/2023/04/logo-new.png",
+          "file": "cgu-logo.png",
+          "mimeType": "image/png",
+          "size": 22712
+        }
+      ]
+    },
+    {
+      "key": "silicon",
+      "verifiedAt": "2026-11-19",
+      "name": "Silicon University",
+      "slug": "silicon-university-bhubaneswar",
+      "shortName": "Silicon University",
+      "websiteUrl": "https://silicon.ac.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PRIVATE",
+      "summary": "Silicon University grew from Silicon Institute of Technology, founded in 2001. The Bhubaneswar institution became a university in 2024. Its programmes cover engineering, computer applications and applied sciences.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics Engineering (VLSI Design and Technology)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical and Electronics Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Instrumentation Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": 4,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Tech",
+          "specialization": "Power Engineering and Energy Systems",
+          "stream": "Engineering",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "MCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Data Science",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Molecular Medicine",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "VLSI",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Embedded Electronics and Industrial Internet of Things",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        },
+        {
+          "degree": "M.Sc",
+          "specialization": "Digital Healthcare Systems and Management",
+          "stream": "Science",
+          "level": "PG",
+          "durationYrs": 2,
+          "acceptedExamSlugs": [],
+          "source": "https://silicon.ac.in/programs/"
+        }
+      ],
+      "estYear": 2001,
+      "fullAddress": "Silicon Hills, Patia, Bhubaneswar, Odisha \u2014 751024",
+      "pincode": "751024",
+      "contactPhone": "0674-2725448",
+      "contactEmail": "info@silicon.ac.in",
+      "sources": [
+        "https://silicon.ac.in/about-us/",
+        "https://silicon.ac.in/programs/"
+      ],
+      "admissionSource": "https://silicon.ac.in/admissions-at-silicon/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://silicon.ac.in/wp-content/themes/sit/assets/img/logo-7.png",
+          "file": "silicon-logo.png",
+          "mimeType": "image/png",
+          "size": 22347
+        },
+        {
+          "usage": "cover",
+          "source": "https://silicon.ac.in/wp-content/uploads/2025/02/8.jpg",
+          "file": "silicon-cover.jpeg",
+          "mimeType": "image/jpeg",
+          "size": 358847
+        }
+      ]
+    },
+    {
+      "key": "gita",
+      "verifiedAt": "2026-11-19",
+      "name": "GITA Autonomous College (Gandhi Institute for Technological Advancement)",
+      "slug": "gita-autonomous-college-bhubaneswar",
+      "shortName": "GITA Autonomous",
+      "websiteUrl": "https://gita.edu.in/",
+      "city": "Bhubaneswar",
+      "state": "Odisha",
+      "ownershipType": "PRIVATE",
+      "summary": "GITA is an autonomous college near Bhubaneswar, founded in 2004. Its official course directory lists engineering, computer applications and business administration. GITA and GIFT are different institutions.",
+      "offerings": [
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Cyber Security)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Artificial Intelligence and Machine Learning)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Computer Science and Engineering (Data Science)",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Civil Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Mechanical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical and Electronics Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electrical Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "B.Tech",
+          "specialization": "Electronics and Communication Engineering",
+          "stream": "Engineering",
+          "level": "UG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "MCA",
+          "specialization": "Computer Applications",
+          "stream": "Computer Applications",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        },
+        {
+          "degree": "MBA",
+          "specialization": "Business Administration",
+          "stream": "Management",
+          "level": "PG",
+          "durationYrs": null,
+          "acceptedExamSlugs": [],
+          "source": "https://gita.edu.in/courses.php"
+        }
+      ],
+      "estYear": 2004,
+      "fullAddress": "Badaraghunathpur, Madanpur, Bhubaneswar, Odisha, India",
+      "contactPhone": "+91 9078083982",
+      "sources": [
+        "https://gita.edu.in/story.php",
+        "https://gita.edu.in/courses.php",
+        "https://gita.edu.in/"
+      ],
+      "admissionSource": "https://gita.edu.in/",
+      "notes": [
+        "Course listing verified from linked official sources. Not a guarantee of current seat availability.",
+        "Current full-programme fees, cutoffs and placement statistics were not verified and are intentionally not inferred."
+      ],
+      "images": [
+        {
+          "usage": "logo",
+          "source": "https://gita.edu.in/assets/images/gitalog.png",
+          "file": "gita-logo.png",
+          "mimeType": "image/png",
+          "size": 24438
+        },
+        {
+          "usage": "cover",
+          "source": "https://gita.edu.in/Admin/uploads/1754291657_1750159563_web-sn-01.webp",
+          "file": "gita-cover.webp",
+          "mimeType": "image/webp",
+          "size": 84964
+        }
+      ]
+    }
+  ]
+}

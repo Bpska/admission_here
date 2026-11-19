@@ -42,9 +42,9 @@ export async function POST(req: NextRequest) {
       .map(
         (c) =>
           `• **${c.name}** (${c.city}, ${c.state}) | NIRF Rank: #${c.nirfRank || "Unranked"} | Rating: ${c.rating}/5.0\n` +
-          `  Courses: ${c.courses.map((cr) => `${cr.name} (Fees: ₹${(cr.fees / 100000).toFixed(2)}L)`).join(", ")}\n` +
+          `  Courses: ${c.courses.map((cr) => `${cr.name} (Fees: ${cr.fees == null ? "Not published" : `₹${(cr.fees / 100000).toFixed(2)}L`})`).join(", ")}\n` +
           (c.latestPlacement
-            ? `  Placement: Average ₹${(c.latestPlacement.averagePackage / 100000).toFixed(1)} LPA, Highest ₹${(c.latestPlacement.highestPackage / 100000).toFixed(1)} LPA`
+            ? `  Placement: Average ${c.latestPlacement.averagePackage == null ? "Not reported" : `₹${(c.latestPlacement.averagePackage / 100000).toFixed(1)} LPA`}, Highest ${c.latestPlacement.highestPackage == null ? "Not reported" : `₹${(c.latestPlacement.highestPackage / 100000).toFixed(1)} LPA`}`
             : "")
       )
       .join("\n\n");

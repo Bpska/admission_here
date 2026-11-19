@@ -158,12 +158,23 @@ export default async function AdminCollegesPage({ searchParams }: {
 
       {/* Colleges Data Table */}
       <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
-        <div className="p-4 border-b bg-muted/10 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="p-4 border-b bg-muted/10 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>Showing <strong className="text-foreground">{colleges.length}</strong> onboarded institutions</span>
           <span className="text-[11px]">Click <strong>Edit</strong> to configure fees, hostel, gallery, and SEO tags</span>
         </div>
 
-        <div className="overflow-x-auto touch-scroll">
+        <div className="divide-y md:hidden">
+          {colleges.length === 0 && <p className="p-4 text-sm text-muted-foreground">No college profiles available.</p>}
+          {colleges.map(college => <article key={college.id} className="space-y-4 p-4">
+            <div className="flex items-start gap-3">
+              {college.logoUrl ? <img src={college.logoUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg border bg-white p-1 object-contain" /> : <Building2 className="h-9 w-9 shrink-0 rounded-lg bg-muted p-2" />}
+              <div className="min-w-0 space-y-1"><h2 className="break-words text-sm font-bold">{college.name}</h2><p className="text-xs text-muted-foreground">{college.city}, {college.state}</p></div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs"><span className={`rounded-md px-2 py-1 text-[10px] font-bold ${college.isPublished ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-800"}`}>{college.isPublished ? "PUBLISHED" : "DRAFT"}</span><span>{college._count.courses} programmes</span><span className="text-muted-foreground">·</span><span>{college._count.leads} leads</span></div>
+            <div className="border-t pt-3"><AdminCollegeActions collegeId={college.id} collegeSlug={college.slug} collegeName={college.name} isPublished={college.isPublished} /></div>
+          </article>)}
+        </div>
+        <div className="hidden md:block overflow-x-auto touch-scroll">
           <table className="w-full text-left text-xs">
             <thead className="bg-muted/50 border-b font-bold text-muted-foreground uppercase text-[10px] tracking-wider">
               <tr>

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { BlogMdxEditor } from "@/components/admin/BlogMdxEditor";
 
-export function EditBlogClient({ post }: { post: any }) {
+export function EditBlogClient({ post, canPublish }: { post: any; canPublish: boolean }) {
   const router = useRouter();
 
   const handleSave = async (data: any, isPublish: boolean) => {
@@ -14,7 +14,7 @@ export function EditBlogClient({ post }: { post: any }) {
     });
 
     if (res.ok) {
-      router.push("/admin/blogs");
+      router.push(`/admin/blogs/${data.showOnWebsiteBlog ? "website" : "college"}`);
     } else {
       const json = await res.json();
       throw new Error(json.error || "Failed to update article");
@@ -25,6 +25,10 @@ export function EditBlogClient({ post }: { post: any }) {
     <BlogMdxEditor
       initialData={{
         id: post.id,
+        status: post.status,
+        likesEnabled: post.likesEnabled,
+        commentsEnabled: post.commentsEnabled,
+        faqsJson: post.faqsJson || [],
         title: post.title,
         metaTitle: post.metaTitle || undefined,
         metaDescription: post.metaDescription || undefined,
@@ -34,10 +38,11 @@ export function EditBlogClient({ post }: { post: any }) {
         relatedCollegeSlug: post.relatedCollege?.slug,
         category: post.category,
         tags: post.tags || [],
+        showOnWebsiteBlog: post.showOnWebsiteBlog,
         isLiveBlog: post.isLiveBlog,
         liveUpdatesJson: post.liveUpdatesJson || [],
       }}
-      canPublish={true}
+      canPublish={canPublish}
       onSave={handleSave}
     />
   );

@@ -33,23 +33,12 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
 
   const galleryImages = college.galleryUrls || [];
 
-  // Standard facilities list
-  const facilities: string[] =
-    Array.isArray(college.facilitiesJson) && college.facilitiesJson.length > 0
-      ? (college.facilitiesJson as string[])
-      : [
-          "Central Library with 1,00,000+ volumes & digital journals",
-          "Advanced Research Laboratories & Computing Centers",
-          "High-speed campus-wide Wi-Fi network (1 Gbps)",
-          "Separate Boys & Girls Hostels with 24x7 security",
-          "Multi-cuisine Mess & Food Court facilities",
-          "Indoor Sports Complex & Outdoor Athletic Ground",
-          "Health Care Center with resident medical officers",
-          "Fleet of Campus Transport Shuttles & Buses",
-        ];
+  const facilities: string[] = Array.isArray(college.facilitiesJson)
+    ? college.facilitiesJson.filter((item): item is string => typeof item === "string")
+    : [];
 
   // Fee range calculation
-  const feeList = college.courses.map((c) => c.totalFeesInr).filter((f) => f > 0);
+  const feeList = college.courses.map((c) => c.totalFeesInr).filter((f): f is number => f != null && f > 0);
   const minFee = feeList.length > 0 ? Math.min(...feeList) : null;
   const maxFee = feeList.length > 0 ? Math.max(...feeList) : null;
 
@@ -74,7 +63,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               <span>Key Institutional Highlights</span>
             </h2>
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary uppercase">
-              Verified 2026 Batch
+              Institution profile
             </span>
           </div>
 
@@ -86,40 +75,40 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-muted/30 border">
-              <span className="text-muted-foreground block text-[11px]">NIRF 2025 Ranking</span>
+            {college.nirfRank && <div className="p-3.5 rounded-xl bg-muted/30 border">
+              <span className="text-muted-foreground block text-[11px]">NIRF Ranking</span>
               <span className="font-black text-amber-600 text-sm">
                 {college.nirfRank ? `#${college.nirfRank} in India` : "Ranked / Accredited"}
               </span>
-            </div>
+            </div>}
 
-            <div className="p-3.5 rounded-xl bg-muted/30 border">
+            {college.naacGrade && <div className="p-3.5 rounded-xl bg-muted/30 border">
               <span className="text-muted-foreground block text-[11px]">NAAC Accreditation</span>
               <span className="font-bold text-emerald-600 text-sm">
                 {college.naacGrade ? `Grade ${college.naacGrade}` : "UGC Approved"}
               </span>
-            </div>
+            </div>}
 
-            <div className="p-3.5 rounded-xl bg-muted/30 border">
+            {college.estYear && <div className="p-3.5 rounded-xl bg-muted/30 border">
               <span className="text-muted-foreground block text-[11px]">Established Year</span>
               <span className="font-bold text-foreground text-sm">
                 {college.estYear ? `Year ${college.estYear}` : "Established Institution"}
               </span>
-            </div>
+            </div>}
 
-            <div className="p-3.5 rounded-xl bg-muted/30 border">
+            {college.campusAreaAcres && <div className="p-3.5 rounded-xl bg-muted/30 border">
               <span className="text-muted-foreground block text-[11px]">Campus Size</span>
               <span className="font-bold text-foreground text-sm">
                 {college.campusAreaAcres ? `${college.campusAreaAcres} Acres` : "Sprawling Campus"}
               </span>
-            </div>
+            </div>}
 
-            <div className="p-3.5 rounded-xl bg-muted/30 border">
+            {college.approvedBy.length > 0 && <div className="p-3.5 rounded-xl bg-muted/30 border">
               <span className="text-muted-foreground block text-[11px]">Approved By</span>
               <span className="font-bold text-foreground text-sm truncate block" title={college.approvedBy.join(", ")}>
                 {college.approvedBy.length > 0 ? college.approvedBy.join(", ") : "AICTE, UGC, MHRD"}
               </span>
-            </div>
+            </div>}
           </div>
 
           {college.affiliatedTo && (
@@ -407,7 +396,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               ) : (
                 <div className="text-muted-foreground space-y-1.5 text-[11px]">
                   <p>
-                    On-campus residential facilities are available for both male and female students with furnished rooms, Wi-Fi access, 24x7 security, and hygienic mess dining.
+                    Contact the college for accommodation availability, room types and current charges.
                   </p>
                   <p className="text-[10px] text-muted-foreground italic">
                     Hostel charges vary by room sharing type (Single, Double, or Triple occupancy). Inquire for current availability.
@@ -430,10 +419,10 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               ) : (
                 <div className="text-muted-foreground space-y-1.5 text-[11px]">
                   <p>
-                    Merit-cum-means scholarships, national scholarship portal (NSP) schemes, and tuition fee waivers for SC/ST/EWS students are applicable as per government regulations.
+                    Check official scholarship notices for current eligibility, award terms and application dates.
                   </p>
                   <p className="text-[10px] text-muted-foreground italic">
-                    Deserving students with top entrance test scores can apply for institutional scholarships at the time of admission.
+                    Confirm available financial support directly with the institution.
                   </p>
                 </div>
               )}
@@ -442,7 +431,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
         </section>
 
         {/* SECTION 7: CAMPUS INFRASTRUCTURE & FACILITIES */}
-        <section className="bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+        {facilities.length > 0 && <section className="bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
           <h2 className="text-base sm:text-lg font-extrabold text-foreground flex items-center gap-2 border-b pb-3">
             <Layers className="w-4 h-4 text-primary" />
             <span>Campus Infrastructure &amp; Student Amenities</span>
@@ -459,7 +448,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               </div>
             ))}
           </div>
-        </section>
+        </section>}
 
         {/* SECTION 8: CAMPUS GALLERY PREVIEW */}
         <section className="bg-card border rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
@@ -512,7 +501,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
                       <MapPin className="w-3 h-3" /> {rel.city}, {rel.state}
                     </p>
                     <span className="text-[10px] font-bold text-amber-600 block">
-                      {rel.nirfRank ? `NIRF #${rel.nirfRank}` : "NAAC Accredited"}
+                      {rel.nirfRank ? `NIRF #${rel.nirfRank}` : rel.naacGrade ? `NAAC ${rel.naacGrade}` : "College profile"}
                     </span>
                   </div>
 
@@ -540,13 +529,13 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
         <div className="bg-card border-2 border-primary/20 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase">
-              <Sparkles className="w-3 h-3" /> Admissions Open 2026
+              <Sparkles className="w-3 h-3" /> Admissions enquiry
             </span>
             <h3 className="font-extrabold text-base text-foreground">
               Interested in {college.shortName || college.name}?
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Submit your direct 3-field application to connect with an official admissions counselor.
+              Request information about programmes and admission requirements.
             </p>
           </div>
 
@@ -593,10 +582,10 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               </div>
               <div>
                 <h3 className="font-bold text-sm text-foreground">
-                  Audited Placements ({latestPlacement.batchYear})
+                  Placements ({latestPlacement.batchYear})
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  Placement Rate: {latestPlacement.placementPercentage}%
+                  Placement Rate: {latestPlacement.placementPercentage == null ? "Not reported" : `${latestPlacement.placementPercentage}%`}
                 </p>
               </div>
             </div>

@@ -45,7 +45,6 @@ export function RichBlogEditor({ value, onChange, onBusyChange }: {
   const [dialog, setDialog] = useState<"link" | "images" | null>(null);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkText, setLinkText] = useState("");
-  const [imageUrls, setImageUrls] = useState("");
   const [imageAlt, setImageAlt] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -83,8 +82,8 @@ export function RichBlogEditor({ value, onChange, onBusyChange }: {
   }
   async function uploadPictures() {
     if (!files.length || uploading) return;
-    if (files.length > 10 || files.some(file => file.size > 5 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type))) {
-      setError("Choose up to 10 JPEG, PNG, GIF or WebP pictures, each 5 MB or smaller."); return;
+    if (files.length > 10 || files.some(file => file.size > 3 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type))) {
+      setError("Choose up to 10 JPEG, PNG, GIF or WebP pictures, each 3 MB or smaller."); return;
     }
     setUploading(true); onBusyChange(true); setError("");
     const nodes: JSONContent[] = [], failed: File[] = [];
@@ -151,18 +150,10 @@ export function RichBlogEditor({ value, onChange, onBusyChange }: {
           <div className="space-y-2 rounded-lg border p-3">
             <label className="block text-sm font-semibold" htmlFor="article-pictures">Upload from your computer</label>
             <input id="article-pictures" type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" disabled={uploading} onChange={event => { setFiles(Array.from(event.target.files || [])); setError(""); }} className="max-w-full text-sm" />
-            <p className="text-xs text-muted-foreground">Up to 10 pictures at once, each 5 MB or smaller.</p>
+            <p className="text-xs text-muted-foreground">Up to 10 pictures at once, each 3 MB or smaller.</p>
             <button type="button" disabled={uploading || !files.length} onClick={uploadPictures} className="rounded-lg bg-primary px-4 py-2 text-primary-foreground text-sm font-semibold disabled:opacity-50">{uploading ? "Uploading pictures…" : `Upload & insert${files.length ? ` (${files.length})` : ""}`}</button>
           </div>
-          <div className="space-y-2 rounded-lg border p-3">
-            <label className="block text-sm font-semibold" htmlFor="article-image-urls">Or use picture URLs (one per line)</label>
-            <textarea id="article-image-urls" rows={3} disabled={uploading} value={imageUrls} onChange={event => setImageUrls(event.target.value)} placeholder="https://example.com/photo.jpg" className="w-full rounded-lg border p-2 text-sm" />
-            <button type="button" disabled={uploading} onClick={() => {
-              const urls = imageUrls.split("\n").map(url => url.trim()).filter(Boolean);
-              if (!urls.length || urls.length > 10 || urls.some(url => !validLink(url, true))) { setError("Enter up to 10 valid picture URLs, one per line."); return; }
-              insertImages(urls.map(src => ({ type: "image", attrs: { src, alt: imageAlt.trim() || "Blog picture" } }))); setImageUrls(""); setDialog(null);
-            }} className="rounded-lg border px-4 py-2 text-sm font-semibold">Insert picture URLs</button>
-          </div>
+
         </div>}
       </section>
     </div>}

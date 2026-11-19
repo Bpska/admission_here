@@ -71,14 +71,14 @@ export function LeadCrmKanban({ initialLeads }: LeadCrmKanbanProps) {
   return (
     <div className="space-y-6">
       {/* Kanban Board Container */}
-      <div className="flex gap-4 overflow-x-auto pb-6 touch-scroll scrollbar-none">
+      <div aria-label="Lead pipeline; scroll horizontally to view stages" tabIndex={0} className="flex max-w-full gap-4 overflow-x-auto pb-6 touch-scroll">
         {stages.map((stage) => {
           const stageLeads = leads.filter((l) => l.status === stage.key);
 
           return (
             <div
               key={stage.key}
-              className={`w-72 shrink-0 bg-muted/40 rounded-xl border-t-4 ${stage.color} border-x border-b p-3 flex flex-col max-h-[75vh]`}
+              className={`w-[min(18rem,calc(100vw-3rem))] sm:w-72 shrink-0 bg-muted/40 rounded-xl border-t-4 ${stage.color} border-x border-b p-3 flex flex-col max-h-[75vh]`}
             >
               <div className="flex items-center justify-between mb-3 px-1">
                 <span className="font-bold text-xs text-foreground">{stage.label}</span>

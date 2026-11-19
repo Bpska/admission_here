@@ -42,8 +42,8 @@ const navItems = [
   { label: "Enquiries Desk",     href: "/admin/enquiries",    icon: MailCheck,        permission: "leads"      as const },
   { label: "B2B Student Leads",  href: "/admin/leads",        icon: Contact2,         permission: "leads"      as const },
   { label: "Entrance Exams",     href: "/admin/exams",        icon: BookOpen,         permission: "exams"      as const },
-  { label: "Editorial Blog CMS", href: "/admin/blogs",        icon: FileText,         permission: "blogs"      as const },
-  { label: "My Blog Desk",       href: "/admin/staff-blogs",  icon: FileText,         permission: "blogs-staff" as any },
+  { label: "Blogs", href: "/admin/blogs", icon: FileText, permission: "blogs" as const },
+  { label: "Blogs",       href: "/admin/staff-blogs",  icon: FileText,         permission: "blogs-staff" as any },
   { label: "Review Moderation",  href: "/admin/reviews",      icon: MessageSquare,    permission: "reviews"    as const },
   { label: "SEO & GEO Engine",   href: "/admin/seo-geo",      icon: Globe2,           permission: "seo-geo"    as const },
   { label: "User & Role Access", href: "/admin/users",        icon: Users,            permission: "users"      as const },
@@ -56,6 +56,7 @@ interface AdminSidebarProps {
   userName?: string;
   userEmail?: string;
   onClose?: () => void;
+  onNavigate?: () => void;
 }
 
 export function AdminSidebar({
@@ -64,6 +65,7 @@ export function AdminSidebar({
   userName = "Super Administrator",
   userEmail = "superadmin@admissionhere.in",
   onClose,
+  onNavigate,
 }: AdminSidebarProps) {
   const pathname = usePathname();
 
@@ -81,20 +83,21 @@ export function AdminSidebar({
   // If STAFF has blogs permission, inject "My Blog Desk" instead of the full CMS link
   const blogsDeskItem =
     role !== "SUPER_ADMIN" && permissions.includes("blogs")
-      ? { label: "My Blog Desk", href: "/admin/staff-blogs", icon: FileText, permission: "blogs-staff" as any }
+      ? { label: "Blogs", href: "/admin/staff-blogs", icon: FileText, permission: "blogs-staff" as any }
       : null;
 
   return (
     <aside
+      aria-label="Admin sidebar"
       className="w-full h-full flex flex-col justify-between shrink-0 overflow-y-auto overscroll-contain"
       style={{ background: "linear-gradient(180deg, #0f1f4a 0%, #1a3068 100%)" }}
     >
       <div className="space-y-4 pt-4">
-        {/* Brand Logo & Close Button (for mobile) */}
+        {/* Brand and sidebar close control */}
         <div className="flex items-center justify-between px-4 pb-2 border-b border-white/10">
           <Link
-            href="/"
-            onClick={onClose}
+            href="/admin"
+            onClick={onNavigate}
             className="flex items-center gap-2"
           >
             <div className="bg-white rounded-lg p-1.5">
@@ -110,6 +113,7 @@ export function AdminSidebar({
 
           {onClose && (
             <button
+              type="button"
               onClick={onClose}
               className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/10"
               aria-label="Close sidebar"
@@ -147,13 +151,13 @@ export function AdminSidebar({
                 key={item.href}
                 href={item.href}
                 prefetch={true}
-                onClick={onClose}
+                onClick={onNavigate}
+                aria-current={isActive ? "page" : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
                   isActive
-                    ? "text-white shadow-lg"
+                    ? "bg-sky-400/20 text-sky-100 ring-1 ring-inset ring-sky-300/30"
                     : "text-blue-200/80 hover:text-white hover:bg-white/10"
                 }`}
-                style={isActive ? { background: "rgba(196,30,30,0.85)" } : {}}
               >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span>{item.label}</span>
@@ -167,8 +171,7 @@ export function AdminSidebar({
       <div className="border-t border-white/10 p-4 space-y-3">
         <div className="flex items-center gap-2.5">
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-            style={{ background: "#c41e1e" }}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-sky-100 shrink-0 bg-sky-400/20 ring-1 ring-sky-300/25"
           >
             {userName.charAt(0).toUpperCase()}
           </div>
@@ -177,14 +180,6 @@ export function AdminSidebar({
             <p className="text-[10px] text-blue-300 truncate">{userEmail}</p>
           </div>
         </div>
-        <Link
-          href="/"
-          onClick={onClose}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-200 hover:bg-white/10 hover:text-white transition-colors"
-        >
-          <LogOut className="w-4 h-4 shrink-0" />
-          <span>Exit to Student Portal</span>
-        </Link>
         <button type="button" onClick={() => signOut({ callbackUrl: "/login" })} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-xs text-blue-200 hover:bg-white/10 hover:text-white">
           <LogOut className="w-4 h-4" />Sign out
         </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
@@ -15,8 +15,18 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [savePassword, setSavePassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Remove credentials saved by the retired remember-login feature.
+    try {
+      localStorage.removeItem("admissionhere_saved_accounts");
+    } catch {
+      // Login still works when browser storage is unavailable.
+    }
+  }, []);
 
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -36,6 +46,23 @@ function LoginForm() {
         const response = await fetch("/api/auth/session", { cache: "no-store" });
         const session = await response.json();
         if (!session?.user) throw new Error("Sign-in could not be completed.");
+        if (savePassword) {
+          // Let the browser manage credentials; never write passwords to app storage.
+          const PasswordCredential = (window as unknown as {
+            PasswordCredential?: new (data: { id: string; password: string; name?: string }) => Credential;
+          }).PasswordCredential;
+          if (window.isSecureContext && PasswordCredential && navigator.credentials?.store) {
+            try {
+              await navigator.credentials.store(new PasswordCredential({
+                id: email,
+                password,
+                name: session.user.name || email,
+              }));
+            } catch {
+              // Browser settings may decline saving; successful login continues.
+            }
+          }
+        }
         router.replace(portalDestination(session.user.role, session.user.managedCollegeId, callbackUrl));
         router.refresh();
       }
@@ -70,14 +97,17 @@ function LoginForm() {
         </div>
       )}
 
-      <form onSubmit={handleLogin} className="space-y-4">
+      <form onSubmit={handleLogin} autoComplete={savePassword ? "on" : "off"} className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-muted-foreground mb-1">
+          <label htmlFor="login-email" className="block text-xs font-semibold text-muted-foreground mb-1">
             Email Address
           </label>
           <div className="relative">
             <Mail className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
             <input
+              id="login-email"
+              name="email"
+              autoComplete={savePassword ? "username" : "off"}
               type="email"
               required
               value={email}
@@ -89,12 +119,15 @@ function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-muted-foreground mb-1">
+          <label htmlFor="login-password" className="block text-xs font-semibold text-muted-foreground mb-1">
             Password
           </label>
           <div className="relative">
             <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
             <input
+              id="login-password"
+              name="password"
+              autoComplete={savePassword ? "current-password" : "off"}
               type="password"
               required
               value={password}
@@ -103,6 +136,21 @@ function LoginForm() {
               className="w-full pl-9 pr-3 py-2 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
             />
           </div>
+        </div>
+
+        <div className="space-y-1">
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
+            <input
+              type="checkbox"
+              checked={savePassword}
+              onChange={(event) => setSavePassword(event.target.checked)}
+              className="rounded border-input accent-primary"
+            />
+            Save password in this browser
+          </label>
+          <p className="text-xs text-muted-foreground">
+            Your browser’s password manager controls saving and autofill. Availability depends on your browser settings.
+          </p>
         </div>
 
         <button

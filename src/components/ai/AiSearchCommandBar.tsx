@@ -1,173 +1,30 @@
 "use client";
-
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useId } from "react";
+import Link from "next/link";
 import { useScrollLock } from "@/hooks/useScrollLock";
+import { useSearchSuggestions } from "@/hooks/useSearchSuggestions";
 import { useRouter } from "next/navigation";
-import { Search, Sparkles, Building2, ExternalLink, X, MapPin, Award } from "lucide-react";
-import type { HybridSearchResult } from "@/lib/db/hybrid-search";
-
-interface AiSearchCommandBarProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
+import { Search, Building2, FileText, X } from "lucide-react";
+interface AiSearchCommandBarProps { open: boolean; onOpenChange: (open: boolean) => void }
 export function AiSearchCommandBar({ open, onOpenChange }: AiSearchCommandBarProps) {
   useScrollLock(open);
-  const router = useRouter();
-  const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<HybridSearchResult[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        onOpenChange(!open);
-      }
-      if (e.key === "Escape" && open) {
-        onOpenChange(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onOpenChange]);
-
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 50);
-    } else {
-      setQuery("");
-      setResults([]);
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      setLoading(false);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/v1/search/hybrid?q=${encodeURIComponent(query)}&limit=8`);
-        if (res.ok) {
-          const json = await res.json();
-          setResults(json.data || []);
-        }
-      } catch (err) {
-        console.error("Search fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [query]);
-
+  const router = useRouter(); const id = useId();
+  const [query, setQuery] = useState(""); const [active, setActive] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null); const dialogRef = useRef<HTMLDivElement>(null);
+  const { results, loading, error } = useSearchSuggestions(query, open);
+  useEffect(() => { const handle = (event: KeyboardEvent) => { if ((event.metaKey || event.ctrlKey) && event.key === "k") { event.preventDefault(); onOpenChange(!open); } if (event.key === "Escape" && open) onOpenChange(false); }; window.addEventListener("keydown", handle); return () => window.removeEventListener("keydown", handle); }, [open, onOpenChange]);
+  useEffect(() => { if (!open) { setQuery(""); return; } const previous = document.activeElement as HTMLElement | null; const timer = setTimeout(() => inputRef.current?.focus(), 0); return () => { clearTimeout(timer); previous?.focus(); }; }, [open]);
+  useEffect(() => setActive(-1), [query, results]);
+  useEffect(() => { if (active >= 0) document.getElementById(`${id}-${active}`)?.scrollIntoView({ block: "nearest" }); }, [active, id]);
   if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-6 sm:pt-20 px-3 sm:px-4">
-      <div className="w-full max-w-2xl bg-background rounded-xl shadow-2xl border overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[85vh] flex flex-col">
-        {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3 border-b gap-3 bg-muted/20 shrink-0">
-          <Search className="w-5 h-5 text-muted-foreground" />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by college name, city, stream, or cutoffs (e.g., IIT Bombay, NIT CSE, Odisha)..."
-            className="flex-1 bg-transparent border-0 outline-hidden text-sm placeholder:text-muted-foreground focus:ring-0"
-          />
-          {loading ? (
-            <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          ) : query ? (
-            <button onClick={() => setQuery("")} className="text-muted-foreground hover:text-foreground">
-              <X className="w-4 h-4" />
-            </button>
-          ) : (
-            <span className="text-[10px] bg-muted px-2 py-0.5 rounded border text-muted-foreground">ESC</span>
-          )}
-        </div>
-
-        {/* Results Container */}
-        <div className="max-h-[60vh] min-h-0 overflow-y-auto overscroll-contain p-2">
-          {results.length > 0 ? (
-            <div className="space-y-1">
-              <div className="px-3 py-1.5 text-xs font-semibold text-muted-foreground flex items-center justify-between">
-                <span>RRF Hybrid Search Results</span>
-                <span className="flex items-center gap-1 text-[11px] text-purple-600 font-normal">
-                  <Sparkles className="w-3 h-3" /> pgvector + tsvector fused
-                </span>
-              </div>
-              {results.map((col) => (
-                <div
-                  key={col.id}
-                  onClick={() => {
-                    onOpenChange(false);
-                    router.push(`/college/${col.slug}`);
-                  }}
-                  className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/70 transition-colors cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-md bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                      <Building2 className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm group-hover:text-primary transition-colors flex items-center gap-2">
-                        {col.name}
-                        {col.nirfRank && (
-                          <span className="text-[10px] font-bold bg-amber-500/15 text-amber-700 px-1.5 py-0.2 rounded flex items-center gap-0.5">
-                            <Award className="w-3 h-3" /> #{col.nirfRank}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-3 mt-0.5">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" /> {col.city}, {col.state}
-                        </span>
-                        <span>•</span>
-                        <span>{col.ownershipType.replace("_", " ")}</span>
-                        <span>•</span>
-                        <span className="text-emerald-600 font-medium">★ {col.ratingOverall} / 5</span>
-                      </div>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              ))}
-            </div>
-          ) : query ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">
-              No matching colleges found for &quot;{query}&quot;. Try searching &quot;IIT&quot;, &quot;NIT&quot;, or &quot;Engineering&quot;.
-            </div>
-          ) : (
-            <div className="p-4 space-y-3">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Quick Suggested Searches
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {["IIT Bombay", "NIT Rourkela", "B.Tech in Odisha", "BITS Pilani", "IIM Ahmedabad", "Computer Science"].map(
-                  (suggestion) => (
-                    <button
-                      key={suggestion}
-                      onClick={() => setQuery(suggestion)}
-                      className="text-xs px-3 py-1.5 rounded-full border bg-muted/40 hover:bg-accent transition-colors cursor-pointer"
-                    >
-                      {suggestion}
-                    </button>
-                  )
-                )}
-              </div>
-            </div>
-          )}
-        </div>
+  return <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 px-3 pt-6 backdrop-blur-xs sm:pt-20" onClick={event => { if (event.target === event.currentTarget) onOpenChange(false); }}>
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Search colleges and blogs" className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border bg-background shadow-2xl" onKeyDown={event => {
+      if (event.key === "Tab") { const elements = dialogRef.current?.querySelectorAll<HTMLElement>('input, button, a[href]'); const first = elements?.[0]; const last = elements?.[elements.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); } }
+    }}>
+      <div className="flex shrink-0 items-center gap-3 border-b bg-muted/20 px-4 py-3"><Search className="h-5 w-5 text-muted-foreground" /><input ref={inputRef} role="combobox" aria-label="Search colleges and blogs" aria-autocomplete="list" aria-controls={id} aria-expanded={results.length > 0} aria-activedescendant={active >= 0 ? `${id}-${active}` : undefined} maxLength={100} autoComplete="off" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === "ArrowDown" && results.length) { event.preventDefault(); setActive(value => (value + 1) % results.length); } if (event.key === "ArrowUp" && results.length) { event.preventDefault(); setActive(value => (value <= 0 ? results.length - 1 : value - 1)); } if (event.key === "Enter" && active >= 0 && results[active]) { event.preventDefault(); onOpenChange(false); router.push(results[active].href); } }} placeholder="Search colleges, cities, courses or blog articles…" className="min-w-0 flex-1 bg-transparent text-sm outline-hidden" /><button type="button" onClick={() => onOpenChange(false)} aria-label="Close search" className="rounded p-1 hover:bg-muted"><X className="h-5 w-5" /></button></div>
+      <div className="max-h-[60vh] overflow-y-auto p-3">
+        {loading ? <p role="status" className="p-4 text-sm text-muted-foreground">Finding suggestions…</p> : error ? <p role="alert" className="p-4 text-sm text-muted-foreground">Suggestions are unavailable. Please try again.</p> : query.trim().length >= 2 ? results.length ? <ul id={id} role="listbox" aria-label="Search suggestions" className="space-y-1">{results.map((result, index) => <li id={`${id}-${index}`} role="option" aria-selected={active === index} key={`${result.type}-${result.id}`}><Link href={result.href} onClick={() => onOpenChange(false)} onMouseEnter={() => setActive(index)} className={`flex items-start gap-3 rounded-lg p-3 hover:bg-muted ${active === index ? "bg-muted" : ""}`}>{result.type === "college" ? <Building2 className="mt-1 h-5 w-5 shrink-0 text-primary" /> : <FileText className="mt-1 h-5 w-5 shrink-0 text-primary" />}<span><span className="block text-sm font-semibold">{result.title}</span><span className="mt-1 block text-xs text-muted-foreground">{result.type === "college" ? "College" : "Blog"} · {result.subtitle}</span></span></Link></li>)}</ul> : <p role="status" className="p-4 text-sm text-muted-foreground">No matching colleges or articles. Try a different search.</p> : <p className="p-4 text-sm text-muted-foreground">Type at least two characters to see college and blog suggestions. Use ↑ ↓ and Enter to select a result.</p>}
       </div>
     </div>
-  );
+  </div>;
 }
-

@@ -1,0 +1,53 @@
+import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
+import { PrismaClient } from "@prisma/client";
+import { encode } from "next-auth/jwt";
+const db = new PrismaClient();
+const base = "http://localhost:3000";
+async function main() {
+  const author = await db.user.findFirstOrThrow({ where: { role: "SUPER_ADMIN", isActive: true } });
+  const marker = `qa-engagement-${randomUUID()}`;
+  const post = await db.blogPost.create({ data: { slug: marker, title: marker, contentMdx: "<p>Engagement verification article.</p>", authorId: author.id, category: "CAREER_GUIDE", status: "DRAFT" } });
+  const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET; assert.ok(secret);
+  const token = await encode({ token: { id: author.id, sub: author.id, email: author.email, role: "SUPER_ADMIN" }, secret, salt: "authjs.session-token", maxAge: 180 });
+  const endpoint = `${base}/api/v1/blogs/${post.id}/engagement`;
+  const adminEndpoint = `${base}/api/v1/cms/blogs/${post.id}/engagement`;
+  let cookie = "";
+  const read = async () => { const response = await fetch(endpoint, { headers: cookie ? { Cookie: cookie } : {} }); const setCookie = response.headers.get("set-cookie"); if (setCookie) cookie = setCookie.split(";")[0]; return { status: response.status, data: await response.json() }; };
+  const send = async (data: object, admin = false) => { const response = await fetch(admin ? adminEndpoint : endpoint, { method: "POST", headers: { "Content-Type": "application/json", Cookie: admin ? `authjs.session-token=${token}` : cookie }, body: JSON.stringify(data) }); return { status: response.status, data: await response.json() }; };
+  try {
+    assert.equal((await read()).status, 404, "Draft engagement is private");
+    await db.blogPost.update({ where: { id: post.id }, data: { status: "PUBLISHED", publishedAt: new Date() } });
+    assert.equal((await read()).data.likes, 0);
+    const article = await fetch(`${base}/blog/${post.slug}`);
+    const initialHtml = await article.text();
+    assert.equal(article.status, 200);
+    assert.ok(initialHtml.includes('id="blog-comments"'));
+    assert.ok(initialHtml.includes("Submit comment"), "Comments are present in the initial article HTML");
+    const likes = await Promise.all(Array.from({ length: 4 }, () => send({ action: "like", liked: true })));
+    assert.ok(likes.every(result => result.status === 200)); assert.equal((await read()).data.likes, 1, "Concurrent repeat likes are deduplicated");
+    assert.equal((await read()).data.liked, true);
+    await send({ action: "like", liked: false }); assert.equal((await read()).data.likes, 0);
+    assert.equal((await send({ action: "comment", name: "A", body: "" })).status, 400);
+    assert.equal((await send({ action: "comment", name: "Reader", body: "<script>alert('text only')</script>" })).status, 200);
+    const comment = await db.blogComment.findFirstOrThrow({ where: { blogId: post.id } });
+    assert.equal(comment.status, "APPROVED"); assert.equal((await read()).data.comments.length, 1, "Reader comments publish immediately");
+    assert.equal((await send({ action: "moderate", commentId: comment.id, status: "APPROVED" })).status, 400);
+    assert.equal((await fetch(adminEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "clearLikes" }) })).status, 403);
+    assert.equal((await send({ action: "moderate", commentId: comment.id, status: "APPROVED" }, true)).status, 200);
+    const approved = (await read()).data; assert.equal(approved.commentCount, 1); assert.equal(approved.comments[0].body, comment.body); assert.ok(!("visitorHash" in approved.comments[0]));
+    await send({ action: "moderate", commentId: comment.id, status: "REJECTED" }, true); assert.equal((await read()).data.comments.length, 0);
+    const submissions = await Promise.all(Array.from({ length: 6 }, (_, index) => send({ action: "comment", name: "Reader", body: `Another comment ${index}` })));
+    assert.equal(submissions.filter(result => result.status === 200).length, 4); assert.equal(submissions.filter(result => result.status === 429).length, 2);
+    await send({ action: "settings", likesEnabled: false, commentsEnabled: false }, true);
+    assert.equal((await send({ action: "like", liked: true })).status, 403); assert.equal((await send({ action: "comment", name: "Reader", body: "Closed comment" })).status, 403);
+    assert.equal((await read()).data.commentsEnabled, false);
+    await send({ action: "settings", likesEnabled: true, commentsEnabled: true }, true);
+    await send({ action: "like", liked: true }); await send({ action: "clearLikes" }, true); assert.equal((await read()).data.likes, 0);
+    const page = await fetch(`${base}/admin/blogs/${post.id}/engagement`, { headers: { Cookie: `authjs.session-token=${token}` } }); assert.equal(page.status, 200); assert.ok((await page.text()).includes("Comment moderation"));
+    await send({ action: "delete", commentId: comment.id }, true); assert.equal(await db.blogComment.count({ where: { id: comment.id } }), 0);
+    await db.blogPost.delete({ where: { id: post.id } }); assert.equal(await db.blogComment.count({ where: { blogId: post.id } }), 0); assert.equal(await db.blogLike.count({ where: { blogId: post.id } }), 0);
+    console.log("Blog engagement passed: private drafts, deduplicated likes/unlike, immediate public comments, moderation, authorization, disabled features, rate limits, admin page and cascade cleanup.");
+  } finally { await db.blogPost.deleteMany({ where: { id: post.id } }); }
+}
+main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => db.$disconnect());

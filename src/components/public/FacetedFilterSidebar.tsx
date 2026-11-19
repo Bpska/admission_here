@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter, RotateCcw, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
 
 interface FacetedFilterSidebarProps {
@@ -10,10 +10,12 @@ interface FacetedFilterSidebarProps {
 }
 
 export function FacetedFilterSidebar({
-  availableStreams = ["Engineering", "Management", "Medical", "Law"],
+  availableStreams = ["Engineering", "Management", "Computer Applications", "MCA", "MBA", "BBA", "BCA", "Diploma", "Medical", "Law"],
   availableStates = ["Odisha", "Maharashtra", "Delhi", "Rajasthan", "Gujarat"],
 }: FacetedFilterSidebarProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const directoryPath = pathname.startsWith("/colleges/sections/") ? pathname : "/colleges";
   const searchParams = useSearchParams();
   const [mobileExpanded, setMobileExpanded] = useState(false);
 
@@ -29,11 +31,11 @@ export function FacetedFilterSidebar({
     } else {
       params.delete(key);
     }
-    router.push(`/colleges?${params.toString()}`);
+    router.push(`${directoryPath}?${params.toString()}`);
   };
 
   const clearFilters = () => {
-    router.push("/colleges");
+    router.push(directoryPath);
   };
 
   const activeFilterCount = [currentStream, currentState, currentOwnership, currentMaxFees].filter(Boolean).length;

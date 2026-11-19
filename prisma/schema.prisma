@@ -207,7 +207,7 @@ model Course {
   stream      String          // Engineering, Management, Medical, Law, Architecture, Design
   degree      String          // B.Tech, M.Tech, MBA, MBBS, B.Arch, LLB
   fullName    String
-  durationYrs Float
+  durationYrs Float?
   level       String          // UG, PG, Diploma, Doctoral
   offerings   CollegeCourse[]
 }
@@ -216,8 +216,16 @@ model CollegeCourse {
   id                  String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   collegeId           String       @db.Uuid
   courseId            String       @db.Uuid
+  programOverviewHtml String?      @db.Text
+  programAdmissionHtml String?     @db.Text
+  programPlacementHtml String?     @db.Text
   specialization      String       // e.g., "Computer Science & Engineering (AI & ML)"
-  totalFeesInr        Int          // Total tuition fee in INR for range filtering
+  totalFeesInr        Int?         // Total tuition fee in INR for range filtering
+  publishedFeeInr     Int?
+  publishedCreditFeeInr Int?
+  feeBasis            String?
+  feeAcademicYear     String?
+  feeSourceUrl        String?
   firstYearFeesInr    Int?
   hostelFeesYearlyInr Int?
   intakeSeats         Int?
@@ -273,11 +281,14 @@ model PlacementStat {
   id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   collegeId           String   @db.Uuid
   batchYear           Int
-  highestPackageInr   BigInt
-  averagePackageInr   BigInt
-  medianPackageInr    BigInt
-  placementPercentage Float
+  highestPackageInr   BigInt?
+  averagePackageInr   BigInt?
+  medianPackageInr    BigInt?
+  placementPercentage Float?
+  sourceUrl           String?
+  sourceNote          String?
   totalOffers         Int?
+  photoUrls           String[] @default([])
   topRecruiters       String[] // ["TCS", "Microsoft", "Deloitte", "Amazon"]
 
   college             College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
@@ -346,6 +357,9 @@ model BlogPost {
   category         BlogCategory
   tags             String[]
   status           PostStatus   @default(DRAFT)
+  showOnWebsiteBlog Boolean     @default(true)
+  likesEnabled     Boolean      @default(true)
+  commentsEnabled  Boolean      @default(true)
   isLiveBlog       Boolean      @default(false)
   liveUpdatesJson  Json?        // Array of { id, timestamp, headline, bodyHtml, isPinned }
   faqsJson         Json?        // Array of { question, answer } for FAQPage JSON-LD
@@ -363,6 +377,10 @@ model BlogPost {
   relatedCollege   College?     @relation(fields: [relatedCollegeId], references: [id], onDelete: SetNull)
   relatedExam      Exam?        @relation(fields: [relatedExamId], references: [id], onDelete: SetNull)
   generatedLeads   Lead[]
+  visits           BlogVisit[]
+  qualifiedViews   BlogQualifiedView[]
+  likes            BlogLike[]
+  comments         BlogComment[]
 
   @@index([status, category, publishedAt(sort: Desc)])
 }
@@ -402,3 +420,56 @@ model Lead {
   @@index([sourceBlogId, ctaType])
 }
 
+
+// Reusable custom navbar filters; public only while a published college uses them.
+model NavbarFilter {
+  id        String   @id
+  slug      String   @unique
+  label     String
+  category  String
+  section   String
+  createdAt DateTime @default(now())
+}
+
+// Anonymous browser-level readership; no names, email addresses or IP addresses.
+model BlogVisit {
+  blogId      String   @db.Uuid
+  visitorHash String   @db.VarChar(64)
+  viewCount   Int      @default(1)
+  firstSeenAt DateTime @default(now())
+  lastViewAt  DateTime @default(now())
+  blog        BlogPost @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@id([blogId, visitorHash])
+  @@index([visitorHash])
+}
+
+model BlogLike {
+  blogId String @db.Uuid
+  visitorHash String @db.VarChar(64)
+  createdAt DateTime @default(now())
+  blog BlogPost @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  @@id([blogId, visitorHash])
+}
+
+model BlogComment {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  blogId String @db.Uuid
+  visitorHash String @db.VarChar(64)
+  name String @db.VarChar(80)
+  body String @db.Text
+  status String @default("APPROVED") @db.VarChar(16)
+  createdAt DateTime @default(now())
+  blog BlogPost @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  @@index([blogId, status, createdAt])
+  @@index([visitorHash, createdAt])
+}
+
+model BlogQualifiedView {
+  id String @id @db.Uuid
+  blogId String @db.Uuid
+  visitorHash String @db.VarChar(64)
+  createdAt DateTime @default(now())
+  blog BlogPost @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  @@index([blogId])
+}

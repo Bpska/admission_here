@@ -1,4 +1,7 @@
+import { canonicalBlogHref } from "@/lib/blog-destination";
+import { programChoices, collegeProgramHref } from "@/lib/college-programs";
 import type { MetadataRoute } from "next";
+import { getCustomNavbarFilters } from "@/lib/custom-navbar-filters";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // College routes + 9 Sub-tabs
   const colleges = await db.college.findMany({
     where: { isPublished: true },
-    select: { slug: true, updatedAt: true },
+    select: { slug: true, updatedAt: true, courses: { select: { course: { select: { degree: true, fullName: true, stream: true } } } } },
   });
 
   const collegeTabs = [
@@ -50,6 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/gallery",
     "/reviews",
     "/qna",
+    "/blogs",
   ];
 
   const collegeRoutes: MetadataRoute.Sitemap = colleges.flatMap((c) => [
@@ -67,18 +71,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ]);
 
+  const programmeRoutes: MetadataRoute.Sitemap = colleges.flatMap(college => programChoices(college.courses).flatMap(program => ["", "courses-fees", "admission", "cutoff", "placements", "rankings", "reviews"].map(tab => ({ url: `${baseUrl}${collegeProgramHref(college.slug, program.key, tab)}`, lastModified: college.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 }))));
+
   // Blog posts
   const blogs = await db.blogPost.findMany({
     where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
+    select: { slug: true, updatedAt: true, showOnWebsiteBlog: true, contentMdx: true, relatedCollegeId: true },
   });
 
-  const blogRoutes: MetadataRoute.Sitemap = blogs.map((b) => ({
-    url: `${baseUrl}/blog/${b.slug}`,
-    lastModified: b.updatedAt,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  const blogRoutes: MetadataRoute.Sitemap = [];
+  for (const blog of blogs) {
+    const href = await canonicalBlogHref(blog);
+    if (href) blogRoutes.push({ url: `${baseUrl}${href}`, lastModified: blog.updatedAt, changeFrequency: "weekly", priority: 0.8 });
+  }
 
   // Exams
   const exams = await db.exam.findMany({
@@ -92,6 +97,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticRoutes, ...collegeRoutes, ...blogRoutes, ...examRoutes];
+  const sectionRoutes: MetadataRoute.Sitemap = (await getCustomNavbarFilters(true)).map(section => ({ url: `${baseUrl}${section.href}`, changeFrequency: "daily", priority: 0.8 }));
+
+  return [...sectionRoutes, ...staticRoutes, ...collegeRoutes, ...programmeRoutes, ...blogRoutes, ...examRoutes];
 }
 

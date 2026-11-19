@@ -25,3 +25,13 @@ export function navbarFilterHref(category: string, column: number, item: SubItem
   if (!filter) return item.href;
   return `${item.href}${item.href.includes("?") ? "&" : "?"}navFilter=${encodeURIComponent(filter.id)}`;
 }
+
+export type NavbarFilterOption = {
+  id: string; category: string; section: string; sectionLabel: string;
+  label: string; href: string; specialization?: string; custom?: boolean;
+};
+
+export function customNavbarPlacement(id: string) {
+  const match = /^custom:(mba|engineering|medical|design|more|study_abroad|counseling):(column_[123]):([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(id);
+  return match ? { id, category: match[1], section: match[2], slug: match[3] } : null;
+}

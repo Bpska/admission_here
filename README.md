@@ -60,26 +60,14 @@ Built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, and **Post
 
 ---
 
-## 🔑 Default Test Credentials & Roles
-
-| Role | Email | Password | Access Level |
-|---|---|---|---|
-| **SUPER_ADMIN** | `superadmin@admissionshub.in` | `Password@123` | Full Admin & Platform Control |
-| **AUTHOR** | `editor@admissionshub.in` | `Password@123` | Blog CMS & Editorial Desk |
-| **COLLEGE_ADMIN** | `admin@iitb.ac.in` | `Password@123` | Partner College Dashboard |
-| **STUDENT** | `student@example.com` | `Password@123` | Student Discovery & Inquiries |
-
----
-
 ## 🏃‍♂️ How to Run
 
 1. **Start PostgreSQL**:
    Ensure PostgreSQL is running on port 5432 with database `admission_db`.
 
-2. **Generate Prisma Client & Seed Data**:
+2. **Generate Prisma Client**:
    ```bash
    npx prisma generate
-   npx tsx prisma/seed.ts
    ```
 
 3. **Start Development Server**:
@@ -94,3 +82,19 @@ Built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, and **Post
    npm run start
    ```
 
+
+Demo seeding is disabled. Create content and manage accounts through the admin dashboard.
+
+### Generate blog drafts from a title
+
+In the blog editor, enter a title and choose **Generate from title**. Preview the result, then choose **Use draft in editor** to insert the article, SEO fields, tags, category, and FAQs. This does not save or publish the article; selected college links and the featured image are retained.
+
+Without an AI key, generation returns a clearly labelled starter draft with topic-specific guidance. To enable AI writing, set `OPENAI_API_KEY` on the server, optionally set `BLOG_DRAFT_MODEL` (default `gpt-4o-mini`), and restart the app. The key is never sent to the browser. Review generated content and verify institution-specific facts before publication.
+
+### Blog view measurement
+
+New article views qualify after 45 seconds of active reading in a visible, focused tab. Background time and time after 60 seconds without reader activity are excluded. A page visit counts once; a return visit can count again after qualifying separately. Signed, time-checked visit tickets and an atomic event record prevent immediate submissions and duplicate retries from inflating counts. Unique visitors continue to use the anonymous signed browser identity. Editorial accounts and common bots are excluded. Existing historical analytics are retained.
+
+### Programme-specific college profiles
+
+Maintain one college with multiple course offerings under **Courses and fees**. Filtered programme results open `/college/<slug>/programs/<degree>`; its tabs retain that programme context. Each offering supports its own overview, admission and placement notes, alongside fees, eligibility and exam cutoffs. General campus information is shared. Missing programme data is shown as unavailable rather than replaced with another programme’s figures. New degree profiles are also added to the sitemap.

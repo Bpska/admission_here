@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS "NavbarFilter" (
+  "id" TEXT PRIMARY KEY,
+  "slug" TEXT NOT NULL UNIQUE,
+  "label" TEXT NOT NULL,
+  "category" TEXT NOT NULL,
+  "section" TEXT NOT NULL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

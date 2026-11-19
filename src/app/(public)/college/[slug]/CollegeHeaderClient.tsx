@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { collegeProgramHref } from "@/lib/college-programs";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { 
   Building2, 
@@ -19,6 +20,7 @@ import { BrochureDownloadModal } from "@/components/public/BrochureDownloadModal
 import { LeadCtaType } from "@prisma/client";
 
 interface CollegeHeaderClientProps {
+  programs?: { key: string; label: string; stream: string }[];
   previewBasePath?: string;
   college: {
     id: string;
@@ -39,11 +41,14 @@ interface CollegeHeaderClientProps {
   };
 }
 
-export function CollegeHeaderClient({ college, previewBasePath }: CollegeHeaderClientProps) {
+export function CollegeHeaderClient({ college, previewBasePath, programs = [] }: CollegeHeaderClientProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const selectedProgramKey = pathname.split("/programs/")[1]?.split("/")[0] || "";
+  const selectedProgram = programs.find(program => program.key === selectedProgramKey);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [brochureModalOpen, setBrochureModalOpen] = useState(false);
-  const basePath = previewBasePath || `/college/${college.slug}`;
+  const basePath = previewBasePath || (selectedProgram ? collegeProgramHref(college.slug, selectedProgram.key) : `/college/${college.slug}`);
 
   const tabs = [
     { label: "Overview", path: `${basePath}` },
@@ -55,18 +60,19 @@ export function CollegeHeaderClient({ college, previewBasePath }: CollegeHeaderC
     { label: "Campus Gallery", path: `${basePath}/gallery` },
     { label: "Reviews", path: `${basePath}/reviews` },
     { label: "Q&A", path: `${basePath}/qna` },
+    { label: "Blogs", path: `${basePath}/blogs` },
   ];
 
   return (
     <>
       <div className="bg-card border-b">
         {/* Cover Banner */}
-        <div className="h-36 sm:h-56 w-full relative overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900">
+        <div className="h-64 sm:h-80 lg:h-[26rem] w-full relative overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900">
           {college.coverImageUrl ? (
             <img
               src={college.coverImageUrl}
               alt={`${college.name} Campus`}
-              className="w-full h-full object-cover opacity-60"
+              className="w-full h-full object-cover object-center"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center opacity-20">
@@ -111,7 +117,7 @@ export function CollegeHeaderClient({ college, previewBasePath }: CollegeHeaderC
                 </div>
 
                 <h1 className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-tight break-words">
-                  {college.name}
+                  {college.name}{selectedProgram ? ` — ${selectedProgram.label}` : ""}
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground pt-0.5">
@@ -153,10 +159,19 @@ export function CollegeHeaderClient({ college, previewBasePath }: CollegeHeaderC
                 style={{ background: "#c41e1e" }}
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>Apply Now 2026</span>
+                <span>{selectedProgram ? `Apply for ${selectedProgram.label}` : "Apply Now 2026"}</span>
               </button>
             </div>
           </div>
+
+          {!previewBasePath && programs.length > 0 && <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border bg-muted/20 p-3">
+            <label htmlFor="college-program" className="text-sm font-semibold">Viewing programme</label>
+            <select id="college-program" value={selectedProgramKey} onChange={event => {
+              const activeTab = tabs.find(tab => tab.path === pathname)?.path.slice(basePath.length).replace(/^\//, "") || "";
+              router.push(event.target.value ? collegeProgramHref(college.slug, event.target.value, activeTab) : `/college/${college.slug}${activeTab ? `/${activeTab}` : ""}`);
+            }} className="rounded-lg border bg-background px-3 py-2 text-sm"><option value="">All programmes / College profile</option>{programs.map(program => <option key={program.key} value={program.key}>{program.label}</option>)}</select>
+            {selectedProgram && <p className="text-xs text-muted-foreground">Fees, eligibility, admission and cutoffs are specific to {selectedProgram.label}. Campus information is shared.</p>}
+          </div>}
 
           {/* Sticky 9 Sub-Tabs with Smooth Horizontal Touch Scroll */}
           <div className="flex gap-2 overflow-x-auto border-t py-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none touch-scroll">
@@ -206,6 +221,9 @@ export function CollegeHeaderClient({ college, previewBasePath }: CollegeHeaderC
 
       {/* 3-Field Direct Apply Form */}
       <LeadCaptureModal
+        key={selectedProgram?.key || "all"}
+        defaultStream={selectedProgram?.stream}
+        defaultCourse={selectedProgram?.label}
         open={applyModalOpen}
         onClose={() => setApplyModalOpen(false)}
         collegeId={college.id}

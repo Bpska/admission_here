@@ -15,7 +15,7 @@ export const metadata = constructSeoMetadata({
 
 export default async function BlogHubPage() {
   const posts = await db.blogPost.findMany({
-    where: { status: "PUBLISHED" },
+    where: { status: "PUBLISHED", showOnWebsiteBlog: true },
     orderBy: { publishedAt: "desc" },
     include: {
       author: { select: { name: true } },

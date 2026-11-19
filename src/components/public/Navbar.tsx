@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { CATEGORIES } from "@/lib/navbar-items";
-import { navbarFilterHref } from "@/lib/navbar-filters";
+import { CATEGORIES, type SubItem } from "@/lib/navbar-items";
+import { navbarFilterHref, type NavbarFilterOption } from "@/lib/navbar-filters";
 import { useState, useEffect, useRef } from "react";
 import { 
   Search, 
@@ -25,7 +25,8 @@ import {
 import { AiCounselorDrawer } from "../ai/AiCounselorDrawer";
 import { AiSearchCommandBar } from "../ai/AiSearchCommandBar";
 
-export function Navbar() {
+export function Navbar({ customFilters = [] }: { customFilters?: NavbarFilterOption[] }) {
+  const categories = CATEGORIES.map(category => ({ ...category, columns: category.columns.map((column, index) => ({ ...column, items: [...column.items, ...customFilters.filter(item => item.category === category.key && item.section === `column_${index + 1}`).map((item): SubItem => ({ label: item.label, href: item.href }))] })) }));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [counselorOpen, setCounselorOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -34,7 +35,7 @@ export function Navbar() {
   const [activeCategoryKey, setActiveCategoryKey] = useState<string | null>(null);
   const [mobileOpenCategory, setMobileOpenCategory] = useState<string | null>(null);
 
-  const activeCategory = CATEGORIES.find((c) => c.key === activeCategoryKey);
+  const activeCategory = categories.find((c) => c.key === activeCategoryKey);
 
   const navBarRef = useRef<HTMLDivElement>(null);
 
@@ -81,12 +82,12 @@ export function Navbar() {
             <div className="hidden md:flex flex-1 max-w-xl mx-4">
               <button
                 onClick={() => setSearchOpen(true)}
-                aria-label="Search colleges, exams, courses"
+                aria-label="Search colleges and blogs"
                 className="w-full flex items-center justify-between px-4 py-2 text-xs text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-full transition-all cursor-pointer shadow-2xs"
               >
                 <div className="flex items-center gap-2.5">
                   <Search className="w-4 h-4 text-slate-400" />
-                  <span>Search for colleges, exams, courses, degrees...</span>
+                  <span>Search colleges, courses and blog articles...</span>
                 </div>
                 <kbd className="px-2 py-0.5 text-[10px] bg-white border rounded text-slate-500 font-mono shadow-2xs">
                   ⌘K
@@ -144,7 +145,7 @@ export function Navbar() {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav className="flex items-center gap-0.5 lg:gap-1">
-              {CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const isActive = activeCategoryKey === cat.key;
                 return (
                   <div 
@@ -241,7 +242,7 @@ export function Navbar() {
             </div>
 
             <div className="space-y-1">
-              {CATEGORIES.map((cat) => {
+              {categories.map((cat) => {
                 const isOpen = mobileOpenCategory === cat.key;
                 return (
                   <div key={cat.key} className="rounded-xl border border-slate-200 overflow-hidden bg-slate-50">

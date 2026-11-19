@@ -5,7 +5,6 @@ import { CheckCircle2, XCircle, Sparkles, Globe, Cpu } from "lucide-react";
 interface SeoGeoChecklistProps {
   metaTitle: string;
   metaDescription: string;
-  tldrBullets: string[];
   contentLength: number;
   hasShortcodes: boolean;
 }
@@ -13,13 +12,11 @@ interface SeoGeoChecklistProps {
 export function SeoGeoChecklist({
   metaTitle,
   metaDescription,
-  tldrBullets,
   contentLength,
   hasShortcodes,
 }: SeoGeoChecklistProps) {
   const isTitleOptimal = metaTitle.length >= 50 && metaTitle.length <= 65;
   const isDescOptimal = metaDescription.length >= 135 && metaDescription.length <= 165;
-  const hasTldrBox = tldrBullets.length >= 3;
   const isContentDetailed = contentLength > 800;
 
   let score = 0;
@@ -29,9 +26,10 @@ export function SeoGeoChecklist({
   if (isDescOptimal) score += 20;
   else if (metaDescription.length > 50) score += 10;
 
-  if (hasTldrBox) score += 25;
   if (hasShortcodes) score += 15;
   if (isContentDetailed) score += 20;
+
+  score = Math.round(score / 75 * 100);
 
   const getScoreColor = () => {
     if (score >= 80) return "text-emerald-600";
@@ -73,20 +71,6 @@ export function SeoGeoChecklist({
           <div>
             <span className="font-semibold text-foreground">SERP Meta Snippet (135-165 chars)</span>
             <p className="text-[11px] text-muted-foreground">Current: {metaDescription.length} chars</p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-2">
-          {hasTldrBox ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-          ) : (
-            <XCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-          )}
-          <div>
-            <span className="font-semibold text-foreground">GEO 4-Bullet Answer Box</span>
-            <p className="text-[11px] text-muted-foreground">
-              Required for LLM answer engines (Perplexity / ChatGPT citation)
-            </p>
           </div>
         </div>
 

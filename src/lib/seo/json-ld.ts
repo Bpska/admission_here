@@ -57,8 +57,8 @@ export interface CourseJsonLdParams {
   courseName: string;
   degree: string;
   collegeName: string;
-  totalFeesInr: number;
-  durationYrs: number;
+  totalFeesInr: number | null;
+  durationYrs: number | null;
   slug: string;
 }
 
@@ -67,22 +67,23 @@ export function generateCourseJsonLd(params: CourseJsonLdParams) {
     "@context": "https://schema.org",
     "@type": "Course",
     name: `${params.degree} in ${params.courseName}`,
-    description: `${params.degree} program offered at ${params.collegeName} with a duration of ${params.durationYrs} years.`,
+    description: `${params.degree} program offered at ${params.collegeName} ${params.durationYrs ? `with a duration of ${params.durationYrs} years` : ""}.`,
     provider: {
       "@type": "CollegeOrUniversity",
       name: params.collegeName,
     },
-    offers: {
+    ...(params.totalFeesInr == null ? {} : { offers: {
       "@type": "Offer",
       price: params.totalFeesInr,
       priceCurrency: "INR",
       category: "Tuition",
-    },
-    timeRequired: `P${params.durationYrs}Y`,
+    } }),
+    ...(params.durationYrs ? { timeRequired: `P${params.durationYrs}Y` } : {}),
   };
 }
 
 export interface NewsArticleJsonLdParams {
+  canonicalPath?: string;
   title: string;
   slug: string;
   metaDescription?: string | null;
@@ -115,7 +116,7 @@ export function generateNewsArticleJsonLd(params: NewsArticleJsonLdParams) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${BASE_URL}/blog/${params.slug}`,
+      "@id": `${BASE_URL}${params.canonicalPath || `/blog/${params.slug}`}`,
     },
   };
 }

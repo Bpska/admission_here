@@ -7,6 +7,10 @@ import Link from "next/link";
 
 interface Props {
   post: {
+    likesEnabled: boolean;
+    commentsEnabled: boolean;
+    status: string;
+    faqsJson: { question: string; answer: string }[];
     id: string;
     title: string;
     metaTitle?: string;
@@ -17,6 +21,7 @@ interface Props {
     relatedCollegeSlug?: string;
     category: string;
     tags: string[];
+    showOnWebsiteBlog: boolean;
     isLiveBlog: boolean;
     liveUpdatesJson?: { id: string; timestamp: string; headline: string; bodyHtml: string; isPinned: boolean }[];
   };
@@ -39,7 +44,7 @@ export function StaffEditBlogClient({ post, canPublish }: Props) {
       if (json.message?.includes("Draft saved") && isPublish) {
         alert(json.message);
       }
-      router.push("/admin/staff-blogs");
+      router.push(`/admin/staff-blogs/${data.showOnWebsiteBlog ? "website" : "college"}`);
     } else {
       throw new Error(json.error || "Failed to update article");
     }
@@ -49,7 +54,7 @@ export function StaffEditBlogClient({ post, canPublish }: Props) {
     <div className="space-y-6 max-w-7xl">
       <div className="flex items-center gap-3">
         <Link
-          href="/admin/staff-blogs"
+          href={`/admin/staff-blogs/${post.showOnWebsiteBlog ? "website" : "college"}`}
           className="p-2 rounded-lg border hover:bg-accent text-muted-foreground"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -65,6 +70,11 @@ export function StaffEditBlogClient({ post, canPublish }: Props) {
       <BlogMdxEditor
         initialData={{
           id: post.id,
+          status: post.status,
+        likesEnabled: post.likesEnabled,
+        commentsEnabled: post.commentsEnabled,
+          faqsJson: post.faqsJson,
+          showOnWebsiteBlog: post.showOnWebsiteBlog,
           title: post.title,
           metaTitle: post.metaTitle,
           metaDescription: post.metaDescription,
