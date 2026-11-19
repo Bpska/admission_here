@@ -1,0 +1,64 @@
+import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
+import { PrismaClient } from "@prisma/client";
+import { blogVisitorIdentity, createBlogViewTicket, verifyBlogViewTicket, getBlogStats, getPostBlogStats, recordBlogView, shouldIgnoreBlogVisit } from "../src/lib/blog-analytics";
+const db = new PrismaClient();
+import { activeReadingDelta } from "../src/lib/active-reading";
+const marker = `qa-blog-visits-${randomUUID()}`;
+async function main() {
+  const first = blogVisitorIdentity();
+  assert.equal(blogVisitorIdentity(first.cookie).visitorHash, first.visitorHash);
+  assert.notEqual(blogVisitorIdentity(first.cookie + "tampered").visitorHash, first.visitorHash);
+  assert.equal(first.visitorHash.length, 64);
+  for (const agent of ["Googlebot", "bingbot/2.0", "HeadlessChrome", "facebookexternalhit/1.1"]) assert.equal(shouldIgnoreBlogVisit(agent), true);
+  for (const role of ["SUPER_ADMIN", "STAFF", "AUTHOR", "COLLEGE_ADMIN"]) assert.equal(shouldIgnoreBlogVisit("Mozilla/5.0", role), true);
+  assert.equal(shouldIgnoreBlogVisit("Mozilla/5.0", "STUDENT"), false);
+  const ticket = createBlogViewTicket("article", first.visitorHash, 1000);
+  assert.equal(verifyBlogViewTicket(ticket, "article", 45999), null);
+  assert.ok(verifyBlogViewTicket(ticket, "article", 46000));
+  assert.equal(verifyBlogViewTicket(ticket + "bad", "article", 46000), null);
+  assert.equal(verifyBlogViewTicket(ticket, "another-article", 46000), null);
+  assert.equal(verifyBlogViewTicket(ticket, "article", 90_000_000), null);
+  let active = 0;
+  for (let second = 1; second <= 44; second++) active += activeReadingDelta((second - 1) * 1000, second * 1000, true, 0);
+  assert.equal(active, 44000);
+  assert.equal(activeReadingDelta(44000, 45000, false, 0), 0, "Hidden/unfocused time does not count");
+  active += activeReadingDelta(45000, 46000, true, 45000); assert.equal(active, 45000);
+  assert.equal(activeReadingDelta(61000, 62000, true, 0), 0, "Idle time does not count");
+  assert.equal(activeReadingDelta(0, 45000, true, 0), 2000, "A suspended timer cannot award a full visit");
+  try {
+    await db.$transaction(async tx => {
+      const author = await tx.user.create({ data: { name: marker, email: `${marker}@example.com`, role: "AUTHOR" } });
+      const post = await tx.blogPost.create({ data: { title: marker, slug: marker, authorId: author.id, contentMdx: "Verified traffic fixture", category: "CAREER_GUIDE", status: "PUBLISHED", viewCount: 9999 } });
+      const other = await tx.blogPost.create({ data: { title: `${marker} other`, slug: `${marker}-other`, authorId: author.id, contentMdx: "Other traffic fixture", category: "CAREER_GUIDE", status: "PUBLISHED" } });
+      const draft = await tx.blogPost.create({ data: { title: `${marker} draft`, slug: `${marker}-draft`, authorId: author.id, contentMdx: "Draft traffic fixture", category: "CAREER_GUIDE", status: "DRAFT" } });
+      assert.deepEqual(await getPostBlogStats(post.id, tx), { views: 0, visitors: 0 }, "Exclude unverified legacy counters");
+      const visitId = randomUUID();
+      assert.deepEqual(await recordBlogView(post.id, first.visitorHash, visitId, tx), { views: 1, visitors: 1, counted: true });
+      const duplicates = await Promise.all(Array.from({ length: 5 }, () => recordBlogView(post.id, first.visitorHash, visitId, tx)));
+      assert.ok(duplicates.every(row => row?.counted === false));
+      const second = blogVisitorIdentity();
+      assert.deepEqual(await recordBlogView(post.id, second.visitorHash, randomUUID(), tx), { views: 2, visitors: 2, counted: true });
+      assert.deepEqual(await recordBlogView(post.id, first.visitorHash, randomUUID(), tx), { views: 3, visitors: 2, counted: true });
+      await recordBlogView(other.id, first.visitorHash, randomUUID(), tx);
+      const totals = await getBlogStats([post.id, other.id], tx);
+      assert.equal(totals.views, 4); assert.equal(totals.visitors, 2, "Do not double-count the same browser across articles");
+      assert.equal((await getBlogStats([other.id], tx)).visitors, 1, "Statistics are limited to selected accessible posts");
+      assert.equal(await recordBlogView(draft.id, first.visitorHash, randomUUID(), tx), null);
+      assert.equal(await recordBlogView(randomUUID(), first.visitorHash, randomUUID(), tx), null);
+      const unchanged = await tx.blogPost.findUniqueOrThrow({ where: { id: post.id } });
+      assert.equal(unchanged.updatedAt.getTime(), post.updatedAt.getTime(), "Views must not alter editorial timestamps");
+      assert.equal(unchanged.viewCount, 9999, "Preserve but do not display historical counters");
+      await tx.blogPost.update({ where: { id: post.id }, data: { status: "DRAFT" } });
+      assert.equal(await recordBlogView(post.id, blogVisitorIdentity().visitorHash, randomUUID(), tx), null);
+      await tx.blogPost.delete({ where: { id: other.id } });
+      assert.equal(await tx.blogVisit.count({ where: { blogId: other.id } }), 0);
+      assert.equal(await tx.blogQualifiedView.count({ where: { blogId: other.id } }), 0);
+      throw Error("VERIFY_ROLLBACK");
+    }, { timeout: 30000 });
+  } catch (error) { if (!(error instanceof Error) || error.message !== "VERIFY_ROLLBACK") throw error; }
+  assert.equal(await db.blogPost.count({ where: { slug: { startsWith: marker } } }), 0);
+  assert.equal(await db.user.count({ where: { email: `${marker}@example.com` } }), 0);
+  console.log("Blog analytics passed: 45-second active reading, signed tickets, per-visit duplicate protection, unique browsers, repeat sessions, scoped totals, draft/bot/editor exclusion, unchanged publication timestamps, and complete fixture rollback.");
+}
+main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => db.$disconnect());

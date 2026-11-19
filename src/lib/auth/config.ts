@@ -77,20 +77,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }) {
       if (token && session.user) {
-        // Read current access on every request: disabling an account or changing
-        // its permissions must also affect sessions issued before the change.
-        const current = await db.user.findUnique({ where: { id: token.id as string }, include: { staffPermission: true } });
-        if (!current?.isActive || (current.role === "STAFF" && !current.staffPermission?.isActive)) {
+        try {
+          const userId = (token.id || token.sub) as string | undefined;
+          const userEmail = (token.email || session.user.email) as string | undefined;
+
+          if (!userId && !userEmail) {
+            (session as any).user = undefined;
+            return session;
+          }
+
+          const current = await db.user.findFirst({
+            where: userId ? { id: userId } : { email: userEmail },
+            include: { staffPermission: true },
+          });
+
+          if (!current || !current.isActive || (current.role === "STAFF" && !current.staffPermission?.isActive)) {
+            (session as any).user = undefined;
+            return session;
+          }
+
+          session.user.id = current.id;
+          session.user.name = current.name;
+          session.user.email = current.email;
+          (session.user as any).role = current.role;
+          (session.user as any).managedCollegeId = current.managedCollegeId;
+          (session.user as any).permissions = current.role === "AUTHOR" ? ["blogs", "dashboard"] : current.role === "STAFF" ? current.staffPermission?.permissions || [] : [];
+          (session.user as any).assignedCollegeIds = current.staffPermission?.assignedCollegeIds || [];
+        } catch (err) {
+          console.error("Error in NextAuth session callback:", err);
           (session as any).user = undefined;
-          return session;
         }
-        session.user.id = current.id;
-        session.user.name = current.name;
-        session.user.email = current.email;
-        (session.user as any).role = current.role;
-        (session.user as any).managedCollegeId = current.managedCollegeId;
-        (session.user as any).permissions = current.role === "AUTHOR" ? ["blogs", "dashboard"] : current.role === "STAFF" ? current.staffPermission?.permissions || [] : [];
-        (session.user as any).assignedCollegeIds = current.staffPermission?.assignedCollegeIds || [];
       }
       return session;
     },

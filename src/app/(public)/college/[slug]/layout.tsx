@@ -1,3 +1,4 @@
+import { programChoices } from "@/lib/college-programs";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { CollegeHeaderClient } from "./CollegeHeaderClient";
@@ -36,6 +37,7 @@ export default async function CollegeLayout({ children, params }: CollegeLayoutP
 
   const college = await db.college.findUnique({
     where: { slug, isPublished: true },
+    include: { courses: { include: { course: true } } },
   });
 
   if (!college) {
@@ -63,7 +65,7 @@ export default async function CollegeLayout({ children, params }: CollegeLayoutP
   return (
     <div>
       <JsonLdScript data={collegeSchema} />
-      <CollegeHeaderClient college={college} />
+      <CollegeHeaderClient college={college} programs={programChoices(college.courses)} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-12">{children}</main>
     </div>
   );

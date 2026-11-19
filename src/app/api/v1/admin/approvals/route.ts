@@ -4,6 +4,8 @@ import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { validateCustomNavbarFilter } from "@/lib/custom-navbar-filters";
+import { createCollegeProfile } from "@/lib/create-college-profile";
 import { CollegeCreateSchema, CollegeUpdateSchema } from "@/lib/college-validation";
 import { applyDataMutation, type DataMutation } from "@/lib/admin-data";
 
@@ -42,13 +44,15 @@ export async function PATCH(request: Request) {
           if (!["offerings", "cutoffs", "placements", "rankings"].includes(mutation.resource) || mutation.collegeId !== collegeId) throw new Error("Invalid college data proposal.");
           await applyDataMutation(tx, mutation, access.userId);
         } else if (proposal.actionType === "CREATE") {
-          const college = await tx.college.create({ data: CollegeCreateSchema.parse(proposed) });
+          const college = await createCollegeProfile(tx, proposed, access.userId, proposal.staffId);
           collegeId = college.id;
           await tx.collegeApprovalRequest.update({ where: { id: requestId }, data: { collegeId } });
           await tx.staffPermission.update({ where: { userId: proposal.staffId }, data: { assignedCollegeIds: { push: collegeId } } });
         } else {
           if (!collegeId) throw new Error("Missing college on update request");
-          await tx.college.update({ where: { id: collegeId }, data: CollegeUpdateSchema.parse(proposed) });
+          const update = CollegeUpdateSchema.parse(proposed);
+          await validateCustomNavbarFilter(tx, update);
+          await tx.college.update({ where: { id: collegeId }, data: update });
         }
       }
       await tx.staffActivityLog.create({ data: { staffId: proposal.staffId, collegeId, action: status, details: `${access.userName}: ${status}. ${adminFeedback || ""}` } });

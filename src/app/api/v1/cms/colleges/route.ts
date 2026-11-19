@@ -4,6 +4,8 @@ import { checkAdminAccess, collegeScope } from "@/lib/auth/staff-guard";
 import { OwnershipType, ApprovalActionType, ApprovalStatus } from "@prisma/client";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { createCollegeProfile } from "@/lib/create-college-profile";
+import { validateCustomNavbarFilter } from "@/lib/custom-navbar-filters";
 import { CollegeCreateSchema } from "@/lib/college-validation";
 
 
@@ -45,6 +47,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    await validateCustomNavbarFilter(db, parsed.data);
 
     // Check slug collision
     const existing = await db.college.findUnique({
@@ -92,9 +96,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Super Admin: direct publication
-    const college = await db.college.create({
-      data: parsed.data,
-    });
+    const college = await db.$transaction(tx => createCollegeProfile(tx, parsed.data, access.userId));
 
     try {
       revalidatePath("/", "layout");

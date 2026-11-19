@@ -1,3 +1,4 @@
+import { validateBlogDestination } from "@/lib/blog-destination";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { PostStatus, BlogCategory } from "@prisma/client";
@@ -15,6 +16,7 @@ const BlogPatchSchema = z.object({
   tags: z.array(z.string()).optional(),
   tldrSummary: z.array(z.string()).optional(),
   contentMdx: z.string().min(10).optional(),
+  showOnWebsiteBlog: z.boolean().optional(),
   isLiveBlog: z.boolean().optional(),
   liveUpdatesJson: z.array(z.object({ id: z.string(), timestamp: z.string().datetime(), headline: z.string().min(1), bodyHtml: z.string(), isPinned: z.boolean().default(false) })).optional(),
   status: z.nativeEnum(PostStatus).optional(),
@@ -51,7 +53,7 @@ export async function PATCH(
     // Fetch existing post for ownership check
     const existing = await db.blogPost.findUnique({
       where: { id },
-      select: { authorId: true, slug: true, contentMdx: true },
+      select: { authorId: true, slug: true, contentMdx: true, featuredImageUrl: true, showOnWebsiteBlog: true, status: true, relatedCollegeId: true, publishedAt: true },
     });
 
     if (!existing) {
@@ -76,14 +78,16 @@ export async function PATCH(
       );
     }
 
-    if (parsed.data.contentMdx) {
-      const imageError = await validateBlogImages(parsed.data.contentMdx, user, existing.contentMdx);
+    if (parsed.data.contentMdx !== undefined || parsed.data.featuredImageUrl !== undefined) {
+      const imageError = await validateBlogImages(`${parsed.data.contentMdx ?? existing.contentMdx} ${parsed.data.featuredImageUrl ?? existing.featuredImageUrl ?? ""}`, user, `${existing.contentMdx} ${existing.featuredImageUrl || ""}`);
       if (imageError) return NextResponse.json({ error: imageError }, { status: 400 });
     }
 
     if (parsed.data.relatedCollegeId && !await db.college.findUnique({ where: { id: parsed.data.relatedCollegeId, isPublished: true }, select: { id: true } })) {
       return NextResponse.json({ error: "Choose a published college." }, { status: 400 });
     }
+    const destinationError = await validateBlogDestination({ showOnWebsiteBlog: parsed.data.showOnWebsiteBlog ?? existing.showOnWebsiteBlog, contentMdx: parsed.data.contentMdx ?? existing.contentMdx, relatedCollegeId: parsed.data.relatedCollegeId !== undefined ? parsed.data.relatedCollegeId : existing.relatedCollegeId }, (parsed.data.status ?? existing.status) === "PUBLISHED");
+    if (destinationError) return NextResponse.json({ error: destinationError }, { status: 400 });
     const updateData: any = { ...parsed.data };
 
     // Only SUPER_ADMIN can change author
@@ -105,7 +109,7 @@ export async function PATCH(
     }
 
     if (updateData.status === PostStatus.PUBLISHED) {
-      updateData.publishedAt = new Date();
+      updateData.publishedAt = existing.publishedAt || new Date();
     }
 
     const post = await db.blogPost.update({ where: { id }, data: updateData });
@@ -140,7 +144,7 @@ export async function DELETE(
 
     const existing = await db.blogPost.findUnique({
       where: { id },
-      select: { authorId: true, slug: true, contentMdx: true },
+      select: { authorId: true, slug: true, contentMdx: true, featuredImageUrl: true },
     });
 
     if (!existing) {

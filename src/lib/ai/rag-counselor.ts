@@ -68,8 +68,8 @@ export async function retrieveCounselingContext(query: string, profile?: Student
       latestPlacement: c.placements[0]
         ? {
             year: c.placements[0].batchYear,
-            averagePackage: Number(c.placements[0].averagePackageInr),
-            highestPackage: Number(c.placements[0].highestPackageInr),
+            averagePackage: c.placements[0].averagePackageInr == null ? null : Number(c.placements[0].averagePackageInr),
+            highestPackage: c.placements[0].highestPackageInr == null ? null : Number(c.placements[0].highestPackageInr),
             topRecruiters: c.placements[0].topRecruiters,
           }
         : null,

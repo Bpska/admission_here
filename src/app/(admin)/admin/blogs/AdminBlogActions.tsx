@@ -8,9 +8,10 @@ interface AdminBlogActionsProps {
   postId: string;
   status: string;
   isSuperAdmin: boolean;
+  canPublish: boolean;
 }
 
-export function AdminBlogActions({ postId, status, isSuperAdmin }: AdminBlogActionsProps) {
+export function AdminBlogActions({ postId, status, isSuperAdmin, canPublish }: AdminBlogActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -55,7 +56,7 @@ export function AdminBlogActions({ postId, status, isSuperAdmin }: AdminBlogActi
   return (
     <>
       {/* Unpublish/Publish toggle — visible to all with blogs permission */}
-      <button
+      {canPublish && <button
         onClick={handleTogglePublish}
         disabled={loading}
         title={status === "PUBLISHED" ? "Unpublish" : "Publish"}
@@ -66,7 +67,7 @@ export function AdminBlogActions({ postId, status, isSuperAdmin }: AdminBlogActi
         ) : (
           <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
         )}
-      </button>
+      </button>}
 
       {/* Delete — SUPER_ADMIN or staff with blogs:delete */}
       {isSuperAdmin && (

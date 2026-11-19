@@ -1,3 +1,4 @@
+import { getBlogStats } from "@/lib/blog-analytics";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
@@ -19,7 +20,9 @@ import {
   ShieldCheck,
   Building2,
   Users,
-  GraduationCap,
+  Cog,
+  BriefcaseBusiness,
+  Stethoscope,
   Calculator,
   MessageSquare,
   CheckCircle2,
@@ -39,6 +42,15 @@ export const metadata = constructSeoMetadata({
 });
 
 export default async function HomePage() {
+  const [collegeCount, examCount, cutoffCount, streamCounts] = await Promise.all([
+    db.college.count({ where: { isPublished: true } }),
+    db.exam.count(),
+    db.examCutoff.count({ where: { collegeCourse: { college: { isPublished: true } } } }),
+    Promise.all(["Engineering", "Management", "Medical"].map(stream =>
+      db.college.count({ where: { isPublished: true, courses: { some: { course: { stream } } } } })
+    )),
+  ]);
+
   // Fetch Top Odisha Spotlight Institutions
   const odishaColleges = await db.college.findMany({
     where: { isPublished: true, state: "Odisha" },
@@ -81,11 +93,13 @@ export default async function HomePage() {
 
   // Fetch live and featured blogs
   const blogs = await db.blogPost.findMany({
-    where: { status: "PUBLISHED" },
+    where: { status: "PUBLISHED", showOnWebsiteBlog: true },
     orderBy: { publishedAt: "desc" },
     take: 5,
     include: { author: { select: { name: true } } },
   });
+
+  const blogStats = await getBlogStats(blogs.map(post => post.id));
 
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -122,7 +136,7 @@ export default async function HomePage() {
             </h1>
 
             <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Explore 1,000+ top Indian universities with audited tuition fees, authentic placement records, NIRF rankings, and previous-year category-wise opening &amp; closing cutoffs.
+              Explore Indian universities, compare tuition fees and placement records, and browse rankings and admission cutoffs as they become available.
             </p>
 
             {/* Direct Search Form */}
@@ -133,17 +147,17 @@ export default async function HomePage() {
             {/* Real Data Highlights */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8 border-t border-slate-200/80">
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70 text-left">
-                <div className="text-2xl font-black text-[#1a3068]">1,000+</div>
-                <div className="text-xs text-slate-600 font-semibold mt-0.5">Verified Institutions</div>
+                <div className="text-2xl font-black text-[#1a3068]">{collegeCount.toLocaleString("en-IN")}</div>
+                <div className="text-xs text-slate-600 font-semibold mt-0.5">Published Institutions</div>
                 <div className="text-[11px] text-slate-400">Govt, Deemed &amp; Private</div>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70 text-left">
-                <div className="text-2xl font-black text-[#1F8040]">100%</div>
-                <div className="text-xs text-slate-600 font-semibold mt-0.5">Audited Data</div>
-                <div className="text-[11px] text-slate-400">NIRF &amp; NAAC Grade A/A++</div>
+                <div className="text-2xl font-black text-[#1F8040]">{examCount.toLocaleString("en-IN")}</div>
+                <div className="text-xs text-slate-600 font-semibold mt-0.5">Entrance Exams</div>
+                <div className="text-[11px] text-slate-400">Listed examination details</div>
               </div>
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/70 text-left">
-                <div className="text-2xl font-black text-[#C41E1E]">50,000+</div>
+                <div className="text-2xl font-black text-[#C41E1E]">{cutoffCount.toLocaleString("en-IN")}</div>
                 <div className="text-xs text-slate-600 font-semibold mt-0.5">Cutoff Ranks</div>
                 <div className="text-[11px] text-slate-400">JoSAA, CSAB &amp; NEET</div>
               </div>
@@ -188,27 +202,30 @@ export default async function HomePage() {
                 title: "Engineering",
                 code: "B.Tech / B.E / M.Tech",
                 desc: "IITs, NITs, IIITs, BITS, and State Technical Universities",
-                count: "450+ Colleges",
+                count: `${streamCounts[0]} Colleges`,
                 href: "/colleges/b-tech",
-                gradient: "from-blue-600 to-indigo-700",
+                icon: Cog,
+                iconTone: "border-blue-100 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950/50 dark:text-blue-300",
                 badge: "JoSAA / CSAB",
               },
               {
                 title: "Management",
                 code: "MBA / PGDM / BBA",
                 desc: "IIMs, XLRI, FMS, SPJIMR, and Top Tier-1 Business Schools",
-                count: "320+ Colleges",
+                count: `${streamCounts[1]} Colleges`,
                 href: "/colleges/mba",
-                gradient: "from-purple-600 to-indigo-800",
+                icon: BriefcaseBusiness,
+                iconTone: "border-violet-100 bg-violet-50 text-violet-700 dark:border-violet-900 dark:bg-violet-950/50 dark:text-violet-300",
                 badge: "CAT / XAT / MAT",
               },
               {
                 title: "Medical & Dental",
                 code: "MBBS / BDS / MD",
                 desc: "AIIMS, Top Government Medical Colleges & Private Institutes",
-                count: "180+ Colleges",
+                count: `${streamCounts[2]} Colleges`,
                 href: "/colleges/mbbs",
-                gradient: "from-emerald-600 to-teal-700",
+                icon: Stethoscope,
+                iconTone: "border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300",
                 badge: "NEET UG / PG",
               },
               {
@@ -217,7 +234,8 @@ export default async function HomePage() {
                 desc: "Calculate cutoff probabilities based on category, state quota & rank",
                 count: "JEE, NEET, CAT",
                 href: "/college-predictor/jee-main",
-                gradient: "from-rose-600 to-amber-600",
+                icon: Calculator,
+                iconTone: "border-amber-100 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300",
                 badge: "Live 2026 Engine",
               },
             ].map((card) => (
@@ -228,8 +246,8 @@ export default async function HomePage() {
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-tr ${card.gradient} text-white flex items-center justify-center font-black text-lg shadow-md`}>
-                      <GraduationCap className="w-6 h-6" />
+                    <div aria-hidden="true" className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${card.iconTone}`}>
+                      <card.icon className="h-6 w-6" strokeWidth={1.75} />
                     </div>
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary uppercase">
                       {card.badge}
@@ -288,6 +306,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {odishaColleges.length === 0 && <p className="text-sm text-muted-foreground">No Odisha colleges have been published yet.</p>}
             {odishaColleges.map((c) => (
               <CollegeCard
                 key={c.id}
@@ -348,6 +367,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {colleges.length === 0 && <p className="text-sm text-muted-foreground">No colleges have been published yet.</p>}
             {colleges.map((c) => (
               <CollegeCard
                 key={c.id}
@@ -408,6 +428,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {entranceExams.length === 0 && <p className="text-sm text-muted-foreground">Exam details will appear here once added.</p>}
             {entranceExams.map((exam) => (
               <Link
                 key={exam.id}
@@ -502,7 +523,7 @@ export default async function HomePage() {
       </section>
 
       {/* Editorial Blog & Live Exam Updates */}
-      <LatestArticlesSection articles={blogs} />
+      <LatestArticlesSection articles={blogs.map(post => ({ ...post, viewCount: blogStats.perPost[post.id]?.views || 0 }))} />
     </>
   );
 }

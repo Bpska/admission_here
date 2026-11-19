@@ -31,3 +31,7 @@ export function blogCollegeSlugs(content: string) {
 export function removeBlogCollege(content: string, slug: string) {
   return normalizeBlogBlocks(content).replace(/<EmbeddedCollegeCTA\s+slug=["']([a-z0-9-]+)["'][^>]*\/>/g, (block, value: string) => value === slug ? "" : block);
 }
+
+export function blogArticleHref(post: { slug: string; showOnWebsiteBlog: boolean }, collegeSlug?: string) {
+  return !post.showOnWebsiteBlog && collegeSlug ? `/college/${collegeSlug}/blogs/${post.slug}` : `/blog/${post.slug}`;
+}

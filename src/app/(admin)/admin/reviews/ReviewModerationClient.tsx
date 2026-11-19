@@ -5,10 +5,12 @@ import { Star, ShieldCheck, CheckCircle2, XCircle, ThumbsUp, ThumbsDown } from "
 
 export function ReviewModerationClient({ initialReviews }: { initialReviews: any[] }) {
   const [reviews, setReviews] = useState(initialReviews);
+  const [error, setError] = useState("");
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleModerate = async (reviewId: string, status: "APPROVED" | "REJECTED") => {
     setLoadingId(reviewId);
+    setError("");
     try {
       const res = await fetch("/api/v1/cms/reviews/moderate", {
         method: "POST",
@@ -16,6 +18,10 @@ export function ReviewModerationClient({ initialReviews }: { initialReviews: any
         body: JSON.stringify({ reviewId, status }),
       });
 
+      if (!res.ok) {
+        const result = await res.json();
+        throw new Error(result.error || "Unable to moderate this review.");
+      }
       if (res.ok) {
         setReviews((prev) =>
           prev.map((r) =>
@@ -23,6 +29,8 @@ export function ReviewModerationClient({ initialReviews }: { initialReviews: any
           )
         );
       }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Unable to moderate this review.");
     } finally {
       setLoadingId(null);
     }
@@ -30,6 +38,7 @@ export function ReviewModerationClient({ initialReviews }: { initialReviews: any
 
   return (
     <div className="space-y-4">
+      {error && <p role="alert" className="rounded-lg border border-red-200 p-3 text-sm text-red-600">{error}</p>}
       {reviews.map((r) => (
         <div key={r.id} className="p-4 sm:p-6 rounded-2xl border bg-card shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3">

@@ -11,7 +11,7 @@ export async function GET() {
   });
 
   const blogs = await db.blogPost.findMany({
-    where: { status: "PUBLISHED" },
+    where: { status: "PUBLISHED", showOnWebsiteBlog: true },
     select: { title: true, slug: true, category: true },
     orderBy: { publishedAt: "desc" },
     take: 20,

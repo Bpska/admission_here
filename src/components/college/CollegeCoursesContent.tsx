@@ -56,14 +56,16 @@ export function CollegeCoursesContent({ college }: { college: Prisma.CollegeGetP
                       Level: {c.course.level}
                     </span>
                   </td>
-                  <td className="p-4 font-medium">{c.course.durationYrs} Years</td>
+                  <td className="p-4 font-medium">{c.course.durationYrs ? `${c.course.durationYrs} Years` : "Not specified"}</td>
                   <td className="p-4 font-bold text-sm text-primary">
-                    {formatInr(c.totalFeesInr)}
+                    {c.totalFeesInr == null ? "Not published" : formatInr(c.totalFeesInr)}
+                    {c.publishedFeeInr != null && <div className="mt-2 space-y-1 text-xs font-normal text-muted-foreground"><p>Published {c.feeAcademicYear || ""} amount: {formatInr(c.publishedFeeInr)}{c.publishedCreditFeeInr != null && c.publishedCreditFeeInr !== c.publishedFeeInr ? ` (credit-card category: ${formatInr(c.publishedCreditFeeInr)})` : ""}</p>{c.feeBasis && <p>{c.feeBasis}</p>}{c.feeSourceUrl && <a href={c.feeSourceUrl} target="_blank" rel="noreferrer" className="underline">Official fee document</a>}</div>}
                   </td>
                   <td className="p-4 font-medium">
                     {c.firstYearFeesInr ? formatInr(c.firstYearFeesInr) : "—"}
                   </td>
-                  <td className="p-4 font-semibold">{c.intakeSeats || "N/A"} Seats</td>
+                  <td className="p-4 font-semibold">{c.intakeSeats || "N/A"} Seats
+                    {(c.eligibilityCriteria as { intakeYear?: string })?.intakeYear && <span className="mt-1 block text-[11px] font-normal text-muted-foreground">Approved {(c.eligibilityCriteria as { intakeYear?: string }).intakeYear}</span>}</td>
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
                       {c.acceptedExamSlugs.map((exam) => (

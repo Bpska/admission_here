@@ -1,3 +1,4 @@
+import React from "react";
 import { formatInr } from "@/lib/utils";
 import { Briefcase, TrendingUp, Users, Building, Award } from "lucide-react";
 
@@ -15,7 +16,7 @@ export function CollegePlacementsContent({ college }: { college: Prisma.CollegeG
           {college.name} Placement Statistics & Recruiters
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
-          Audited placement figures including highest domestic CTC, average package, placement percentage, and hiring companies.
+          Available institution-published placement figures, with reporting year and source notes where supplied.
         </p>
       </div>
 
@@ -56,14 +57,16 @@ export function CollegePlacementsContent({ college }: { college: Prisma.CollegeG
               Placement Rate
             </span>
             <span className="text-xl sm:text-2xl font-extrabold text-blue-600 mt-1 block">
-              {latestPlacement.placementPercentage}%
+              {latestPlacement.placementPercentage == null ? "Not reported" : `${latestPlacement.placementPercentage}%`}
             </span>
             <span className="text-[10px] text-muted-foreground mt-0.5 block">
-              {latestPlacement.totalOffers || "1,000+"} Total Offers
+              {latestPlacement.totalOffers ?? "Not reported"} Total Offers
             </span>
           </div>
         </div>
       )}
+
+      {college.placements.some(row => row.sourceNote || row.sourceUrl) && <section className="space-y-3 rounded-xl border bg-card p-5"><h3 className="font-bold">Placement data sources</h3>{college.placements.map(row => (row.sourceNote || row.sourceUrl) && <div key={row.id} className="space-y-1 text-sm"><p className="font-semibold">Batch {row.batchYear}</p>{row.sourceNote && <p className="text-muted-foreground">{row.sourceNote}</p>}{row.sourceUrl && <a href={row.sourceUrl} target="_blank" rel="noreferrer" className="text-primary underline">Official source document</a>}</div>)}</section>}
 
       {/* Top Recruiters */}
       {latestPlacement && latestPlacement.topRecruiters.length > 0 && (
@@ -83,6 +86,16 @@ export function CollegePlacementsContent({ college }: { college: Prisma.CollegeG
           </div>
         </div>
       )}
+
+      {college.placements.filter(placement => placement.photoUrls?.length).map(placement => <section key={placement.id} className="space-y-4 rounded-2xl border bg-card p-5">
+        <h3 className="text-lg font-bold">Placement photos — Batch {placement.batchYear}</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {placement.photoUrls.map((url, index) => <a key={`${url}-${index}`} href={url} target="_blank" rel="noreferrer" className="overflow-hidden rounded-xl border">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt={`${college.name} placement photo ${index + 1}, batch ${placement.batchYear}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+          </a>)}
+        </div>
+      </section>)}
 
       {/* Historical Year-wise Placement Table */}
       <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
@@ -112,7 +125,7 @@ export function CollegePlacementsContent({ college }: { college: Prisma.CollegeG
                     {formatInr(p.averagePackageInr)}
                   </td>
                   <td className="p-4">{formatInr(p.medianPackageInr)}</td>
-                  <td className="p-4 font-semibold text-blue-600">{p.placementPercentage}%</td>
+                  <td className="p-4 font-semibold text-blue-600">{p.placementPercentage == null ? "Not reported" : `${p.placementPercentage}%`}</td>
                   <td className="p-4">{p.totalOffers || "—"}</td>
                 </tr>
               ))}

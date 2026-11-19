@@ -4,6 +4,7 @@ import { checkAdminAccess, canAccessCollege } from "@/lib/auth/staff-guard";
 import { revalidatePath } from "next/cache";
 import { OwnershipType, ApprovalActionType, ApprovalStatus } from "@prisma/client";
 import { z } from "zod";
+import { validateCustomNavbarFilter } from "@/lib/custom-navbar-filters";
 import { CollegeUpdateSchema } from "@/lib/college-validation";
 
 
@@ -60,6 +61,8 @@ export async function PATCH(
         { status: 400 }
       );
     }
+
+    await validateCustomNavbarFilter(db, parsed.data);
 
     const existingCollege = await db.college.findUnique({
       where: { id },

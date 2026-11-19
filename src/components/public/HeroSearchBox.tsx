@@ -1,20 +1,17 @@
 "use client";
 
+import { useSearchSuggestions } from "@/hooks/useSearchSuggestions";
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, ArrowRight, Loader2 } from "lucide-react";
-
-interface SearchSuggestion { id: string; slug: string; name: string; city: string; state: string }
+import { Search, MapPin, FileText, ArrowRight, Loader2 } from "lucide-react";
 
 export function HeroSearchBox() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [stream, setStream] = useState("all");
   const [pending, startTransition] = useTransition();
-  const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [searchError, setSearchError] = useState(false);
+  const { results: suggestions, loading: searching, error: searchError } = useSearchSuggestions(query, true, stream);
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -25,25 +22,6 @@ export function HeroSearchBox() {
     document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
   }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    setSuggestions([]);
-    setSearchError(false);
-    if (query.trim().length < 2) { setSearching(false); return; }
-    setSearching(true);
-    const timer = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/v1/search/hybrid?q=${encodeURIComponent(query.trim())}&limit=6`, { signal: controller.signal });
-        if (!response.ok) throw new Error("Search unavailable");
-        const data = await response.json();
-        if (!controller.signal.aborted) setSuggestions(data.data || []);
-      } catch {
-        if (!controller.signal.aborted) setSearchError(true);
-      } finally { if (!controller.signal.aborted) setSearching(false); }
-    }, 250);
-    return () => { clearTimeout(timer); controller.abort(); };
-  }, [query]);
 
   const navigate = (href: string) => {
     setFocused(false);
@@ -73,12 +51,12 @@ export function HeroSearchBox() {
           <Search className="w-5 h-5 text-slate-400 shrink-0" />
           <input
             type="text"
-            aria-label="Search colleges"
+            aria-label="Search colleges and blogs"
             autoComplete="off"
             onFocus={() => setFocused(true)}
             value={query}
             onChange={(e) => { setQuery(e.target.value); setFocused(true); }}
-            placeholder="Search by college name, city, state, or course (e.g. IIT Bombay, NIT Rourkela)..."
+            placeholder="Search colleges, cities, courses or blog topics…"
             className="w-full bg-transparent text-sm sm:text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
         </div>
@@ -109,17 +87,17 @@ export function HeroSearchBox() {
 
       {focused && query.trim().length >= 2 && (
         <div className="absolute top-auto left-0 right-0 z-30 mt-2 rounded-2xl border border-slate-200 bg-white shadow-xl overflow-hidden text-left">
-          {searching ? <p role="status" className="p-4 text-sm text-slate-500">Searching colleges…</p> : suggestions.length ? (
-            <ul aria-label="College suggestions" className="divide-y divide-slate-100">
+          {searching ? <p role="status" className="p-4 text-sm text-slate-500">Finding suggestions…</p> : suggestions.length ? (
+            <ul aria-label="College and blog suggestions" className="divide-y divide-slate-100">
               {suggestions.map(college => <li key={college.id}>
-                <Link href={`/college/${college.slug}`} onClick={() => setFocused(false)} className="block px-4 py-3 hover:bg-slate-50 focus:bg-slate-50">
-                  <span className="block text-sm font-semibold text-slate-900">{college.name}</span>
-                  <span className="mt-1 flex items-center gap-1 text-xs text-slate-500"><MapPin className="h-3 w-3" />{college.city}, {college.state}</span>
+                <Link href={college.href} onClick={() => setFocused(false)} className="block px-4 py-3 hover:bg-slate-50 focus:bg-slate-50">
+                  <span className="block text-sm font-semibold text-slate-900">{college.title}</span>
+                  <span className="mt-1 flex items-center gap-1 text-xs text-slate-500">{college.type === "college" ? <MapPin className="h-3 w-3" /> : <FileText className="h-3 w-3" />}{college.type === "college" ? "College" : "Blog"} · {college.subtitle}</span>
                 </Link>
               </li>)}
             </ul>
-          ) : <p role="status" className="p-4 text-sm text-slate-500">{searchError ? "Suggestions unavailable. Press Search to view results." : "No college suggestions found. Try another name, city, or course."}</p>}
-          <button type="button" onClick={handleSubmit} className="w-full border-t px-4 py-3 text-left text-sm font-semibold text-primary hover:bg-slate-50">View all search results <ArrowRight className="ml-1 inline h-4 w-4" /></button>
+          ) : <p role="status" className="p-4 text-sm text-slate-500">{searchError ? "Suggestions unavailable. Press Search to view results." : "No matching suggestions. Try another college, topic, or course."}</p>}
+          <button type="button" onClick={handleSubmit} className="w-full border-t px-4 py-3 text-left text-sm font-semibold text-primary hover:bg-slate-50">View all college results <ArrowRight className="ml-1 inline h-4 w-4" /></button>
         </div>
       )}
 

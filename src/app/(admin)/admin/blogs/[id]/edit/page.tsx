@@ -1,3 +1,4 @@
+import { getPostBlogStats } from "@/lib/blog-analytics";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { ArrowLeft } from "lucide-react";
@@ -22,11 +23,13 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
   if (!post) notFound();
   if (!access.isSuperAdmin && post.authorId !== access.userId) notFound();
 
+  const stats = await getPostBlogStats(post.id);
+
   return (
     <div className="space-y-6 max-w-7xl">
       <div className="flex items-center gap-3">
         <Link
-          href="/admin/blogs"
+          href={`/admin/blogs/${post.showOnWebsiteBlog ? "website" : "college"}`}
           className="p-2 rounded-lg border hover:bg-accent text-muted-foreground"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -37,12 +40,12 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
           </h1>
           <p className="text-xs text-muted-foreground">
             Status: <strong className="text-foreground">{post.status}</strong> • Views:{" "}
-            {post.viewCount}
+            {stats.views.toLocaleString("en-IN")} • Unique visitors: {stats.visitors.toLocaleString("en-IN")}
           </p>
         </div>
       </div>
 
-      <EditBlogClient post={post} />
+      <EditBlogClient post={post} canPublish={access.isSuperAdmin || access.permissions.includes("blogs") || access.permissions.includes("blogs:publish")} />
     </div>
   );
 }

@@ -1,0 +1,289 @@
+{
+  "verifiedAt": "2026-11-16",
+  "sources": [
+    "https://www.thenalanda.com/about",
+    "https://www.thenalanda.com/contact",
+    "https://www.thenalanda.com/departments",
+    "https://www.thenalanda.com/api/departments/",
+    "https://www.thenalanda.com/api/fees-structure/",
+    "https://www.thenalanda.com/api/hero-images/"
+  ],
+  "notes": [
+    "PIN code omitted: about page says 754005, contact page says 751024, linked map contains 754012.",
+    "Fees labelled 2024–25 with no billing period; do not populate current total/annual fee fields.",
+    "Current fees, cutoffs, placement statistics, campus acreage, scholarship rules and brochure URL not verified.",
+    "Programme names appear in the profile; structured course offerings require a verified total fee under the current database schema."
+  ],
+  "college": {
+    "slug": "nalanda-institute-of-technology-bhubaneswar",
+    "name": "Nalanda Institute of Technology",
+    "shortName": "Nalanda Institute of Technology",
+    "city": "Bhubaneswar",
+    "state": "Odisha",
+    "fullAddress": "Buddhist Villa, Chandaka, Bhubaneswar, Odisha, India",
+    "pincode": null,
+    "websiteUrl": "https://www.thenalanda.com/",
+    "contactPhone": "+918249791801",
+    "contactEmail": "info@thenalanda.com",
+    "estYear": 2006,
+    "ownershipType": "PRIVATE",
+    "affiliatedTo": "Biju Patnaik University of Technology, Rourkela, Odisha",
+    "approvedBy": [
+      "AICTE"
+    ],
+    "naacGrade": "A+",
+    "nirfRank": null,
+    "campusAreaAcres": null,
+    "overviewHtml": "<p>Nalanda Institute of Technology is a self-financing institution in Chandaka, Bhubaneswar, founded in 2006 under Balaji Educational Trust. It offers undergraduate and postgraduate study in engineering, management, computer applications and applied sciences.</p><p>The institution reports AICTE approval, affiliation to Biju Patnaik University of Technology, and NAAC A+ accreditation. Its Mechanical and Electrical Engineering departments are reported as NBA-accredited. It also reports UGC 2(f) recognition, SIRO recognition, an Atal Incubation Centre and an MSME Business Incubator.</p><h3>Programmes listed by the institution</h3><ul><li>BBA — Bachelor of Business Administration (BBA)</li><li>BCA — Bachelor of Computer Applications (BCA)</li><li>B.Tech — Civil Engineering</li><li>B.Tech — Computer Science &amp; Engineering</li><li>M.Tech — Computer Science &amp; Engineering</li><li>B.Tech — Computer Science &amp; Engineering in AIML</li><li>B.Tech — Computer Science &amp; Engineering in Cyber Security</li><li>B.Tech — Computer Science &amp; Technology</li><li>B.Tech — Electrical Engineering</li><li>MBA — Finance</li><li>M.Sc — M.Sc. in Applied Chemistry</li><li>M.Sc — M.Sc. in Applied Physics</li><li>M.Sc — M.Sc. in Applied Mathematics</li><li>MBA — MBA in Human Resources</li><li>MCA — MCA (Master in Computer Applications)</li><li>MBA — Marketing</li><li>B.Tech — Mechanical Engineering</li><li>M.Tech — Thermal Engineering</li></ul><p>Programme availability and intake should be confirmed with the institution for the intended admission year.</p><h3>Learning and campus facilities</h3><p>Department pages describe laboratories, a digital library, smart classrooms and Wi-Fi-enabled computer laboratories. Incubation facilities support student innovation and entrepreneurship.</p><p>Information checked on 16 November 2026 using the institution’s official website. Accreditation statements are institution-reported; no NIRF rank or placement package has been independently verified.</p><p>Sources: <a href=\"https://www.thenalanda.com/about\">Institution profile</a>, <a href=\"https://www.thenalanda.com/departments\">Departments</a>, <a href=\"https://www.thenalanda.com/contact\">Contact</a>.</p>",
+    "admissionHtml": "<h3>Admissions enquiries</h3><p>Contact the institution at +91 8249791801 or info@thenalanda.com to confirm current application dates, programme eligibility, entrance examinations and seat availability.</p><p>The MCA department lists a two-year, full-time programme with 180 seats and identifies OJEE as its admission route. Confirm the current intake and counselling requirements before applying.</p><h3>Published fee schedule: 2024–25 (historical)</h3><p>The official website lists the following older amounts. It does not specify whether these amounts are per semester, per year or for the full programme. They are not verified fees for the current intake.</p><ul><li>BBA &amp; BCA: Tuition Fees ₹60,000; Hostel Fees ₹60,000.</li><li>M.Sc.: Tuition Fees ₹60,000; Hostel Fees ₹60,000.</li><li>M.TECH: Tuition Fees ₹90,000; Hostel Fees ₹60,000.</li><li>MCA: Tuition Fees ₹90,000; Hostel Fees ₹60,000.</li><li>MBA: Tuition Fees ₹90,000; Hostel Fees ₹60,000.</li><li>B.TECH-FOR CIVIL, MECH &amp; EE: Tuition Fees ₹90,000; Hostel Fees ₹60,000; Other Fees ₹15,000.</li><li>B.TECH-FOR CSE, CST, CSE (CYBER SECURITY) &amp; CSE (AIML): Tuition Fees ₹120,000; Hostel Fees ₹60,000.</li></ul><p>Contact the admissions office for a current fee quotation, payment frequency, hostel charges and refund rules.</p><p>Sources: <a href=\"https://www.thenalanda.com/departments\">Official departments</a> and <a href=\"https://www.thenalanda.com/api/fees-structure/\">published fee schedule</a>. Checked 16 November 2026.</p>",
+    "hostelInfo": "The official website lists hostel facilities. Current hostel availability, room types and fees must be confirmed with the institution. The published 2024–25 schedule lists ₹60,000 under hostel fees without identifying the billing period; this is not a verified current annual charge.",
+    "scholarshipInfo": null,
+    "facilitiesJson": [
+      "Department laboratories",
+      "Digital library",
+      "Smart classrooms",
+      "Wi-Fi-enabled computer laboratories",
+      "Hostel facilities",
+      "Atal Incubation Centre",
+      "MSME Business Incubator"
+    ],
+    "metaTitle": "Nalanda Institute of Technology, Bhubaneswar | Admission Here",
+    "metaDescription": "Explore Nalanda Institute of Technology in Bhubaneswar: official programme information, admissions enquiries, campus photos, affiliation and contact details.",
+    "isPublished": true,
+    "isFeatured": false,
+    "showInNavbar": false
+  },
+  "programmes": [
+    {
+      "name": "Bachelor of Business Administration (BBA)",
+      "degree": "BBA",
+      "level": "UG"
+    },
+    {
+      "name": "Bachelor of Computer Applications (BCA)",
+      "degree": "BCA",
+      "level": "UG"
+    },
+    {
+      "name": "Civil Engineering",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Computer Science & Engineering",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Computer Science & Engineering",
+      "degree": "M.Tech",
+      "level": "PG"
+    },
+    {
+      "name": "Computer Science & Engineering in AIML",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Computer Science & Engineering in Cyber Security",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Computer Science & Technology",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Electrical Engineering",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Finance",
+      "degree": "MBA",
+      "level": "PG"
+    },
+    {
+      "name": "M.Sc. in Applied Chemistry",
+      "degree": "M.Sc",
+      "level": "PG"
+    },
+    {
+      "name": "M.Sc. in Applied Physics",
+      "degree": "M.Sc",
+      "level": "PG"
+    },
+    {
+      "name": "M.Sc. in Applied Mathematics",
+      "degree": "M.Sc",
+      "level": "PG"
+    },
+    {
+      "name": "MBA in Human Resources",
+      "degree": "MBA",
+      "level": "PG"
+    },
+    {
+      "name": "MCA (Master in Computer Applications)",
+      "degree": "MCA",
+      "level": "PG"
+    },
+    {
+      "name": "Marketing",
+      "degree": "MBA",
+      "level": "PG"
+    },
+    {
+      "name": "Mechanical Engineering",
+      "degree": "B.Tech",
+      "level": "UG"
+    },
+    {
+      "name": "Thermal Engineering",
+      "degree": "M.Tech",
+      "level": "PG"
+    }
+  ],
+  "historicalFees": [
+    {
+      "programme": "BBA & BCA",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 60000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        }
+      ]
+    },
+    {
+      "programme": "M.Sc.",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 60000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        }
+      ]
+    },
+    {
+      "programme": "M.TECH",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 90000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        }
+      ]
+    },
+    {
+      "programme": "MCA",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 90000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        }
+      ]
+    },
+    {
+      "programme": "MBA",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 90000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        }
+      ]
+    },
+    {
+      "programme": "B.TECH-FOR CIVIL, MECH & EE",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 90000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        },
+        {
+          "label": "Other Fees",
+          "amount": 15000,
+          "category": "other"
+        }
+      ]
+    },
+    {
+      "programme": "B.TECH-FOR CSE, CST, CSE (CYBER SECURITY) & CSE (AIML)",
+      "academicYear": "2024-25",
+      "items": [
+        {
+          "label": "Tuition Fees",
+          "amount": 120000,
+          "category": "tuition"
+        },
+        {
+          "label": "Hostel Fees",
+          "amount": 60000,
+          "category": "hostel"
+        }
+      ]
+    }
+  ],
+  "images": [
+    {
+      "file": "logo.png",
+      "source": "https://www.thenalanda.com/assets/nit-logo-DD176wxf.png",
+      "usage": "logo"
+    },
+    {
+      "file": "about-hero.jpg",
+      "source": "https://www.thenalanda.com/assets/aboutus%20hero-zOtCm1lc.jpg",
+      "usage": "cover-gallery"
+    },
+    {
+      "file": "campus.jpg",
+      "source": "https://www.thenalanda.com/media/hero_images/DJI_0144_-_Copy.jpg",
+      "usage": "gallery"
+    },
+    {
+      "file": "about.jpg",
+      "source": "https://www.thenalanda.com/assets/about%20us%20image-hEBNCOOu.jpg",
+      "usage": "gallery"
+    }
+  ]
+}

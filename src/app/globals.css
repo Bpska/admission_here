@@ -210,3 +210,29 @@ body {
 .blog-prose table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 1rem 0; }
 .blog-prose th, .blog-prose td { border: 1px solid hsl(var(--border)); padding: 0.5rem 0.75rem; }
 .blog-prose [data-blog-block] { border: 1px dashed hsl(var(--primary)); background: hsl(var(--accent)); padding: 0.75rem; border-radius: 0.5rem; margin: 1rem 0; font-size: 0.85rem; }
+
+/* Shared sizing rules for the admin workspace. Tables scroll inside their panels. */
+.admin-content { width: 100%; min-width: 0; }
+.admin-content > :where(div, section, form) { width: 100%; min-width: 0; margin-inline: auto; }
+.admin-content :where(.grid) > * { min-width: 0; }
+.admin-content :where(h1, h2, h3, h4, p, dt, dd, label) { overflow-wrap: anywhere; }
+.admin-content :where(input, select, textarea) { max-width: 100%; min-width: 0; }
+.admin-content :where(input[type="text"], input[type="email"], input[type="number"], input[type="password"], input[type="datetime-local"], input[type="url"], select) { min-height: 2.75rem; }
+.admin-content .overflow-x-auto { max-width: 100%; min-width: 0; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; }
+.admin-content .overflow-x-auto > table { min-width: 42rem; }
+.admin-content .overflow-x-auto > table :where(th, td) { vertical-align: middle; }
+.admin-content .ProseMirror { min-width: 0; overflow-wrap: anywhere; }
+.admin-content .ProseMirror :where(img, video) { max-width: 100%; height: auto; }
+.admin-content :where([role="dialog"]) { max-width: calc(100vw - 1.5rem); }
+.admin-sticky-actions { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+@media (max-width: 639px) {
+  .admin-content :where(input, select, textarea):not([type="checkbox"]):not([type="radio"]) { font-size: 16px; }
+  .admin-content :where(button, a[role="button"]) { min-height: 2.75rem; }
+  .admin-form-actions { align-items: stretch; }
+  .admin-form-actions > :where(button, a) { display: inline-flex; flex: 1 1 100%; justify-content: center; align-items: center; text-align: center; }
+  .admin-sticky-actions > :where(button, a) { flex: 1 1 0; min-width: 0; }
+  .admin-content .overflow-x-auto > table :where(th, td) { padding: .75rem; }
+}
+@media (max-width: 1279px) {
+  .admin-content .overflow-x-auto:has(> table)::before { content: "Scroll sideways to see all columns"; display: block; position: sticky; left: 0; width: max-content; max-width: 100%; padding: .75rem 1rem; color: hsl(var(--muted-foreground)); font-size: .75rem; }
+}

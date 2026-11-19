@@ -12,7 +12,7 @@ export function CollegeAdmissionContent({ college }: { college: Prisma.CollegeGe
           {college.name} Admission Process 2026
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
-          Complete step-by-step application guidelines, counseling rounds, and selection criteria.
+          Institution-published admission information. Confirm current eligibility, application dates and selection requirements with the institute.
         </p>
       </div>
 
@@ -25,7 +25,7 @@ export function CollegeAdmissionContent({ college }: { college: Prisma.CollegeGe
         <div className="bg-card border rounded-2xl p-6 sm:p-8 space-y-4 shadow-xs">
           <h3 className="font-bold text-base text-foreground">Admissions Overview</h3>
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            Admissions to undergraduate B.Tech programs at {college.name} are conducted strictly through centralized counseling rounds based on entrance exam merit. Candidates must fulfill the minimum 75% aggregate requirement in Class 12 board examinations (or be in the top 20 percentile).
+            Verified admission requirements have not been added for {college.name}. Contact the institute for current programme eligibility, entrance examinations and application instructions.
           </p>
         </div>
       )}
@@ -33,7 +33,7 @@ export function CollegeAdmissionContent({ college }: { college: Prisma.CollegeGe
       {/* Step-by-Step Flow */}
       <div className="bg-card border rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
         <h3 className="font-bold text-base text-foreground">
-          Step-by-Step JoSAA / Institutional Counseling Procedure
+          Confirming Your Admission
         </h3>
 
         <div className="space-y-4">
@@ -41,22 +41,22 @@ export function CollegeAdmissionContent({ college }: { college: Prisma.CollegeGe
             {
               step: "1",
               title: "Entrance Exam Qualification",
-              desc: "Appear for JEE Main / BITSAT / CAT and score above the official qualifying cutoff percentile.",
+              desc: "Confirm which entrance examination, qualifying marks or other entry conditions apply to your chosen programme.",
             },
             {
               step: "2",
-              title: "Online Choice Filling & Locking",
-              desc: `Register on the centralized counseling portal and submit ${college.name} with your preferred branch order.`,
+              title: "Official Application",
+              desc: `Use the official application route specified by ${college.name}; check whether a counselling registration is also required.`,
             },
             {
               step: "3",
               title: "Seat Allotment & Document Verification",
-              desc: "Review allotted seat, pay the seat acceptance fee, and complete online document verification.",
+              desc: "Confirm the selection decision, required documents, fees and payment deadlines with the institute or relevant counselling authority.",
             },
             {
               step: "4",
               title: "Physical Campus Reporting",
-              desc: "Report to the institute with original certificates, medical fitness proof, and fee receipt for final enrollment.",
+              desc: "Follow the reporting instructions given in your admission offer and retain copies of submitted documents and payment receipts.",
             },
           ].map((s) => (
             <div key={s.step} className="flex gap-4 items-start">

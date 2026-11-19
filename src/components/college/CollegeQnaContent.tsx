@@ -7,26 +7,7 @@ import type { Prisma } from "@prisma/client";
 export function CollegeQnaContent({ college }: { college: Prisma.CollegeGetPayload<{}> }) {
 
 
-  const defaultFaqs = [
-    {
-      question: `What is the NIRF ranking of ${college.name}?`,
-      answer: `${college.name} is ranked #${college.nirfRank || "Top Tier"} in the National Institutional Ranking Framework (NIRF) Engineering and Overall rankings published by the Ministry of Education.`,
-    },
-    {
-      question: `What is the cutoff for Computer Science (CSE) at ${college.name}?`,
-      answer: `Closing ranks for Computer Science vary by quota and category. General category candidates under Home State and All India quotas can view historical Round 1 to 6 closing ranks on our Cutoff tab.`,
-    },
-    {
-      question: `How are the placements at ${college.name}?`,
-      answer: `The institute maintains an audited placement percentage exceeding 90%, with leading global companies such as Microsoft, Google, Amazon, and Tata Steel recruiting across undergraduate and postgraduate branches.`,
-    },
-    {
-      question: `Is hostel accommodation available at ${college.name}?`,
-      answer: `Yes, comprehensive on-campus hostel and dining facilities are provided for both male and female students with high-speed internet, athletic complexes, and medical centers.`,
-    },
-  ];
-
-  const faqs = (college.faqsJson as Array<{ question: string; answer: string }>) || defaultFaqs;
+  const faqs = Array.isArray(college.faqsJson) ? college.faqsJson as Array<{ question: string; answer: string }> : [];
   const faqJsonLd = generateFaqJsonLd(faqs);
 
   return (
@@ -42,6 +23,7 @@ export function CollegeQnaContent({ college }: { college: Prisma.CollegeGetPaylo
         </p>
       </div>
 
+      {faqs.length === 0 && <p className="text-sm text-muted-foreground">Questions and answers have not been added yet.</p>}
       <div className="space-y-4">
         {faqs.map((faq, idx) => (
           <div key={idx} className="p-5 rounded-2xl border bg-card shadow-xs space-y-2">

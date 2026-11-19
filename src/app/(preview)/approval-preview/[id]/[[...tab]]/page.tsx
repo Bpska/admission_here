@@ -1,3 +1,7 @@
+import { CollegeInitialBlogSchema } from "@/lib/college-initial-blog";
+import { BlogProse } from "@/components/blog/BlogProse";
+import { getCollegeBlogPosts } from "@/lib/college-blogs";
+import { CollegeBlogsContent } from "@/components/college/CollegeBlogsContent";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { loadApprovalCollege } from "@/lib/approval-college";
@@ -19,7 +23,7 @@ export const metadata: Metadata = { title: "College submission preview", robots:
 export default async function ApprovalPreviewPage({ params }: { params: Promise<{ id: string; tab?: string[] }> }) {
   const { id, tab = [] } = await params;
   if (tab.length > 1) notFound();
-  const { college } = await loadApprovalCollege(id);
+  const { college, request } = await loadApprovalCollege(id);
   const basePath = `/approval-preview/${id}`;
   let content;
   switch (tab[0] || "") {
@@ -31,6 +35,20 @@ export default async function ApprovalPreviewPage({ params }: { params: Promise<
     case "rankings": content = <CollegeRankingsContent college={college} />; break;
     case "gallery": content = <CollegeGalleryContent college={college} />; break;
     case "reviews": content = <CollegeReviewsContent college={college} preview />; break;
+    case "blogs": {
+      const proposed = request.proposedData as Record<string, unknown>;
+      const initial = proposed.initialBlog ? CollegeInitialBlogSchema.parse(proposed.initialBlog) : null;
+      content = <div className="space-y-6">
+        {initial && <section className="space-y-4 rounded-xl border bg-card p-6">
+          <p className="text-xs font-semibold text-amber-700">Submitted college blog — {initial.publish && college.isPublished ? "publish after approval" : "save as draft"}</p>
+          <h1 className="text-2xl font-bold">{initial.title}</h1>
+          {initial.featuredImageUrl && <img src={initial.featuredImageUrl} alt="Submitted blog cover" className="max-h-80 w-full rounded-xl object-contain" />}
+          <BlogProse content={initial.contentMdx} />
+        </section>}
+        <CollegeBlogsContent collegeName={college.name} posts={await getCollegeBlogPosts(college)} />
+      </div>;
+      break;
+    }
     case "qna": content = <CollegeQnaContent college={college} />; break;
     default: notFound();
   }

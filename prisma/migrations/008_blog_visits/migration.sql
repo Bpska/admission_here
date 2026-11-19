@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS "BlogVisit" (
+  "blogId" UUID NOT NULL REFERENCES "BlogPost"("id") ON DELETE CASCADE,
+  "visitorHash" VARCHAR(64) NOT NULL,
+  "viewCount" INTEGER NOT NULL DEFAULT 1,
+  "firstSeenAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "lastViewAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY ("blogId", "visitorHash")
+);
+CREATE INDEX IF NOT EXISTS "BlogVisit_visitorHash_idx" ON "BlogVisit"("visitorHash");

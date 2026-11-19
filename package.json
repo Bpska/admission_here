@@ -10,7 +10,9 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "predev": "prisma generate",
+    "prebuild": "prisma generate"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import { filterBlogArticles } from "../src/lib/blog-cms";
+const articles = Array.from({ length: 34 }, (_, i) => ({ id: i, title: `Article ${String(i).padStart(2, "0")}`, slug: `article-${i}`, author: { name: i % 2 ? "Satyam" : "Editorial" }, category: i % 2 ? "EXAM_NEWS" : "CAREER_GUIDE", status: i % 3 ? "PUBLISHED" : "DRAFT", showOnWebsiteBlog: i % 2 === 0, createdAt: new Date(2026, 0, i + 1), updatedAt: new Date(2026, 0, i + 1) }));
+const first = filterBlogArticles(articles, {});
+assert.equal(first.posts.length, 15); assert.equal(first.pages, 3); assert.equal(first.posts[0].id, 33);
+const second = filterBlogArticles(articles, { page: "2" });
+assert.equal(second.posts.length, 15); assert.ok(second.posts.every(post => !first.posts.some(row => row.id === post.id)));
+assert.equal(filterBlogArticles(articles, { page: "999" }).page, 3);
+assert.equal(filterBlogArticles(articles, { page: "NaN" }).page, 1);
+assert.equal(filterBlogArticles(articles, { destination: "college" }).matching.length, 17);
+assert.ok(filterBlogArticles(articles, { destination: "website", status: "DRAFT", category: "CAREER_GUIDE" }).matching.every(post => post.showOnWebsiteBlog && post.status === "DRAFT" && post.category === "CAREER_GUIDE"));
+assert.equal(filterBlogArticles(articles, { q: " SATYAM " }).matching.length, 17);
+assert.equal(filterBlogArticles(articles, { q: "article-33" }).matching.length, 1);
+assert.equal(filterBlogArticles(articles, { sort: "oldest" }).posts[0].id, 0);
+assert.equal(filterBlogArticles(articles, { sort: "title" }).posts[0].id, 0);
+assert.equal(filterBlogArticles(articles, { q: "no match" }).pages, 1);
+assert.equal(articles[0].id, 0, "Filtering does not mutate the input order");
+console.log("Blog CMS checks passed: separate destinations, search, combined filters, sorting, pagination, invalid pages and empty results.");

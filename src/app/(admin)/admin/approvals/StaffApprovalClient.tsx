@@ -201,7 +201,7 @@ export function StaffApprovalClient({
 
       {/* Filter Tabs */}
       <div className="bg-card border rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mr-2">
             Filter Requests:
           </span>

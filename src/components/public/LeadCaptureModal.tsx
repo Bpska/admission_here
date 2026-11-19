@@ -14,6 +14,7 @@ interface LeadCaptureModalProps {
   ctaType?: LeadCtaType;
   brochureUrl?: string;
   defaultStream?: string;
+  defaultCourse?: string;
 }
 
 export function LeadCaptureModal({
@@ -25,6 +26,7 @@ export function LeadCaptureModal({
   ctaType = LeadCtaType.APPLY_NOW,
   brochureUrl,
   defaultStream = "Engineering",
+  defaultCourse,
 }: LeadCaptureModalProps) {
   useScrollLock(open);
   const [step, setStep] = useState<"form" | "success">("form");
@@ -83,6 +85,7 @@ export function LeadCaptureModal({
           studentName: trimmedName,
           phone: trimmedPhone,
           targetStream: trimmedStream,
+          targetCourse: defaultCourse,
           targetCollegeId: collegeId,
           sourceBlogId: blogId,
           sourceUrl: typeof window !== "undefined" ? window.location.pathname : "/",
@@ -206,6 +209,8 @@ export function LeadCaptureModal({
                     <option value="Engineering">Engineering (B.Tech / M.Tech)</option>
                     <option value="Management">Management (MBA / BBA)</option>
                     <option value="Medical">Medical (MBBS / BDS / AYUSH)</option>
+                    <option value="Computer Applications">Computer Applications (MCA / BCA)</option>
+                    <option value="Diploma">Diploma</option>
                     <option value="Law">Law (BA LLB / LLM)</option>
                     <option value="Commerce">Commerce & Accounting (B.Com / M.Com)</option>
                     <option value="Science">Pure Sciences (B.Sc / M.Sc)</option>

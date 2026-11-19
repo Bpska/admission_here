@@ -1,5 +1,6 @@
 "use client";
 
+import { collegeProgramHref } from "@/lib/college-programs";
 import { useCollegeComparison } from "./CollegeComparison";
 import Link from "next/link";
 import { useState } from "react";
@@ -24,6 +25,7 @@ export interface CollegeCardData {
   id: string;
   slug: string;
   name: string;
+  programKey?: string;
   shortName?: string | null;
   logoUrl?: string | null;
   coverImageUrl?: string | null;
@@ -38,13 +40,14 @@ export interface CollegeCardData {
   reviewCount: number;
   featuredCourse?: {
     degree: string;
+    stream?: string;
     specialization: string;
-    totalFeesInr: number;
+    totalFeesInr: number | null;
   } | null;
   latestPlacement?: {
     batchYear: number;
-    averagePackageInr: bigint | number;
-    highestPackageInr: bigint | number;
+    averagePackageInr: bigint | number | null;
+    highestPackageInr: bigint | number | null;
   } | null;
 }
 
@@ -103,7 +106,7 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
             </div>
 
             <Link
-              href={`/college/${college.slug}`}
+              href={college.programKey ? collegeProgramHref(college.slug, college.programKey) : `/college/${college.slug}`}
               className="after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-primary focus-visible:after:ring-inset"
             >
               <h3 className="font-bold text-base sm:text-lg text-foreground hover:text-primary transition-colors line-clamp-1">
@@ -135,7 +138,7 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
               </div>
 
               <div>
-                <span className="text-[11px] text-muted-foreground block">Avg Package</span>
+                <span className="text-[11px] text-muted-foreground block">{college.programKey ? "Programme placement" : "Avg Package"}</span>
                 <span className="font-bold text-emerald-600 flex items-center">
                   <Briefcase className="w-3 h-3 mr-1" />
                   {college.latestPlacement
@@ -191,6 +194,8 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
         open={modalOpen && ctaType !== LeadCtaType.DOWNLOAD_BROCHURE}
         onClose={() => setModalOpen(false)}
         collegeId={college.id}
+        defaultCourse={college.programKey ? college.featuredCourse?.degree : undefined}
+        defaultStream={college.programKey ? college.featuredCourse?.stream : undefined}
         collegeName={college.name}
         ctaType={ctaType}
         brochureUrl={college.brochurePdfUrl || undefined}

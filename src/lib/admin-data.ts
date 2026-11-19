@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { collegeSlugSchema } from "./college-slug";
+import { createHash } from "node:crypto";
+import { collegeSlugSchema, slugifyCollegeName } from "./college-slug";
 
 const int = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const year = z.number().int().min(2000).max(2100);
@@ -10,10 +11,10 @@ const optionalText = z.string().trim().nullable().optional();
 const date = z.coerce.date().nullable().optional();
 export const DATA_SCHEMAS = {
   exams: z.object({ name: text, slug: collegeSlugSchema, conductingBody: text, stream: text, examLevel: z.enum(["National", "State", "University"]), applicationStart: date, applicationEnd: date, examDate: date, resultDate: date, overviewHtml: text, syllabusHtml: optionalText, durationMinutes: int.min(1).nullable().optional(), totalMarks: int.min(1).nullable().optional(), examMode: optionalText, counselingSchedule: optionalText }),
-  courses: z.object({ slug: collegeSlugSchema, stream: text, degree: text, fullName: text, durationYrs: z.number().min(0.25).max(15), level: z.enum(["UG", "PG", "Diploma", "Doctoral"]) }),
-  offerings: z.object({ courseId: z.string().uuid(), specialization: text, totalFeesInr: int, firstYearFeesInr: int.nullable().optional(), hostelFeesYearlyInr: int.nullable().optional(), intakeSeats: int.nullable().optional(), acceptedExamSlugs: z.array(text).default([]), minimumClass12Percent: z.number().min(0).max(100).nullable().optional(), eligibilityDescription: optionalText, syllabusPdfUrl: optionalText }),
+  courses: z.object({ slug: collegeSlugSchema, stream: text, degree: text, fullName: text, durationYrs: z.number().min(0.25).max(15).nullable(), level: z.enum(["UG", "PG", "Diploma", "Doctoral"]) }),
+  offerings: z.object({ courseId: z.string().uuid().nullable().optional(), courseName: text.max(200).optional(), degree: text.max(100).optional(), stream: text.max(100).optional(), durationYrs: z.number().min(0.25).max(15).nullable().optional(), level: z.enum(["UG", "PG", "Diploma", "Doctoral"]).optional(), programOverviewHtml: optionalText, programAdmissionHtml: optionalText, programPlacementHtml: optionalText, specialization: text, totalFeesInr: int.nullable().optional(), publishedFeeInr: int.nullable().optional(), publishedCreditFeeInr: int.nullable().optional(), feeBasis: optionalText, feeAcademicYear: optionalText, feeSourceUrl: optionalText, firstYearFeesInr: int.nullable().optional(), hostelFeesYearlyInr: int.nullable().optional(), intakeSeats: int.nullable().optional(), acceptedExamSlugs: z.array(text).default([]), minimumClass12Percent: z.number().min(0).max(100).nullable().optional(), eligibilityDescription: optionalText, syllabusPdfUrl: optionalText }),
   cutoffs: z.object({ examId: z.string().uuid(), collegeCourseId: z.string().uuid(), academicYear: year, counselingRound: int.min(1), category: z.enum(["GEN", "OBC", "SC", "ST", "EWS"]), quota: z.enum(["AI", "HS", "OS"]), gender: z.enum(["Gender-Neutral", "Female-only"]), openingRank: int.min(1).nullable().optional(), closingRank: int.min(1).nullable().optional(), cutoffPercentile: z.number().min(0).max(100).nullable().optional() }),
-  placements: z.object({ batchYear: year, highestPackageInr: int, averagePackageInr: int, medianPackageInr: int, placementPercentage: z.number().min(0).max(100), totalOffers: int.nullable().optional(), topRecruiters: z.array(text).default([]) }),
+  placements: z.object({ batchYear: year, highestPackageInr: int.nullable().optional(), averagePackageInr: int.nullable().optional(), medianPackageInr: int.nullable().optional(), placementPercentage: z.number().min(0).max(100).nullable().optional(), sourceUrl: optionalText, sourceNote: optionalText, totalOffers: int.nullable().optional(), topRecruiters: z.array(text).default([]), photoUrls: z.array(z.string().regex(/^\/api\/v1\/blog-images\/[a-f0-9-]{36}$/i, "Upload placement photos using the file picker.")).max(100).optional() }),
   rankings: z.object({ agencyName: text, category: text, rankingYear: year, rankNumber: int.min(1), outOfTotal: int.min(1).nullable().optional() }),
   users: z.object({ name: text, email: z.string().trim().toLowerCase().email(), phone: optionalText, role: z.enum(["STUDENT", "AUTHOR", "COLLEGE_ADMIN", "SUPER_ADMIN"]), managedCollegeId: z.string().uuid().nullable().optional(), password: z.string().min(8).optional(), isActive: z.boolean().default(true) }),
 };
@@ -64,6 +65,23 @@ export async function applyDataMutation(tx: Prisma.TransactionClient, mutation: 
     data.patternJson = pattern;
   }
   if (resource === "offerings" && operation !== "delete") {
+    const details = ["courseName", "degree", "stream", "durationYrs", "level"];
+    const hasDetails = details.some(key => data[key] !== undefined);
+    if (hasDetails) {
+      if (!["courseName", "degree", "stream", "level"].every(key => data[key] !== undefined && data[key] !== "" && data[key] !== null)) throw new Error("Enter the course name, degree, stream and level.");
+      const courseData = { fullName: data.courseName, degree: data.degree, stream: data.stream, durationYrs: data.durationYrs ?? null, level: data.level };
+      const matching = await tx.course.findFirst({ where: courseData });
+      if (matching) data.courseId = matching.id;
+      else {
+        // Reuse identical typed degrees; never overwrite a shared catalog course.
+        const hash = createHash("sha256").update(JSON.stringify(courseData)).digest("hex").slice(0, 12);
+        const prefix = slugifyCollegeName(`${data.degree}-${data.courseName}`).slice(0, 65).replace(/-+$/, "") || "course";
+        const course = await tx.course.upsert({ where: { slug: `${prefix}-${hash}` }, create: { ...courseData, slug: `${prefix}-${hash}` }, update: {} });
+        data.courseId = course.id;
+      }
+    }
+    if (!data.courseId && (operation === "create" || "courseId" in data)) throw new Error("Enter course details or select an existing course.");
+    for (const key of details) delete data[key];
     const eligibility = { ...(existing?.eligibilityCriteria || {}) };
     if ("minimumClass12Percent" in data) eligibility.min_12th_pct = data.minimumClass12Percent;
     if ("eligibilityDescription" in data) eligibility.description = data.eligibilityDescription;

@@ -1,0 +1,21 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+type Comment = { id: string; name: string; body: string; status: string; createdAt: string };
+export function BlogEngagementManager({ blogId, likesEnabled, commentsEnabled, likes, comments, counts }: { blogId: string; likesEnabled: boolean; commentsEnabled: boolean; likes: number; comments: Comment[]; counts: Record<string, number> }) {
+  const router = useRouter(); const [busy, setBusy] = useState(false); const [error, setError] = useState(""); const [filter, setFilter] = useState("APPROVED");
+  async function act(data: object) { setBusy(true); setError(""); try { const response = await fetch(`/api/v1/cms/blogs/${blogId}/engagement`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }); const result = await response.json(); if (!response.ok) throw Error(result.error); router.refresh(); } catch (error) { setError(error instanceof Error ? error.message : "Unable to save."); } finally { setBusy(false); } }
+  return <div className="space-y-6">
+    {error && <p role="alert" className="text-red-600">{error}</p>}
+    <section className="space-y-4 rounded-xl border bg-card p-5"><h2 className="font-bold">Reader interaction settings</h2><p className="text-sm text-muted-foreground">New comments appear immediately. You can hide or delete them at any time. Disabling comments hides the form and existing comments without deleting them.</p>
+      <label className="flex gap-2 text-sm"><input type="checkbox" checked={likesEnabled} disabled={busy} onChange={event => void act({ action: "settings", likesEnabled: event.target.checked, commentsEnabled })} />Enable likes ({likes})</label>
+      <label className="flex gap-2 text-sm"><input type="checkbox" checked={commentsEnabled} disabled={busy} onChange={event => void act({ action: "settings", likesEnabled, commentsEnabled: event.target.checked })} />Enable comments</label>
+      <button type="button" disabled={busy || !likes} className="text-sm text-red-600 underline disabled:opacity-50" onClick={() => { if (confirm("Remove all likes from this article?")) void act({ action: "clearLikes" }); }}>Clear all likes</button>
+    </section>
+    <section className="space-y-4"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">Comment moderation</h2><select aria-label="Filter comments" className="rounded-lg border bg-background p-2 text-sm" value={filter} onChange={event => setFilter(event.target.value)}>{["PENDING", "APPROVED", "REJECTED"].map(status => <option key={status} value={status}>{status} ({counts[status] || 0})</option>)}</select></div>
+    <p className="text-xs text-muted-foreground">Showing up to the latest 200 comments per status. Approved comments are public; pending and rejected comments are hidden.</p>
+    {!comments.some(comment => comment.status === filter) && <p className="rounded-xl border p-6 text-sm text-muted-foreground">No {filter.toLowerCase()} comments.</p>}
+    {comments.filter(comment => comment.status === filter).map(comment => <article key={comment.id} className="space-y-3 rounded-xl border bg-card p-4"><div className="flex flex-wrap justify-between gap-2 text-sm"><strong>{comment.name}</strong><time dateTime={comment.createdAt}>{new Date(comment.createdAt).toLocaleString("en-IN")}</time></div><p className="whitespace-pre-wrap break-words text-sm">{comment.body}</p><div className="flex flex-wrap gap-3 text-xs font-semibold">{comment.status !== "APPROVED" && <button disabled={busy} onClick={() => void act({ action: "moderate", commentId: comment.id, status: "APPROVED" })} className="text-emerald-700 underline">Approve</button>}{comment.status !== "REJECTED" && <button disabled={busy} onClick={() => void act({ action: "moderate", commentId: comment.id, status: "REJECTED" })} className="text-amber-700 underline">{comment.status === "APPROVED" ? "Hide comment" : "Reject"}</button>}<button disabled={busy} onClick={() => { if (confirm("Permanently delete this comment?")) void act({ action: "delete", commentId: comment.id }); }} className="text-red-600 underline">Delete</button></div></article>)}
+    </section>
+  </div>;
+}
