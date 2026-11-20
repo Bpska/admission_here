@@ -473,3 +473,35 @@ model BlogQualifiedView {
   blog BlogPost @relation(fields: [blogId], references: [id], onDelete: Cascade)
   @@index([blogId])
 }
+
+// Durable import ledger: preview data never changes college records until confirmed.
+model CollegeImport {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId     String @db.Uuid
+  actorName   String
+  fileName    String
+  status      String @default("PREVIEW")
+  version     Int @default(1)
+  headers     Json
+  mapping     Json
+  options     Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  rows        CollegeImportRow[]
+}
+
+model CollegeImportRow {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  importId    String @db.Uuid
+  rowNumber   Int
+  raw         Json
+  decision    Json
+  preview     Json
+  status      String @default("PENDING")
+  collegeId   String? @db.Uuid
+  message     String?
+  completedAt DateTime?
+  import      CollegeImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+  @@unique([importId, rowNumber])
+  @@index([importId, status])
+}
