@@ -91,13 +91,6 @@ export default async function AdminCollegesPage({ searchParams }: {
       </div>
 
       {/* KPI Stats Cards */}
-      {access.isSuperAdmin && (
-        <div className="flex flex-wrap gap-3 text-sm font-semibold">
-          <Link href="/admin/colleges/bulk-upload" className="rounded-lg border bg-card px-4 py-3">Bulk Upload Colleges</Link>
-          <a href="/api/v1/admin/college-imports/template" className="rounded-lg border bg-card px-4 py-3">Download Excel Template</a>
-          <Link href="/admin/colleges/import-history" className="rounded-lg border bg-card px-4 py-3">Import History</Link>
-        </div>
-      )}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl border bg-card shadow-2xs">
           <span className="text-xs font-semibold text-muted-foreground">Total Institutions</span>
