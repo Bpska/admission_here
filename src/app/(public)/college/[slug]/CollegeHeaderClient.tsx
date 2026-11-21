@@ -53,10 +53,8 @@ export function CollegeHeaderClient({ college, previewBasePath, programs = [] }:
   const tabs = [
     { label: "Overview", path: `${basePath}` },
     { label: "Courses & Fees", path: `${basePath}/courses-fees` },
-    { label: "Admission 2026", path: `${basePath}/admission` },
-    { label: "Cutoff", path: `${basePath}/cutoff` },
+    { label: "Admission 2027", path: `${basePath}/admission` },
     { label: "Placements", path: `${basePath}/placements` },
-    { label: "Rankings", path: `${basePath}/rankings` },
     { label: "Campus Gallery", path: `${basePath}/gallery` },
     { label: "Reviews", path: `${basePath}/reviews` },
     { label: "Q&A", path: `${basePath}/qna` },
@@ -101,11 +99,6 @@ export function CollegeHeaderClient({ college, previewBasePath, programs = [] }:
               {/* Title & Metadata */}
               <div className="space-y-2 min-w-0 w-full flex-1">
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                  {college.nirfRank && (
-                    <span className="text-[10px] sm:text-xs font-black px-2 sm:px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                      NIRF #{college.nirfRank}
-                    </span>
-                  )}
                   {college.naacGrade && (
                     <span className="text-[10px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                       NAAC {college.naacGrade}
@@ -159,7 +152,7 @@ export function CollegeHeaderClient({ college, previewBasePath, programs = [] }:
                 style={{ background: "#c41e1e" }}
               >
                 <Send className="w-3.5 h-3.5" />
-                <span>{selectedProgram ? `Apply for ${selectedProgram.label}` : "Apply Now 2026"}</span>
+                <span>{selectedProgram ? `Apply for ${selectedProgram.label}` : "Apply Now 2027"}</span>
               </button>
             </div>
           </div>
@@ -170,7 +163,7 @@ export function CollegeHeaderClient({ college, previewBasePath, programs = [] }:
               const activeTab = tabs.find(tab => tab.path === pathname)?.path.slice(basePath.length).replace(/^\//, "") || "";
               router.push(event.target.value ? collegeProgramHref(college.slug, event.target.value, activeTab) : `/college/${college.slug}${activeTab ? `/${activeTab}` : ""}`);
             }} className="rounded-lg border bg-background px-3 py-2 text-sm"><option value="">All programmes / College profile</option>{programs.map(program => <option key={program.key} value={program.key}>{program.label}</option>)}</select>
-            {selectedProgram && <p className="text-xs text-muted-foreground">Fees, eligibility, admission and cutoffs are specific to {selectedProgram.label}. Campus information is shared.</p>}
+            {selectedProgram && <p className="text-xs text-muted-foreground">Fees, eligibility and admission are specific to {selectedProgram.label}. Campus information is shared.</p>}
           </div>}
 
           {/* Sticky 9 Sub-Tabs with Smooth Horizontal Touch Scroll */}

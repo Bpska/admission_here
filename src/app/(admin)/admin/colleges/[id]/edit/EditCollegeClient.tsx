@@ -92,7 +92,6 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
   const [brochurePdfUrl, setBrochurePdfUrl] = useState(college.brochurePdfUrl || "");
   const [ownershipType, setOwnershipType] = useState(college.ownershipType || "PUBLIC_GOVERNMENT");
   const [estYear, setEstYear] = useState(college.estYear ? String(college.estYear) : "");
-  const [nirfRank, setNirfRank] = useState(college.nirfRank ? String(college.nirfRank) : "");
   const [naacGrade, setNaacGrade] = useState(college.naacGrade || "");
   const [campusAreaAcres, setCampusAreaAcres] = useState(college.campusAreaAcres ? String(college.campusAreaAcres) : "");
 
@@ -175,7 +174,6 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
           contactEmail: contactEmail.trim() || null,
           estYear: estYear ? parseInt(estYear, 10) : null,
           ownershipType,
-          nirfRank: nirfRank ? parseInt(nirfRank, 10) : null,
           naacGrade: naacGrade.trim() || null,
           campusAreaAcres: campusAreaAcres ? parseFloat(campusAreaAcres) : null,
           overviewHtml,
@@ -229,7 +227,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
 
   return (
     <div className="max-w-5xl space-y-6">
-      {!approvalRequest && <Link href={`/admin/colleges/${college.id}/data`} className="inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Manage courses, fees, cutoffs, placements & rankings</Link>}
+      {!approvalRequest && <Link href={`/admin/colleges/${college.id}/data`} className="inline-flex rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Manage courses, fees & placements</Link>}
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b">
         <div className="flex items-center gap-3">
@@ -365,19 +363,6 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
 
             <div>
               <label className="block font-semibold text-muted-foreground mb-1">
-                NIRF Ranking (2025)
-              </label>
-              <input
-                type="number"
-                value={nirfRank}
-                onChange={(e) => setNirfRank(e.target.value)}
-                placeholder="e.g. 16 (leave blank if unranked)"
-                className="w-full px-3 py-2 border rounded-lg bg-background outline-hidden focus:border-primary font-bold text-amber-600"
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold text-muted-foreground mb-1">
                 NAAC Accreditation Grade
               </label>
               <select
@@ -433,7 +418,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
                 type="url"
                 value={brochurePdfUrl}
                 onChange={(e) => setBrochurePdfUrl(e.target.value)}
-                placeholder="https://example.com/brochure-2026.pdf"
+                placeholder="https://example.com/brochure-2027.pdf"
                 className="w-full px-3 py-2 border rounded-lg bg-background outline-hidden focus:border-primary"
               />
             </div>
@@ -605,7 +590,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
                 type="text"
                 value={metaTitle}
                 onChange={(e) => setMetaTitle(e.target.value)}
-                placeholder="e.g. NIT Rourkela Admissions 2026: Cutoffs, Fees & Placements"
+                placeholder="e.g. NIT Rourkela Admissions 2027: Courses, Fees & Placements"
                 className="w-full px-3 py-2 border rounded-lg bg-background outline-hidden focus:border-primary"
               />
             </div>
@@ -650,12 +635,12 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
       </form>
       {!approvalRequest && <>
         <p className="text-sm text-muted-foreground">Each section below saves its records separately. Profile changes use Save College Profile at the bottom.</p>
-        {(["offerings", "cutoffs", "placements", "rankings"] as const).map(resource => <div key={resource} id={`college-${resource}`} className="scroll-mt-6"><AdminDataEditor resource={resource} collegeId={college.id} /></div>)}
+        {(["offerings", "placements"] as const).map(resource => <div key={resource} id={`college-${resource}`} className="scroll-mt-6"><AdminDataEditor resource={resource} collegeId={college.id} /></div>)}
         <CollegeReviewSection collegeId={college.id} />
         <CollegeBlogsSection collegeId={college.id} />
       </>}
-      {approvalRequest && college.onboardingData && (["offerings", "cutoffs", "placements", "rankings"] as const).map(resource => <section key={resource} id={`college-${resource}`} className="scroll-mt-6 space-y-3 rounded-xl border bg-card p-6">
-        <h2 className="text-lg font-bold">{{ offerings: "Courses & Fees", cutoffs: "Cutoff", placements: "Placements", rankings: "Rankings" }[resource]}</h2>
+      {approvalRequest && college.onboardingData && (["offerings", "placements"] as const).map(resource => <section key={resource} id={`college-${resource}`} className="scroll-mt-6 space-y-3 rounded-xl border bg-card p-6">
+        <h2 className="text-lg font-bold">{{ offerings: "Courses & Fees", placements: "Placements" }[resource]}</h2>
         <p className="text-sm text-muted-foreground">{college.onboardingData![resource].length} submitted record(s). These records are included when the college is approved. Use Preview Submission to inspect the public sections.</p>
       </section>)}
       {approvalRequest && <section id="college-blogs" className="rounded-xl border p-4 text-sm text-muted-foreground">College articles can be managed after this submission is approved.</section>}

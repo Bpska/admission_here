@@ -14,19 +14,19 @@ import {
 } from "lucide-react";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = Math.max(2027, new Date().getFullYear());
 
-  // Month-wise Government & National Entrance Examinations Calendar 2026
+  // Government & National Entrance Examinations for the 2027 admission cycle
   const govtExamsCalendar = [
-    { month: "January", exam: "JEE Main (Session 1)", body: "NTA", stream: "Engineering", href: "/exams/jee-main" },
-    { month: "February", exam: "GATE 2026", body: "IITs / IISc", stream: "M.Tech / PSU", href: "/exams/gate" },
-    { month: "March", exam: "CUET PG 2026", body: "NTA", stream: "Postgraduate", href: "/exams/cuet-ug" },
-    { month: "April", exam: "JEE Main (Session 2)", body: "NTA", stream: "Engineering", href: "/exams/jee-main" },
-    { month: "May", exam: "NEET UG 2026", body: "NTA", stream: "Medical (MBBS)", href: "/exams/neet-ug" },
-    { month: "May", exam: "OJEE 2026 (Odisha)", body: "OJEE Board", stream: "Odisha State", href: "/exams/ojee" },
-    { month: "May", exam: "JEE Advanced", body: "IITs", stream: "IIT Admissions", href: "/exams/jee-main" },
-    { month: "June", exam: "CUET UG 2026", body: "NTA", stream: "Central Univ", href: "/exams/cuet-ug" },
-    { month: "November", exam: "CAT 2026", body: "IIMs", stream: "IIM / MBA", href: "/exams/cat" },
+    { exam: "JEE Main (Session 1)", body: "NTA", stream: "Engineering", href: "/exams/jee-main" },
+    { exam: "GATE 2027", body: "IITs / IISc", stream: "M.Tech / PSU", href: "/exams/gate" },
+    { exam: "CUET PG 2027", body: "NTA", stream: "Postgraduate", href: "/exams/cuet-ug" },
+    { exam: "JEE Main (Session 2)", body: "NTA", stream: "Engineering", href: "/exams/jee-main" },
+    { exam: "NEET UG 2027", body: "NTA", stream: "Medical (MBBS)", href: "/exams/neet-ug" },
+    { exam: "OJEE 2027 (Odisha)", body: "OJEE Board", stream: "Odisha State", href: "/exams/ojee" },
+    { exam: "JEE Advanced", body: "IITs", stream: "IIT Admissions", href: "/exams/jee-main" },
+    { exam: "CUET UG 2027", body: "NTA", stream: "Central Univ", href: "/exams/cuet-ug" },
+    { exam: "CAT 2027", body: "IIMs", stream: "IIM / MBA", href: "/exams/cat" },
   ];
 
   const coursesDegrees = [
@@ -162,7 +162,7 @@ export function Footer() {
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/college-predictor/jee-main" className="text-[#C41E1E] font-bold hover:underline block">
-                  • Rank Predictor 2026
+                  • Rank Predictor 2027
                 </Link>
               </li>
               <li>
@@ -194,13 +194,13 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Month-Wise Government & National Entrance Examinations Calendar */}
+        {/* Government & National Entrance Examinations */}
         <div className="pt-8 border-t border-slate-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-[#1a3068]" />
               <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#1a3068]">
-                2026 Government &amp; National Entrance Examinations Calendar (Month-Wise)
+                2027 Government &amp; National Entrance Examinations
               </h4>
             </div>
             <span className="text-[11px] text-slate-500 font-medium">
@@ -217,7 +217,7 @@ export function Footer() {
               >
                 <div>
                   <span className="text-[10px] font-black uppercase text-[#C41E1E] block">
-                    {item.month}
+                    View exam dates
                   </span>
                   <div className="font-bold text-xs text-slate-900 group-hover:text-[#1a3068] transition-colors line-clamp-1 mt-0.5">
                     {item.exam}

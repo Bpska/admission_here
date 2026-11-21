@@ -17,7 +17,7 @@ export function CollegeCutoffContent({ college }: { college: Prisma.CollegeGetPa
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-          {college.name} Cutoff 2026 / 2025: Opening & Closing Ranks
+          {college.name} Cutoff Trends: Opening & Closing Ranks
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
           Official round-wise closing ranks for General, OBC, SC, ST and EWS categories across Home State and All India quotas.

@@ -26,8 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return constructSeoMetadata({
-    title: college.metaTitle || `${college.name} Admissions 2026: Cutoffs, Fees, Placements & Ranking`,
-    description: college.metaDescription || `Check complete details for ${college.name}, ${college.city}, ${college.state}. Explore courses, fees, cutoffs, placements, and rankings.`,
+    title: college.metaTitle || `${college.name} Admissions 2027: Courses, Fees & Placements`,
+    description: college.metaDescription || `Check complete details for ${college.name}, ${college.city}, ${college.state}. Explore courses, fees, admissions and placements.`,
     canonicalPath: `/college/${slug}`,
   });
 }

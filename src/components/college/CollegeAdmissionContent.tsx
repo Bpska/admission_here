@@ -9,7 +9,7 @@ export function CollegeAdmissionContent({ college }: { college: Prisma.CollegeGe
     <div className="space-y-8 max-w-4xl">
       <div>
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-          {college.name} Admission Process 2026
+          {college.name} Admission Process 2027
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
           Institution-published admission information. Confirm current eligibility, application dates and selection requirements with the institute.

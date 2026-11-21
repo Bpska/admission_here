@@ -186,7 +186,7 @@ export function Navbar({ customFilters = [] }: { customFilters?: NavbarFilterOpt
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#1F8040]" />
                     <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
-                      {activeCategory.label} Admissions &amp; College Directory 2026
+                      {activeCategory.label} Admissions &amp; College Directory 2027
                     </h3>
                   </div>
                   <Link

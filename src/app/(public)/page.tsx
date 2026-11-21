@@ -127,7 +127,7 @@ export default async function HomePage() {
             {/* Real Portal Header Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#1a3068] border border-blue-200">
               <span className="w-2 h-2 rounded-full bg-[#1F8040]" />
-              <span>Admissions 2026-2027 • JoSAA, NEET &amp; CAT Counseling Platform</span>
+              <span>Admissions 2027-2028 • JoSAA, NEET &amp; CAT Counseling Platform</span>
             </div>
 
             {/* Natural Human Headline */}
@@ -236,7 +236,7 @@ export default async function HomePage() {
                 href: "/college-predictor/jee-main",
                 icon: Calculator,
                 iconTone: "border-amber-100 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300",
-                badge: "Live 2026 Engine",
+                badge: "Live 2027 Engine",
               },
             ].map((card) => (
               <Link
@@ -287,7 +287,7 @@ export default async function HomePage() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-[#1a3068] bg-blue-100/70 border border-blue-200 mb-2">
                 <MapPin className="w-3.5 h-3.5 text-[#C41E1E]" />
-                <span>Odisha Higher Education Spotlight 2026</span>
+                <span>Odisha Higher Education Spotlight 2027</span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
                 Top Colleges &amp; Universities in Odisha
@@ -348,7 +348,7 @@ export default async function HomePage() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/50 mb-2">
                 <Award className="w-4 h-4 text-amber-500" />
-                <span>Audited Ranking 2025-2026</span>
+                <span>Rankings &amp; Accreditations</span>
               </div>
               <h2 className="text-2xl sm:text-4xl font-black text-foreground tracking-tight">
                 Top Ranked Universities in India
@@ -409,7 +409,7 @@ export default async function HomePage() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 mb-2">
                 <FileText className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Admissions 2026 Examination Desk</span>
+                <span>Admissions 2027 Examination Desk</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 Top National Entrance Exams

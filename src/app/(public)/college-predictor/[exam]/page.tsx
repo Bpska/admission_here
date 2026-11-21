@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PredictorPageProps) {
   const examName = exam ? exam.name : examSlug.toUpperCase();
 
   return constructSeoMetadata({
-    title: `${examName} College Predictor 2026: Calculate Your Admission Chances`,
+    title: `${examName} College Predictor 2027: Calculate Your Admission Chances`,
     description: `Free algorithmic college predictor for ${examName}. Enter your rank, category, and state quota to get high, medium, and aspirational college admission probabilities.`,
     canonicalPath: `/college-predictor/${examSlug}`,
   });
@@ -49,7 +49,7 @@ export default async function CollegePredictorPage({ params }: PredictorPageProp
         </div>
 
         <h1 className="text-2xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-          {exam?.name || examSlug.toUpperCase()} College Predictor 2026
+          {exam?.name || examSlug.toUpperCase()} College Predictor 2027
         </h1>
 
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">

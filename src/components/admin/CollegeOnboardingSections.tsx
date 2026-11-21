@@ -8,7 +8,7 @@ export type OnboardingDraft = Record<"offerings" | "cutoffs" | "placements" | "r
 export const emptyOnboardingDraft = (): OnboardingDraft => ({ offerings: [], cutoffs: [], placements: [], rankings: [] });
 
 export function serializeOnboarding(draft: OnboardingDraft) {
-  return Object.fromEntries(Object.entries(draft).map(([resource, rows]) => [resource, rows.map(row => {
+  return Object.fromEntries(Object.entries(draft).filter(([resource]) => resource === "offerings" || resource === "placements").map(([resource, rows]) => [resource, rows.map(row => {
     const result: Record<string, any> = resource === "offerings" ? { clientId: row.clientId } : {};
     for (const field of ADMIN_RESOURCES[resource].fields) {
       const value = row[field.key] ?? "";
@@ -42,10 +42,9 @@ export function CollegeOnboardingSections({ value, onChange, disabled, onBusyCha
   }
   return <>
     {error && <div role="alert" className="rounded-lg border p-3 text-sm text-red-700">{error} <button type="button" className="underline" onClick={() => setAttempt(attempt + 1)}>Retry</button></div>}
-    {(["offerings", "cutoffs", "placements", "rankings"] as const).map(resource => <section key={resource} id={`college-${resource}`} className="scroll-mt-6 space-y-4 rounded-2xl border bg-card p-6">
+    {(["offerings", "placements"] as const).map(resource => <section key={resource} id={`college-${resource}`} className="scroll-mt-6 space-y-4 rounded-2xl border bg-card p-6">
       <div className="flex flex-wrap justify-between gap-3"><h2 className="text-lg font-bold">{ADMIN_RESOURCES[resource].label}</h2><button type="button" disabled={busy} className="rounded-lg border px-3 py-2 text-xs text-primary" onClick={() => onChange({ ...value, [resource]: [...value[resource], { clientId: crypto.randomUUID(), ...Object.fromEntries(ADMIN_RESOURCES[resource].fields.map(field => [field.key, field.options?.[0] || ""])) }] })}>Add {resource === "offerings" ? "course" : "record"}</button></div>
       {resource === "offerings" && <p className="text-xs text-muted-foreground">Type the course name, degree, stream, duration, eligibility and fee details directly. These records are stored when you save the college. Amounts are in rupees.</p>}
-      {resource === "cutoffs" && <p className="text-xs text-muted-foreground">Add courses above first. Choose the course, entrance exam, year, category and counselling round for each cutoff.</p>}
       {value[resource].length === 0 && <p className="text-sm text-muted-foreground">No records added. This section is optional.</p>}
       {value[resource].map((row, index) => <div key={row.clientId} className="space-y-3 rounded-xl border p-4">
         <div className="flex justify-between"><h3 className="text-sm font-semibold">{resource === "offerings" ? "Course" : "Record"} {index + 1}</h3><button type="button" disabled={busy} className="text-xs text-red-600" onClick={() => {

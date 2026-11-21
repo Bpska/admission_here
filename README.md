@@ -11,13 +11,11 @@ Built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, and **Post
 ### 1. Public Student Portal (SSR & ISR)
 - **Homepage (`/`)**: AI Search Command Bar, Stream discovery grid, top NIRF-ranked institutions, live exam news.
 - **Programmatic SEO Directory (`/colleges/[[...filters]]`)**: Faceted multi-dimensional filtering by Stream, Degree, State (e.g. `/colleges/b-tech/odisha`), Ownership, and Max Fees.
-- **Persistent College Layout & 9 Sub-Tabs (`/college/[slug]`)**:
+- **Persistent College Layout & Programme Tabs (`/college/[slug]`)**:
   - `Overview` (`/`): Quick facts, highlights, facilities, and accreditations.
   - `Courses & Fees` (`/courses-fees`): Comprehensive tuition, hostel costs, intake seats, and Course JSON-LD.
-  - `Admission 2026` (`/admission`): Step-by-step JoSAA/institutional counseling workflow.
-  - `Cutoff` (`/cutoff`): Historical round-wise opening & closing ranks by Quota (HS/OS/AI) and Category (GEN/OBC/SC/ST/EWS).
+  - `Admission 2027` (`/admission`): Step-by-step JoSAA/institutional counseling workflow.
   - `Placements` (`/placements`): Highest CTC, Average CTC, Median package, placement rates, and top recruiters.
-  - `Rankings` (`/rankings`): Ministry of Education NIRF benchmarks and NAAC grades.
   - `Campus Gallery` (`/gallery`): High-res photos of labs, auditoriums, hostels, and sports arenas.
   - `Student Reviews` (`/reviews`): Verified ID-checked student ratings across Placements, Infrastructure, Faculty, and Value/ROI.
   - `Q&A` (`/qna`): Verified answers with Schema.org `FAQPage` JSON-LD.

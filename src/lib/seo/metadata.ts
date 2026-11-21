@@ -23,7 +23,7 @@ export function constructSeoMetadata({
 
   const defaultKeywords = [
     "Colleges in India",
-    "College Admissions 2026",
+    "College Admissions 2027",
     "B.Tech Cutoffs",
     "NIRF Rankings",
     "College Predictor",

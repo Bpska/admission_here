@@ -7,7 +7,7 @@ import { Sparkles, Radio, Calendar, User, ArrowRight, Tag } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export const metadata = constructSeoMetadata({
-  title: "AdmissionsHub Editorial & Live Exam Updates 2026",
+  title: "AdmissionsHub Editorial & Live Exam Updates 2027",
   description:
     "Authoritative cutoff analysis, JoSAA seat allotment updates, entrance exam results, and college roundups authored by education specialists.",
   canonicalPath: "/blog",

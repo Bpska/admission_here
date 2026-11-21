@@ -163,7 +163,7 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. JEE Main 2026 Cutoff Analysis: Opening and Closing Ranks for Top NITs"
+              placeholder="e.g. JEE Main 2027 Cutoff Analysis: Opening and Closing Ranks for Top NITs"
               className="w-full text-base sm:text-lg font-bold border rounded-lg px-3.5 py-2.5 bg-background outline-hidden focus:border-primary"
             />
           </div>
@@ -221,7 +221,7 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
               type="text"
               value={tagsText}
               onChange={(e) => setTagsText(e.target.value)}
-              placeholder="jee-main, cutoff-2026, nit-rourkela"
+              placeholder="jee-main, cutoff-2027, nit-rourkela"
               className="w-full text-xs border rounded-lg px-3 py-2 bg-background outline-hidden focus:border-primary"
             />
           </div>

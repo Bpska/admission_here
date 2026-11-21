@@ -7,4 +7,4 @@ export function collegeProgramHref(slug: string, program: string, tab = "") { re
 export function programChoices(offerings: { course: { degree: string; fullName: string; stream: string } }[]) {
   return [...new Map(offerings.map(offering => [programKey(offering.course.degree), { key: programKey(offering.course.degree), label: offering.course.degree, stream: offering.course.stream }])).values()];
 }
-export const PROGRAM_TABS = ["", "courses-fees", "admission", "cutoff", "placements", "rankings", "gallery", "reviews", "qna", "blogs"];
+export const PROGRAM_TABS = ["", "courses-fees", "admission", "placements", "gallery", "reviews", "qna", "blogs"];

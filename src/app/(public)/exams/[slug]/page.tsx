@@ -97,7 +97,7 @@ export default async function ExamHubPage({ params }: ExamPageProps) {
           <div className="p-3 rounded-xl bg-muted/40 border">
             <span className="text-muted-foreground block text-[11px]">Examination Date</span>
             <span className="font-bold text-primary">
-              {exam.examDate ? new Date(exam.examDate).toLocaleDateString() : "Jan 2026"}
+              {exam.examDate ? new Date(exam.examDate).toLocaleDateString() : "TBA"}
             </span>
           </div>
 

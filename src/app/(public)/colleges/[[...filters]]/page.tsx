@@ -36,7 +36,7 @@ export async function generateMetadata({ params, searchParams }: CollegesPagePro
   const query = sParams.q?.trim() || "";
   const selectedFilter = await findNavbarFilter(sParams.navFilter);
 
-  let title = "Top Colleges in India 2026";
+  let title = "Top Colleges in India 2027";
   let description =
     "Explore, compare and filter verified Indian colleges by NIRF rankings, cutoffs, tuition fees, and placements.";
 

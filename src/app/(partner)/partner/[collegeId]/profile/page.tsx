@@ -48,7 +48,7 @@ export default async function PartnerProfilePage({ params }: ProfilePageProps) {
 
       <div className="bg-card border rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
         <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-700 leading-relaxed">
-          <strong>Notice for Partner Institutes:</strong> Proposed fee adjustments, placement record audits, and updated 2026 brochures are reviewed by AdmissionsHub Editorial Desk within 24 business hours prior to live publication.
+          <strong>Notice for Partner Institutes:</strong> Proposed fee adjustments, placement record audits, and updated 2027 brochures are reviewed by AdmissionsHub Editorial Desk within 24 business hours prior to live publication.
         </div>
 
         <div className="space-y-4">
@@ -87,7 +87,7 @@ export default async function PartnerProfilePage({ params }: ProfilePageProps) {
         {/* Brochure Upload Proposal */}
         <div className="border-t pt-6 space-y-3">
           <h3 className="font-bold text-sm text-foreground">
-            Upload 2026 Official PDF Brochure
+            Upload 2027 Official PDF Brochure
           </h3>
           <div className="border-2 border-dashed rounded-xl p-8 text-center text-xs space-y-2 hover:border-primary/50 transition-colors">
             <UploadCloud className="w-8 h-8 mx-auto text-muted-foreground" />

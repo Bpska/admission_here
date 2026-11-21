@@ -75,13 +75,6 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
               </span>
             </div>
 
-            {college.nirfRank && <div className="p-3.5 rounded-xl bg-muted/30 border">
-              <span className="text-muted-foreground block text-[11px]">NIRF Ranking</span>
-              <span className="font-black text-amber-600 text-sm">
-                {college.nirfRank ? `#${college.nirfRank} in India` : "Ranked / Accredited"}
-              </span>
-            </div>}
-
             {college.naacGrade && <div className="p-3.5 rounded-xl bg-muted/30 border">
               <span className="text-muted-foreground block text-[11px]">NAAC Accreditation</span>
               <span className="font-bold text-emerald-600 text-sm">
@@ -297,7 +290,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
           ) : (
             <div className="p-8 text-center text-muted-foreground text-xs bg-muted/20 rounded-xl border">
               <BookOpen className="w-8 h-8 mx-auto text-muted-foreground/60 mb-2" />
-              <p className="font-medium text-foreground">Course data for this college is currently being updated for the 2026 academic batch.</p>
+              <p className="font-medium text-foreground">Course data for this college is currently being updated for the 2027 academic batch.</p>
               <p className="mt-1">Inquire directly to receive the complete syllabus and program list.</p>
             </div>
           )}
@@ -307,7 +300,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
         <section className="bg-card border rounded-2xl p-6 sm:p-8 shadow-xs space-y-5">
           <h2 className="text-base sm:text-lg font-extrabold text-foreground flex items-center gap-2 border-b pb-3">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>Admission Process &amp; Eligibility Guidelines (2026)</span>
+            <span>Admission Process &amp; Eligibility Guidelines (2027)</span>
           </h2>
 
           {college.admissionHtml ? (
@@ -501,7 +494,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
                       <MapPin className="w-3 h-3" /> {rel.city}, {rel.state}
                     </p>
                     <span className="text-[10px] font-bold text-amber-600 block">
-                      {rel.nirfRank ? `NIRF #${rel.nirfRank}` : rel.naacGrade ? `NAAC ${rel.naacGrade}` : "College profile"}
+                      {rel.naacGrade ? `NAAC ${rel.naacGrade}` : "College profile"}
                     </span>
                   </div>
 
@@ -568,7 +561,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
             </p>
             <p className="flex items-center gap-1.5 text-foreground font-medium">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Free personalized cutoff guidance</span>
+              <span>Free personalized admission guidance</span>
             </p>
           </div>
         </div>

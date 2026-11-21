@@ -9,7 +9,7 @@ export function CollegeRankingsContent({ college }: { college: Prisma.CollegeGet
     <div className="space-y-8 max-w-4xl">
       <div>
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-          {college.name} Rankings & Accreditations 2026
+          {college.name} Rankings & Accreditations 2027
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
           Institutional rankings and accreditation details.

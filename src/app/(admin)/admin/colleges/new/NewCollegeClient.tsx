@@ -36,7 +36,6 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
   const [brochurePdfUrl, setBrochurePdfUrl] = useState("");
   const [ownershipType, setOwnershipType] = useState("PUBLIC_GOVERNMENT");
   const [estYear, setEstYear] = useState("");
-  const [nirfRank, setNirfRank] = useState("");
   const [naacGrade, setNaacGrade] = useState("");
   const [campusAreaAcres, setCampusAreaAcres] = useState("");
 
@@ -120,7 +119,6 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
           contactEmail: contactEmail.trim() || null,
           estYear: estYear ? parseInt(estYear, 10) : null,
           ownershipType,
-          nirfRank: nirfRank ? parseInt(nirfRank, 10) : null,
           naacGrade: naacGrade.trim() || null,
           campusAreaAcres: campusAreaAcres ? parseFloat(campusAreaAcres) : null,
           overviewHtml,
@@ -172,7 +170,7 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
           <p className="text-xs text-muted-foreground">
             {requiresApproval
               ? "Your submission goes to the administrator for review. The college becomes public only after approval."
-              : "Enter verified details for NIRF indexing, schema generation, and SEO directory discovery."}
+              : "Enter verified details for college indexing, schema generation, and SEO directory discovery."}
           </p>
         </div>
       </div>
@@ -266,19 +264,6 @@ export function NewCollegeClient({ requiresApproval }: { requiresApproval: boole
                 onChange={(e) => setEstYear(e.target.value)}
                 placeholder="e.g. 1961"
                 className="w-full border rounded-lg px-3 py-2 bg-background outline-hidden focus:border-primary"
-              />
-            </div>
-
-            <div>
-              <label className="block font-semibold text-muted-foreground mb-1">
-                NIRF Rank (2025)
-              </label>
-              <input
-                type="number"
-                value={nirfRank}
-                onChange={(e) => setNirfRank(e.target.value)}
-                placeholder="e.g. 16"
-                className="w-full border rounded-lg px-3 py-2 bg-background outline-hidden focus:border-primary font-bold text-amber-600"
               />
             </div>
 

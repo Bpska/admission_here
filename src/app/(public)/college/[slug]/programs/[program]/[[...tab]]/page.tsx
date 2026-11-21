@@ -1,12 +1,10 @@
 import { cache } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { programKey, collegeProgramHref, PROGRAM_TABS } from "@/lib/college-programs";
 import { constructSeoMetadata } from "@/lib/seo/metadata";
 import { CollegeCoursesContent } from "@/components/college/CollegeCoursesContent";
-import { CollegeCutoffContent } from "@/components/college/CollegeCutoffContent";
-import { CollegeRankingsContent } from "@/components/college/CollegeRankingsContent";
 import { CollegeGalleryContent } from "@/components/college/CollegeGalleryContent";
 import { CollegeReviewsContent } from "@/components/college/CollegeReviewsContent";
 import { CollegeQnaContent } from "@/components/college/CollegeQnaContent";
@@ -17,8 +15,7 @@ type Props = { params: Promise<{ slug: string; program: string; tab?: string[] }
 const getProfile = cache(async (slug: string, program: string) => {
   if (!/^[a-z0-9-]{1,100}$/.test(program)) notFound();
   const college = await db.college.findUnique({ where: { slug, isPublished: true }, include: {
-    courses: { include: { course: true, cutoffs: { include: { exam: true }, orderBy: [{ academicYear: "desc" }, { counselingRound: "asc" }] } } },
-    rankings: { orderBy: { rankingYear: "desc" } },
+    courses: { include: { course: true } },
     reviews: { where: { moderationStatus: "APPROVED" }, include: { user: { select: { name: true } } }, orderBy: { createdAt: "desc" } },
   } });
   if (!college) notFound();
@@ -26,16 +23,18 @@ const getProfile = cache(async (slug: string, program: string) => {
   if (!courses.length) notFound();
   return { ...college, courses };
 });
-const tabLabel: Record<string, string> = { "": "Overview", "courses-fees": "Courses & Fees", admission: "Admission & Eligibility", cutoff: "Cutoffs", placements: "Placements", rankings: "Rankings", gallery: "Campus Gallery", reviews: "Student Reviews", qna: "Questions & Answers", blogs: "College Blogs" };
+const tabLabel: Record<string, string> = { "": "Overview", "courses-fees": "Courses & Fees", admission: "Admission & Eligibility", placements: "Placements", gallery: "Campus Gallery", reviews: "Student Reviews", qna: "Questions & Answers", blogs: "College Blogs" };
 export async function generateMetadata({ params }: Props) {
   const { slug, program, tab = [] } = await params;
+  if(tab.length===1&&["cutoff","rankings"].includes(tab[0])) {const college=await getProfile(slug,program);permanentRedirect(collegeProgramHref(college.slug,program));}
   if (tab.length > 1 || !PROGRAM_TABS.includes(tab[0] || "")) notFound();
   const college = await getProfile(slug, program); const label = college.courses[0].course.degree;
-  return constructSeoMetadata({ title: `${college.name} ${label}: ${tabLabel[tab[0] || ""]}`, description: `Explore ${label} at ${college.name}: programme fees, eligibility, admission, cutoffs and available placement information.`, canonicalPath: ["gallery", "qna", "blogs"].includes(tab[0] || "") ? `/college/${slug}/${tab[0]}` : collegeProgramHref(slug, program, tab[0]), keywords: [label, college.name, `${label} fees`, `${label} admission`] });
+  return constructSeoMetadata({ title: `${college.name} ${label}: ${tabLabel[tab[0] || ""]}`, description: `Explore ${label} at ${college.name}: programme fees, eligibility, admission and available placement information.`, canonicalPath: ["gallery", "qna", "blogs"].includes(tab[0] || "") ? `/college/${slug}/${tab[0]}` : collegeProgramHref(slug, program, tab[0]), keywords: [label, college.name, `${label} fees`, `${label} admission`] });
 }
 function HtmlSection({ title, html }: { title: string; html: string }) { return <section className="space-y-3 rounded-xl border bg-card p-5"><h2 className="text-lg font-bold">{title}</h2><div className="prose prose-sm max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: html }} /></section>; }
 export default async function CollegeProgramPage({ params }: Props) {
   const { slug, program, tab = [] } = await params;
+  if(tab.length===1&&["cutoff","rankings"].includes(tab[0])) {const college=await getProfile(slug,program);permanentRedirect(collegeProgramHref(college.slug,program));}
   if (tab.length > 1 || !PROGRAM_TABS.includes(tab[0] || "")) notFound();
   const college = await getProfile(slug, program); const label = college.courses[0].course.degree;
   const section = tab[0] || ""; const base = collegeProgramHref(slug, program);
@@ -47,9 +46,7 @@ export default async function CollegeProgramPage({ params }: Props) {
   let content;
   if (section === "courses-fees") content = <><CollegeCoursesContent college={college} />{eligibility}</>;
   else if (section === "admission") content = <>{admissions}{eligibility}</>;
-  else if (section === "cutoff") content = <CollegeCutoffContent college={college} />;
   else if (section === "placements") content = <section className="space-y-4"><h2 className="text-xl font-bold">{college.name} {label} placements</h2>{college.courses.some(offering => offering.programPlacementHtml) ? college.courses.map(offering => offering.programPlacementHtml && <HtmlSection key={offering.id} title={offering.specialization} html={offering.programPlacementHtml} />) : <p className="rounded-xl border p-5 text-sm text-muted-foreground">{label}-specific placement data has not been added. College-wide or other programme figures are not presented as {label} placements.</p>}</section>;
-  else if (section === "rankings") content = <><p className="text-sm text-muted-foreground">Rankings below are for the applicable discipline or the institution overall. An overall college ranking is not a separate {label} ranking.</p><CollegeRankingsContent college={{ ...college, rankings: college.rankings.filter(ranking => ["overall", label.toLowerCase(), ...college.courses.map(offering => offering.course.stream.toLowerCase())].includes(ranking.category.toLowerCase())) }} /></>;
   else if (section === "gallery") content = <><p className="text-sm text-muted-foreground">Shared college campus and facilities for all programmes.</p><CollegeGalleryContent college={college} /></>;
   else if (section === "reviews") {
     const degreeExpression = new RegExp(`(^|[^a-z0-9])${label.replace(/[^a-z0-9]/gi, "").split("").join("[.\\s-]*")}([^a-z0-9]|$)`, "i");
@@ -61,7 +58,7 @@ export default async function CollegeProgramPage({ params }: Props) {
     <section className="rounded-xl border bg-card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-primary">Programme profile</p><h2 className="mt-2 text-2xl font-bold">{college.name} — {label}</h2><p className="mt-2 text-sm text-muted-foreground">Explore only the {label} programmes offered here. Switch programmes above to compare another course at the same college.</p></section>
     {college.courses.map(offering => offering.programOverviewHtml && <HtmlSection key={offering.id} title={`${label}: ${offering.specialization}`} html={offering.programOverviewHtml} />)}
     <CollegeCoursesContent college={college} />{eligibility}{admissions}
-    <div className="flex flex-wrap gap-3 text-sm font-semibold"><Link href={`${base}/cutoff`} className="rounded-lg border p-3 text-primary">View {label} cutoffs</Link><Link href={`${base}/placements`} className="rounded-lg border p-3 text-primary">View {label} placements</Link></div>
+    <div className="flex flex-wrap gap-3 text-sm font-semibold"><Link href={`${base}/placements`} className="rounded-lg border p-3 text-primary">View {label} placements</Link></div>
     <section className="space-y-3 rounded-xl border bg-card p-5"><h2 className="text-lg font-bold">College &amp; campus information</h2><p className="text-sm text-muted-foreground">{college.name}, {college.city}, {college.state}. Campus details are shared by all programmes.</p>{college.fullAddress && <p className="text-sm">{college.fullAddress}</p>}{college.estYear && <p className="text-sm">Established: {college.estYear}</p>}{college.approvedBy.length > 0 && <p className="text-sm">Institutional approvals: {college.approvedBy.join(", ")}</p>}<Link href={`${base}/gallery`} className="inline-block text-sm font-semibold text-primary">View campus gallery →</Link></section>
   </>;
   return <div className="space-y-6">{content}</div>;

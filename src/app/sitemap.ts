@@ -47,9 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "",
     "/courses-fees",
     "/admission",
-    "/cutoff",
     "/placements",
-    "/rankings",
     "/gallery",
     "/reviews",
     "/qna",
@@ -71,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ]);
 
-  const programmeRoutes: MetadataRoute.Sitemap = colleges.flatMap(college => programChoices(college.courses).flatMap(program => ["", "courses-fees", "admission", "cutoff", "placements", "rankings", "reviews"].map(tab => ({ url: `${baseUrl}${collegeProgramHref(college.slug, program.key, tab)}`, lastModified: college.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 }))));
+  const programmeRoutes: MetadataRoute.Sitemap = colleges.flatMap(college => programChoices(college.courses).flatMap(program => ["", "courses-fees", "admission", "placements", "reviews"].map(tab => ({ url: `${baseUrl}${collegeProgramHref(college.slug, program.key, tab)}`, lastModified: college.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 }))));
 
   // Blog posts
   const blogs = await db.blogPost.findMany({

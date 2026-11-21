@@ -37,8 +37,8 @@ export const CATEGORIES: NavCategory[] = [
       {
         title: NAVBAR_COLUMN_TITLES.mba[1],
         items: [
-          { label: "CAT 2026 Exam", href: "/exams/cat" },
-          { label: "XAT 2026 Exam", href: "/exams/cat" },
+          { label: "CAT 2027 Exam", href: "/exams/cat" },
+          { label: "XAT 2027 Exam", href: "/exams/cat" },
           { label: "MAT Exam Details", href: "/exams/cat" },
           { label: "CAT College Predictor", href: "/college-predictor/cat" },
           { label: "IIM Cutoff Analysis", href: "/blog/top-10-mba-colleges-in-india-cat-cutoffs-placements" },
@@ -74,11 +74,11 @@ export const CATEGORIES: NavCategory[] = [
       {
         title: NAVBAR_COLUMN_TITLES.engineering[1],
         items: [
-          { label: "JEE Main 2026", href: "/exams/jee-main", badge: "Live" },
-          { label: "GATE 2026", href: "/exams/gate" },
+          { label: "JEE Main 2027", href: "/exams/jee-main", badge: "Live" },
+          { label: "GATE 2027", href: "/exams/gate" },
           { label: "OJEE Engineering", href: "/exams/ojee" },
           { label: "JoSAA Cutoffs Predictor", href: "/college-predictor/jee-main" },
-          { label: "NIT Opening & Closing Ranks", href: "/blog/jee-main-2026-cutoff-analysis-for-top-nits" },
+          { label: "NIT Opening & Closing Ranks", href: "/blog/jee-main-2027-cutoff-analysis-for-top-nits" },
         ],
       },
       {
@@ -111,8 +111,8 @@ export const CATEGORIES: NavCategory[] = [
       {
         title: NAVBAR_COLUMN_TITLES.medical[1],
         items: [
-          { label: "NEET UG 2026 Exam", href: "/exams/neet-ug", badge: "Key" },
-          { label: "NEET UG Counseling & Seat Matrix", href: "/blog/neet-ug-2026-counseling-dates-seat-matrix-breakdown" },
+          { label: "NEET UG 2027 Exam", href: "/exams/neet-ug", badge: "Key" },
+          { label: "NEET UG Counseling & Seat Matrix", href: "/blog/neet-ug-2027-counseling-dates-seat-matrix-breakdown" },
           { label: "NEET College Predictor", href: "/college-predictor/neet-ug" },
           { label: "MCC 15% AIQ Cutoffs", href: "/colleges/mbbs" },
         ],
@@ -145,7 +145,7 @@ export const CATEGORIES: NavCategory[] = [
       {
         title: NAVBAR_COLUMN_TITLES.design[1],
         items: [
-          { label: "UCEED Exam 2026", href: "/exams/jee-main" },
+          { label: "UCEED Exam 2027", href: "/exams/jee-main" },
           { label: "NID DAT Exam", href: "/exams/jee-main" },
           { label: "NATA Architecture Exam", href: "/exams/jee-main" },
         ],
@@ -236,9 +236,9 @@ export const CATEGORIES: NavCategory[] = [
       {
         title: NAVBAR_COLUMN_TITLES.counseling[0],
         items: [
-          { label: "JoSAA Counseling 2026 Process", href: "/exams/jee-main" },
+          { label: "JoSAA Counseling 2027 Process", href: "/exams/jee-main" },
           { label: "CSAB Special Rounds", href: "/college-predictor/jee-main" },
-          { label: "MCC NEET Medical Allotment", href: "/blog/neet-ug-2026-counseling-dates-seat-matrix-breakdown" },
+          { label: "MCC NEET Medical Allotment", href: "/blog/neet-ug-2027-counseling-dates-seat-matrix-breakdown" },
           { label: "State Quota Seat Matrix", href: "/colleges/b-tech/odisha" },
         ],
       },

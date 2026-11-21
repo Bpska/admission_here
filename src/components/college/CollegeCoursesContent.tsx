@@ -25,7 +25,7 @@ export function CollegeCoursesContent({ college }: { college: Prisma.CollegeGetP
 
       <div>
         <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-          {college.name} Courses & Fee Structure 2026
+          {college.name} Courses & Fee Structure 2027
         </h2>
         <p className="text-xs text-muted-foreground mt-1">
           Detailed tuition fees, hostel expenses, seat intake, and eligibility criteria for all programs.

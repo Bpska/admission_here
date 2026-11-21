@@ -52,7 +52,6 @@ export default async function AdminCollegesPage({ searchParams }: {
   const totalCount = colleges.length;
   const publishedCount = colleges.filter((c) => c.isPublished).length;
   const draftCount = totalCount - publishedCount;
-  const rankedCount = colleges.filter((c) => c.nirfRank && c.nirfRank > 0).length;
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -91,7 +90,14 @@ export default async function AdminCollegesPage({ searchParams }: {
       </div>
 
       {/* KPI Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {access.isSuperAdmin && (
+        <div className="flex flex-wrap gap-3 text-sm font-semibold">
+          <Link href="/admin/colleges/bulk-upload" className="rounded-lg border bg-card px-4 py-3">Bulk Upload Colleges</Link>
+          <a href="/api/v1/admin/college-imports/template" className="rounded-lg border bg-card px-4 py-3">Download Excel Template</a>
+          <Link href="/admin/colleges/import-history" className="rounded-lg border bg-card px-4 py-3">Import History</Link>
+        </div>
+      )}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 rounded-xl border bg-card shadow-2xs">
           <span className="text-xs font-semibold text-muted-foreground">Total Institutions</span>
           <p className="text-2xl font-black text-foreground mt-1">{totalCount}</p>
@@ -110,11 +116,7 @@ export default async function AdminCollegesPage({ searchParams }: {
           <p className="text-[11px] text-muted-foreground mt-0.5">Pending publication</p>
         </div>
 
-        <div className="p-4 rounded-xl border bg-card shadow-2xs">
-          <span className="text-xs font-semibold text-muted-foreground">NIRF Ranked</span>
-          <p className="text-2xl font-black text-blue-700 mt-1">{rankedCount}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">Verified NIRF 2025</p>
-        </div>
+
       </div>
 
       {(!access.isSuperAdmin || submissions.length > 0) && (
@@ -180,7 +182,6 @@ export default async function AdminCollegesPage({ searchParams }: {
               <tr>
                 <th className="p-4">College Name &amp; Slug</th>
                 <th className="p-4">Location</th>
-                <th className="p-4">NIRF Rank</th>
                 <th className="p-4">Ownership</th>
                 <th className="p-4">Programs</th>
                 <th className="p-4">Leads</th>
@@ -190,7 +191,7 @@ export default async function AdminCollegesPage({ searchParams }: {
             </thead>
             <tbody className="divide-y text-foreground">
               {colleges.length === 0 && (
-                <tr><td colSpan={8} className="p-6 text-sm text-muted-foreground">
+                <tr><td colSpan={7} className="p-6 text-sm text-muted-foreground">
                   {access.isSuperAdmin
                     ? "No college profiles have been created yet."
                     : "No colleges are assigned to you yet. You can submit a new college now; it will appear in this directory after admin approval."}
@@ -226,9 +227,7 @@ export default async function AdminCollegesPage({ searchParams }: {
                     {c.city}, {c.state}
                   </td>
 
-                  <td className="p-4 font-black text-amber-600 whitespace-nowrap">
-                    {c.nirfRank ? `#${c.nirfRank}` : "—"}
-                  </td>
+
 
                   <td className="p-4 whitespace-nowrap">
                     <span className="text-[11px] font-medium text-foreground">

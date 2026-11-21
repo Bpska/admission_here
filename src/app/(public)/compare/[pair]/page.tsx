@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: ComparePageProps) {
   const names = colleges.map((c) => c.shortName || c.name).join(" vs ");
 
   return constructSeoMetadata({
-    title: `${names}: Complete Side-by-Side Comparison 2026`,
+    title: `${names}: Complete Side-by-Side Comparison 2027`,
     description: `Compare ${names} side-by-side on NIRF rankings, total tuition fees, average placement packages, cutoffs, and student reviews.`,
     canonicalPath: `/compare/${pair}`,
   });
