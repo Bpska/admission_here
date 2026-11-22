@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { BLOG_VISITOR_MAX_AGE, blogVisitorIdentity } from "@/lib/blog-analytics";
 import { blogEngagement, setBlogLike, submitBlogComment } from "@/lib/blog-engagement";
+import { isSameSiteRequest } from "@/lib/security";
 export const runtime = "nodejs";
 const ENGAGEMENT_COOKIE = "admissionhere_blog_interactions";
 const schema = z.discriminatedUnion("action", [z.object({ action: z.literal("like"), liked: z.boolean() }), z.object({ action: z.literal("comment"), name: z.string().trim().min(2).max(80), body: z.string().trim().min(2).max(2000) })]);
@@ -22,8 +23,7 @@ export async function POST(request: NextRequest, { params }: Context) {
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Article not found." }, { status: 404 });
   try {
-    const origin = request.headers.get("origin");
-    if (request.headers.get("sec-fetch-site") === "cross-site" || (origin && new URL(origin).host !== (request.headers.get("host") || request.nextUrl.host))) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
+    if (!isSameSiteRequest(request)) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: "Enter your name (2–80 characters) and comment (2–2000 characters)." }, { status: 400 });
     const visitor = blogVisitorIdentity(request.cookies.get(ENGAGEMENT_COOKIE)?.value);

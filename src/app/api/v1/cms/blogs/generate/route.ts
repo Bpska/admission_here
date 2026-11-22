@@ -4,14 +4,14 @@ import sanitizeHtml from "sanitize-html";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { db } from "@/lib/db";
 import { BlogDraftSchema, starterBlogDraft } from "@/lib/blog-draft";
+import { isSameSiteRequest } from "@/lib/security";
 export const runtime = "nodejs";
 const schema = z.object({ title: z.string().trim().min(3).max(180), collegeSlugs: z.array(z.string().regex(/^[a-z0-9-]+$/)).max(10).default([]) });
 export async function POST(request: NextRequest) {
   const access = await checkAdminAccess("blogs");
   if (!access.allowed) return NextResponse.json({ error: "Blog access required." }, { status: 403 });
   try {
-    const origin = request.headers.get("origin");
-    if (request.headers.get("sec-fetch-site") === "cross-site" || (origin && new URL(origin).host !== (request.headers.get("host") || request.nextUrl.host))) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
+    if (!isSameSiteRequest(request)) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
     const parsed = schema.safeParse(await request.json());
     if (!parsed.success) return NextResponse.json({ error: "Enter a title between 3 and 180 characters." }, { status: 400 });
     const { title, collegeSlugs } = parsed.data;

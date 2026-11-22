@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkAdminAccess } from "../auth/staff-guard";
+import { isSameSiteRequest } from "../security";
 export async function importAccess(request?: Request) {
   const access = await checkAdminAccess("colleges");
   if (!access.isSuperAdmin || !access.allowed)
@@ -11,11 +12,7 @@ export async function importAccess(request?: Request) {
       access,
     };
   if (request && request.method !== "GET") {
-    const origin = request.headers.get("origin");
-    if (
-      request.headers.get("sec-fetch-site") === "cross-site" ||
-      (origin && new URL(origin).host !== new URL(request.url).host)
-    )
+    if (!isSameSiteRequest(request))
       return {
         error: NextResponse.json(
           { error: "Same-site requests only." },

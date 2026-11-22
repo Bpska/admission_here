@@ -3,6 +3,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth/config";
 import { BLOG_VISITOR_COOKIE, BLOG_VISITOR_MAX_AGE, blogVisitorIdentity, createBlogViewTicket, verifyBlogViewTicket, recordBlogView, shouldIgnoreBlogVisit } from "@/lib/blog-analytics";
 import { publicEngagementPost } from "@/lib/blog-engagement";
+import { isSameSiteRequest } from "@/lib/security";
 
 export const runtime = "nodejs";
 const schema = z.discriminatedUnion("action", [z.object({ action: z.literal("start") }), z.object({ action: z.literal("complete"), ticket: z.string().max(2000), activeMs: z.number().finite().min(45000).max(86400000) })]);
@@ -10,8 +11,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { id } = await params;
   if (!z.string().uuid().safeParse(id).success) return NextResponse.json({ error: "Article not found." }, { status: 404 });
   try {
-    const origin = request.headers.get("origin");
-    if (request.headers.get("sec-fetch-site") === "cross-site" || (origin && new URL(origin).host !== (request.headers.get("host") || request.nextUrl.host))) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
+    if (!isSameSiteRequest(request)) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
   } catch { return NextResponse.json({ error: "Invalid request origin." }, { status: 403 }); }
   const session = await auth();
   if (shouldIgnoreBlogVisit(request.headers.get("user-agent") || "", (session?.user as { role?: string } | undefined)?.role)) return new NextResponse(null, { status: 204 });
