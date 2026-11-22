@@ -43,6 +43,7 @@ export async function limitedBody(request: Request, max: number) {
   return Buffer.concat(chunks);
 }
 export function importError(e: unknown) {
+  console.error("Import error detail:", e);
   const message = e instanceof Error ? e.message : "Import request failed.";
   const isMissing = /not found|No .* found/i.test(message);
   const safe = /Prisma|Invalid `|SELECT|ECONN|Authentication failed/i.test(

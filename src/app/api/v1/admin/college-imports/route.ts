@@ -8,13 +8,14 @@ import {
 } from "@/lib/college-import/http";
 import { LIMITS } from "@/lib/college-import/fields";
 import { parseSpreadsheet } from "@/lib/college-import/spreadsheet";
-import { createImport, summarize } from "@/lib/college-import/service";
+import { createImport, ensureImportSchema, summarize } from "@/lib/college-import/service";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const { error } = await importAccess();
   if (error) return error;
   try {
+    await ensureImportSchema();
     const url = new URL(request.url);
     const page = Math.max(
       1,
