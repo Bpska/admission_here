@@ -1,6 +1,11 @@
+import { createHash } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { db } from "./db";
 import { canonicalBlogHref } from "./blog-destination";
+// Keep existing anonymous history, but bind all new interactions to an account.
+export function blogAccountIdentity(userId: string) {
+  return createHash("sha256").update(`blog-account:${userId}`).digest("hex");
+}
 export async function publicEngagementPost(id: string, client: Prisma.TransactionClient = db) {
   const post = await client.blogPost.findUnique({ where: { id, status: "PUBLISHED" } });
   return post && await canonicalBlogHref(post, client) ? post : null;
@@ -21,14 +26,14 @@ export async function setBlogLike(id: string, visitorHash: string, liked: boolea
     const post = await publicEngagementPost(id, tx);
     if (!post) return "NOT_FOUND";
     if (!post.likesEnabled) return "DISABLED";
-    if (liked) await tx.blogLike.upsert({ where: { blogId_visitorHash: { blogId: id, visitorHash } }, create: { blogId: id, visitorHash }, update: {} });
+    if (liked) await tx.blogLike.createMany({ data: [{ blogId: id, visitorHash }], skipDuplicates: true });
     else await tx.blogLike.deleteMany({ where: { blogId: id, visitorHash } });
     return "OK";
   });
 }
 export async function submitBlogComment(id: string, visitorHash: string, name: string, body: string) {
   return db.$transaction(async tx => {
-    // Serialize submissions from this browser so concurrent requests share the limit.
+    // Serialize submissions from this account so concurrent requests share the limit.
     await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${visitorHash}, 0))::text`;
     const post = await publicEngagementPost(id, tx);
     if (!post) return "NOT_FOUND";

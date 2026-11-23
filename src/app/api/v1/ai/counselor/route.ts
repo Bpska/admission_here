@@ -1,3 +1,5 @@
+import { isSameSiteRequest } from "@/lib/security";
+import { auth } from "@/lib/auth/config";
 import { NextRequest, NextResponse } from "next/server";
 import { retrieveCounselingContext, COUNSELOR_SYSTEM_PROMPT } from "@/lib/ai/rag-counselor";
 import { z } from "zod";
@@ -20,6 +22,9 @@ const CounselorRequestSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isSameSiteRequest(req)) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "Sign in to continue." }, { status: 401, headers: { "Cache-Control": "private, no-store" } });
     const body = await req.json();
     const parsed = CounselorRequestSchema.safeParse(body);
 

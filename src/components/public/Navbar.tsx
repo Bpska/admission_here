@@ -118,7 +118,7 @@ export function Navbar({ customFilters = [], account }: { customFilters?: Navbar
                 <span className="sm:hidden">Help</span>
               </button>
 
-              <Link href={account ? portalDestination(account.role, account.managedCollegeId) : "/login?callbackUrl=%2Fstudent"} title={account ? `Signed in as ${staffDisplayName(account)}` : "Sign in or create an account"} className="text-xs font-bold text-[#1a3068] px-2 py-2">{account ? account.role === "STUDENT" ? "My account" : "Dashboard" : "Sign in"}</Link>
+              <Link href={account ? portalDestination(account.role, account.managedCollegeId) : "/login?callbackUrl=%2Fstudent"} title={account ? `Signed in as ${staffDisplayName(account)}` : "Sign in or create an account"} className="text-xs font-bold text-[#1a3068] px-2 py-2">{account ? account.role === "STUDENT" ? "My account" : "Dashboard" : "User login"}</Link>
               {/* Admin Portal Button */}
               {(!account || account.role !== "STUDENT") && <Link
                 href="/login?callbackUrl=%2Fadmin"
@@ -289,6 +289,9 @@ export function Navbar({ customFilters = [], account }: { customFilters?: Navbar
 
             {/* Quick Links */}
             <div className="pt-3 border-t border-slate-200 space-y-2">
+              <Link href={account ? portalDestination(account.role, account.managedCollegeId) : "/login?callbackUrl=%2Fstudent"} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2 p-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold">
+                <UserCheck className="w-4 h-4" />{account ? "My account" : "User login / Create account"}
+              </Link>
               <Link
                 href="/login?callbackUrl=%2Fadmin"
                 onClick={() => setMobileMenuOpen(false)}

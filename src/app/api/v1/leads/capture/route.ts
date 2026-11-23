@@ -1,3 +1,4 @@
+import { isSameSiteRequest } from "@/lib/security";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { LeadCtaType, LeadStatus } from "@prisma/client";
@@ -31,6 +32,9 @@ const LeadCaptureSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isSameSiteRequest(req)) return NextResponse.json({ error: "Same-site requests only." }, { status: 403 });
+    const session = await auth();
+    if (!session?.user?.id) return NextResponse.json({ error: "Sign in to continue." }, { status: 401, headers: { "Cache-Control": "private, no-store" } });
     const body = await req.json();
     const parsed = LeadCaptureSchema.safeParse(body);
 
@@ -43,7 +47,6 @@ export async function POST(req: NextRequest) {
     }
 
     const data = parsed.data;
-    const session = await auth();
     const studentId = (session?.user as any)?.role === "STUDENT" ? session!.user!.id : null;
     if (data.targetCollegeId && !await db.college.findUnique({ where: { id: data.targetCollegeId, isPublished: true }, select: { id: true } })) return NextResponse.json({ error: "College not found" }, { status: 404 });
     if ((data.state || data.district) && !isValidStateDistrict(data.state || "", data.district || "")) {

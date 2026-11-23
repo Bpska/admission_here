@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionAuthGate, redirectIfUnauthorized } from "@/components/auth/SignInPrompt";
 import { useEffect, useState } from "react";
 import { X, CheckCircle2, FileText, Download } from "lucide-react";
 import { LeadCtaType } from "@prisma/client";
@@ -75,6 +76,7 @@ export function BrochureDownloadModal({ open, onClose, collegeId, collegeName, b
           sourceBlogId: blogId && blogId !== "preview-id" ? blogId : undefined,
           ctaType: LeadCtaType.DOWNLOAD_BROCHURE }),
       });
+      if (redirectIfUnauthorized(response)) return;
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || "Unable to submit your details.");
       try { localStorage.setItem(storageKey, JSON.stringify({ submittedAt: new Date().toISOString() })); }
@@ -91,6 +93,7 @@ export function BrochureDownloadModal({ open, onClose, collegeId, collegeName, b
           <div className="min-w-0"><p className="text-xs font-bold text-primary flex items-center gap-2 mb-1"><FileText className="w-4 h-4" />Official admission documents</p><h3 id={`brochure-title-${collegeId}`} className="font-extrabold text-base break-words">Brochures: {collegeName}</h3></div>
           <button type="button" onClick={onClose} aria-label="Close brochure dialog" className="p-1 shrink-0"><X className="w-5 h-5" /></button>
         </div>
+        <ActionAuthGate message="Sign in before requesting a college brochure.">
         <div className="p-4 sm:p-6 min-h-0 overflow-y-auto overscroll-contain space-y-4">
           {fetching ? <p role="status" className="text-sm text-muted-foreground">Loading official documents…</p> : fetchError ? (
             <div role="alert" className="text-sm space-y-2"><p>{fetchError}</p><button type="button" className="underline text-primary" onClick={() => setRetry(value => value + 1)}>Try again</button></div>
@@ -120,6 +123,7 @@ export function BrochureDownloadModal({ open, onClose, collegeId, collegeName, b
             </form>}
           </>}
         </div>
+        </ActionAuthGate>
       </section>
     </div>
   );

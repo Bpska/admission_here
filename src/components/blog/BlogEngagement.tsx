@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SignInPrompt, currentPageLoginHref } from "@/components/auth/SignInPrompt";
 import { Heart, MessageCircle, Send, UserRound } from "lucide-react";
 
 export type Engagement = {
+  viewer?: { name: string } | null;
   likesEnabled: boolean;
   commentsEnabled: boolean;
   likes: number;
@@ -11,7 +13,7 @@ export type Engagement = {
   commentCount: number;
   comments: { id: string; name: string; body: string; createdAt: string }[];
 };
-type Action = { action: "like"; liked: boolean } | { action: "comment"; name: string; body: string };
+type Action = { action: "like"; liked: boolean } | { action: "comment"; body: string };
 
 function Avatar({ name }: { name: string }) {
   return <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-100 to-orange-100 text-xs font-bold text-fuchsia-900 ring-1 ring-black/5 dark:from-fuchsia-950 dark:to-orange-950 dark:text-fuchsia-100">{name.trim() ? name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join("").toUpperCase() : <UserRound className="h-4 w-4" />}</span>;
@@ -20,14 +22,12 @@ function Avatar({ name }: { name: string }) {
 export function BlogEngagement({ blogId, initialData }: { blogId: string; initialData?: Engagement }) {
   const [data, setData] = useState<Engagement | null>(initialData || null);
   const [error, setError] = useState("");
-  const [name, setName] = useState("");
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const commentRef = useRef<HTMLTextAreaElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,6 +45,7 @@ export function BlogEngagement({ blogId, initialData }: { blogId: string; initia
 
   async function send(payload: Action) {
     if (busy || !ready || !data) return;
+    if (!data.viewer) { window.location.assign(currentPageLoginHref("#blog-comments")); return; }
     const previous = data;
     setBusy(true);
     setError("");
@@ -56,6 +57,11 @@ export function BlogEngagement({ blogId, initialData }: { blogId: string; initia
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
       });
       const result = await response.json();
+      if (response.status === 401) {
+        setData({ ...previous, viewer: null });
+        window.location.assign(currentPageLoginHref("#blog-comments"));
+        return;
+      }
       if (!response.ok) throw Error(result.error);
       if (payload.action === "comment") {
         setData(result);
@@ -69,7 +75,8 @@ export function BlogEngagement({ blogId, initialData }: { blogId: string; initia
   }
 
   function focusComposer() {
-    (name.trim().length < 2 ? nameRef.current : commentRef.current)?.focus();
+    if (!data?.viewer) { window.location.assign(currentPageLoginHref("#blog-comments")); return; }
+    commentRef.current?.focus();
   }
   const visibleComments = data ? (expanded ? data.comments : data.comments.slice(0, 2)) : [];
 
@@ -96,10 +103,11 @@ export function BlogEngagement({ blogId, initialData }: { blogId: string; initia
 
         </>}
       </div>
-      {data.commentsEnabled && <form aria-label="Add a comment" onSubmit={event => { event.preventDefault(); void send({ action: "comment", name, body }); }} className="border-t border-border">
-        <div className="flex items-center gap-3 px-5 pt-4 sm:px-6"><Avatar name={name} /><label className="min-w-0 flex-1"><span className="sr-only">Your name</span><input ref={nameRef} required minLength={2} maxLength={80} autoComplete="name" value={name} onChange={event => setName(event.target.value)} disabled={busy || !ready} placeholder="Your name" className="w-full border-0 bg-transparent py-1 text-sm font-semibold outline-none placeholder:font-normal placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" /></label></div>
-        <div className="flex items-end gap-3 px-5 pb-3 pl-[4.25rem] pt-2 sm:px-6 sm:pl-[4.5rem]"><label className="min-w-0 flex-1"><span className="sr-only">Comment</span><textarea ref={commentRef} required minLength={2} maxLength={2000} rows={1} value={body} onChange={event => { setBody(event.target.value); event.target.style.height = "auto"; event.target.style.height = `${Math.min(event.target.scrollHeight, 144)}px`; }} disabled={busy || !ready} placeholder="Add a comment…" className="block max-h-36 min-h-8 w-full resize-none border-0 bg-transparent py-1 text-sm leading-6 outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" /></label><button type="submit" aria-label="Submit comment" disabled={busy || !ready || name.trim().length < 2 || body.trim().length < 2} className="mb-1 inline-flex shrink-0 items-center gap-1.5 rounded px-1 py-1 text-sm font-semibold text-sky-600 transition-colors hover:text-sky-800 disabled:opacity-40 dark:text-sky-400 dark:hover:text-sky-300"><span>{busy ? "Posting…" : "Post"}</span><Send className="h-4 w-4 sm:hidden" /></button></div>
+      {data.commentsEnabled && data.viewer && <form aria-label="Add a comment" onSubmit={event => { event.preventDefault(); void send({ action: "comment", body }); }} className="border-t border-border">
+        <div className="flex items-center gap-3 px-5 pt-4 sm:px-6"><Avatar name={data.viewer.name} /><p className="min-w-0 break-words text-sm font-semibold">{data.viewer.name}</p></div>
+        <div className="flex items-end gap-3 px-5 pb-3 pl-[4.25rem] pt-2 sm:px-6 sm:pl-[4.5rem]"><label className="min-w-0 flex-1"><span className="sr-only">Comment</span><textarea ref={commentRef} required minLength={2} maxLength={2000} rows={1} value={body} onChange={event => { setBody(event.target.value); event.target.style.height = "auto"; event.target.style.height = `${Math.min(event.target.scrollHeight, 144)}px`; }} disabled={busy || !ready} placeholder="Add a comment…" className="block max-h-36 min-h-8 w-full resize-none border-0 bg-transparent py-1 text-sm leading-6 outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary" /></label><button type="submit" aria-label="Submit comment" disabled={busy || !ready || body.trim().length < 2} className="mb-1 inline-flex shrink-0 items-center gap-1.5 rounded px-1 py-1 text-sm font-semibold text-sky-600 transition-colors hover:text-sky-800 disabled:opacity-40 dark:text-sky-400 dark:hover:text-sky-300"><span>{busy ? "Posting…" : "Post"}</span><Send className="h-4 w-4 sm:hidden" /></button></div>
       </form>}
+      {(data.commentsEnabled || data.likesEnabled) && !data.viewer && <div className="border-t p-5 sm:p-6"><SignInPrompt message="Sign in to like this article and join the comments." anchor="#blog-comments" /></div>}
     </>}
     {error && <p role="alert" className="border-t p-4 text-sm text-red-600">{error} {!ready && <button type="button" onClick={() => setAttempt(value => value + 1)} className="ml-2 underline">Retry</button>}</p>}
   </section>;

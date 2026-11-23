@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionAuthGate, redirectIfUnauthorized } from "@/components/auth/SignInPrompt";
 import { useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
 import { X, CheckCircle2, FileText, Send, Sparkles, Phone, User, GraduationCap, AlertCircle } from "lucide-react";
@@ -93,6 +94,7 @@ export function LeadCaptureModal({
         }),
       });
 
+      if (redirectIfUnauthorized(res)) return;
       const json = await res.json();
 
       if (res.ok && json.success) {
@@ -142,6 +144,7 @@ export function LeadCaptureModal({
           </button>
         </div>
 
+        <ActionAuthGate message="Sign in before submitting an application or requesting admission guidance.">
         {/* Content */}
         <div className="p-4 sm:p-6 min-h-0 overflow-y-auto overscroll-contain">
           {step === "form" && (
@@ -281,6 +284,7 @@ export function LeadCaptureModal({
             </div>
           )}
         </div>
+        </ActionAuthGate>
       </div>
     </div>
   );

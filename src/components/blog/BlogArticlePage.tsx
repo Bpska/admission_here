@@ -6,7 +6,8 @@ import { suggestBlogMetadata } from "@/lib/blog-suggestions";
 import { blogPreviewImage, safeBlogImageUrl } from "@/lib/blog-image-display";
 import { relatedBlogArticles } from "@/lib/related-blog-articles";
 import { RelatedBlogArticles } from "./RelatedBlogArticles";
-import { blogEngagement } from "@/lib/blog-engagement";
+import { auth } from "@/lib/auth/config";
+import { blogAccountIdentity, blogEngagement } from "@/lib/blog-engagement";
 import { BlogEngagement } from "@/components/blog/BlogEngagement";
 import { getPostBlogStats } from "@/lib/blog-analytics";
 import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
@@ -93,7 +94,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post.showOnWebsiteBlog && !college) notFound();
 
   const stats = await getPostBlogStats(post.id);
-  const engagement = await blogEngagement(post.id, "");
+  const session = await auth();
+  const viewer = session?.user?.id ? { name: session.user.name || "Reader" } : null;
+  const engagement = await blogEngagement(post.id, session?.user?.id ? blogAccountIdentity(session.user.id) : "");
   const relatedArticles = await relatedBlogArticles(post, college || null);
   const reading = analyzeBlogContent(post.contentMdx);
   const description = post.metaDescription?.trim() || suggestBlogMetadata(post.title, reading.text).metaDescription;
@@ -222,7 +225,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </section>
       )}
       <RelatedBlogArticles articles={relatedArticles} />
-      <BlogEngagement blogId={post.id} initialData={engagement ? { ...engagement, comments: engagement.comments.map(comment => ({ ...comment, createdAt: comment.createdAt.toISOString() })) } : undefined} />
+      <BlogEngagement blogId={post.id} initialData={engagement ? { ...engagement, viewer, comments: engagement.comments.map(comment => ({ ...comment, createdAt: comment.createdAt.toISOString() })) } : undefined} />
     </div>
   );
 }

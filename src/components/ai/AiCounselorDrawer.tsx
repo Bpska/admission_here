@@ -1,5 +1,6 @@
 "use client";
 
+import { ActionAuthGate, redirectIfUnauthorized } from "@/components/auth/SignInPrompt";
 import { useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
 import { Sparkles, X, Send, Bot, User, CheckCircle2, AlertCircle } from "lucide-react";
@@ -55,6 +56,7 @@ export function AiCounselorDrawer({ open, onClose }: AiCounselorDrawerProps) {
         }),
       });
 
+      if (redirectIfUnauthorized(res)) return;
       if (res.ok) {
         const json = await res.json();
         setMessages([...newMessages, { role: "assistant", content: json.answer }]);
@@ -104,6 +106,7 @@ export function AiCounselorDrawer({ open, onClose }: AiCounselorDrawerProps) {
           </button>
         </div>
 
+        <ActionAuthGate message="Sign in to ask the admissions counselor a question.">
         {/* Quick Profile Filter Bar */}
         <div className="p-3 border-b bg-muted/30 text-xs flex flex-wrap gap-2 items-center">
           <span className="font-semibold text-muted-foreground">My Profile:</span>
@@ -217,6 +220,7 @@ export function AiCounselorDrawer({ open, onClose }: AiCounselorDrawerProps) {
             <Send className="w-3.5 h-3.5" />
           </button>
         </div>
+        </ActionAuthGate>
       </div>
     </div>
   );

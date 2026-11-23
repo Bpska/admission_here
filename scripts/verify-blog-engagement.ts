@@ -5,6 +5,7 @@ import { encode } from "next-auth/jwt";
 const db = new PrismaClient();
 const base = "http://localhost:3000";
 async function main() {
+  assert.ok(["localhost", "127.0.0.1"].includes(new URL(process.env.DATABASE_URL!).hostname), "Use a local test database only.");
   const author = await db.user.findFirstOrThrow({ where: { role: "SUPER_ADMIN", isActive: true } });
   const marker = `qa-engagement-${randomUUID()}`;
   const post = await db.blogPost.create({ data: { slug: marker, title: marker, contentMdx: "<p>Engagement verification article.</p>", authorId: author.id, category: "CAREER_GUIDE", status: "DRAFT" } });
@@ -12,8 +13,10 @@ async function main() {
   const token = await encode({ token: { id: author.id, sub: author.id, email: author.email, role: "SUPER_ADMIN" }, secret, salt: "authjs.session-token", maxAge: 180 });
   const endpoint = `${base}/api/v1/blogs/${post.id}/engagement`;
   const adminEndpoint = `${base}/api/v1/cms/blogs/${post.id}/engagement`;
-  let cookie = "";
-  const read = async () => { const response = await fetch(endpoint, { headers: cookie ? { Cookie: cookie } : {} }); const setCookie = response.headers.get("set-cookie"); if (setCookie) cookie = setCookie.split(";")[0]; return { status: response.status, data: await response.json() }; };
+  const reader = await db.user.create({ data: { name: "Signed-in Reader", email: `${marker}@example.com`, role: "STUDENT" } });
+  const readerToken = await encode({ token: { sub: reader.id, id: reader.id }, secret, salt: "authjs.session-token", maxAge: 180 });
+  let cookie = `authjs.session-token=${readerToken}`;
+  const read = async () => { const response = await fetch(endpoint, { headers: cookie ? { Cookie: cookie } : {} }); const setCookie = response.headers.get("set-cookie"); if (setCookie && !setCookie.startsWith("authjs.session-token=")) cookie += `; ${setCookie.split(";")[0]}`; return { status: response.status, data: await response.json() }; };
   const send = async (data: object, admin = false) => { const response = await fetch(admin ? adminEndpoint : endpoint, { method: "POST", headers: { "Content-Type": "application/json", Cookie: admin ? `authjs.session-token=${token}` : cookie }, body: JSON.stringify(data) }); return { status: response.status, data: await response.json() }; };
   try {
     assert.equal((await read()).status, 404, "Draft engagement is private");
@@ -23,7 +26,18 @@ async function main() {
     const initialHtml = await article.text();
     assert.equal(article.status, 200);
     assert.ok(initialHtml.includes('id="blog-comments"'));
-    assert.ok(initialHtml.includes("Submit comment"), "Comments are present in the initial article HTML");
+    assert.ok(initialHtml.includes("Sign in to like this article"), "Guests see a login prompt in the initial HTML");
+    assert.ok(!initialHtml.includes('aria-label="Add a comment"'), "Guests cannot enter a comment before signing in");
+    const anonymous = async (path: string, payload: object) => fetch(`${base}${path}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    for (const payload of [{ action: "like", liked: true }, { action: "comment", name: "Guest", body: "Anonymous comment" }]) {
+      const response = await anonymous(`/api/v1/blogs/${post.id}/engagement`, payload);
+      assert.equal(response.status, 401); assert.match(response.headers.get("cache-control") || "", /no-store/);
+    }
+    for (const path of ["/api/v1/leads/capture", "/api/v1/ai/counselor", "/api/v1/student/reviews"]) assert.equal((await anonymous(path, {})).status, 401);
+    assert.equal(await db.blogComment.count({ where: { blogId: post.id } }), 0);
+    assert.equal(await db.blogLike.count({ where: { blogId: post.id } }), 0);
+    const crossSite = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", Cookie: cookie, "Sec-Fetch-Site": "cross-site" }, body: JSON.stringify({ action: "like", liked: true }) });
+    assert.equal(crossSite.status, 403);
     const likes = await Promise.all(Array.from({ length: 4 }, () => send({ action: "like", liked: true })));
     assert.ok(likes.every(result => result.status === 200)); assert.equal((await read()).data.likes, 1, "Concurrent repeat likes are deduplicated");
     assert.equal((await read()).data.liked, true);
@@ -31,6 +45,15 @@ async function main() {
     assert.equal((await send({ action: "comment", name: "A", body: "" })).status, 400);
     assert.equal((await send({ action: "comment", name: "Reader", body: "<script>alert('text only')</script>" })).status, 200);
     const comment = await db.blogComment.findFirstOrThrow({ where: { blogId: post.id } });
+    assert.equal(comment.name, reader.name, "The account name overrides a forged comment name");
+    assert.equal((await read()).data.viewer.name, reader.name);
+    const signedArticle = await fetch(`${base}/blog/${post.slug}`, { headers: { Cookie: cookie } });
+    assert.ok((await signedArticle.text()).includes('aria-label="Add a comment"'));
+    const sameAccountBrowser = await encode({ token: { sub: reader.id, id: reader.id }, secret, salt: "authjs.session-token", maxAge: 180 });
+    await send({ action: "like", liked: true });
+    const otherBrowser = await fetch(endpoint, { headers: { Cookie: `authjs.session-token=${sameAccountBrowser}` } });
+    assert.equal((await otherBrowser.json()).liked, true, "Likes belong to the account across browsers");
+    await send({ action: "like", liked: false });
     assert.equal(comment.status, "APPROVED"); assert.equal((await read()).data.comments.length, 1, "Reader comments publish immediately");
     assert.equal((await send({ action: "moderate", commentId: comment.id, status: "APPROVED" })).status, 400);
     assert.equal((await fetch(adminEndpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "clearLikes" }) })).status, 403);
@@ -46,8 +69,11 @@ async function main() {
     await send({ action: "like", liked: true }); await send({ action: "clearLikes" }, true); assert.equal((await read()).data.likes, 0);
     const page = await fetch(`${base}/admin/blogs/${post.id}/engagement`, { headers: { Cookie: `authjs.session-token=${token}` } }); assert.equal(page.status, 200); assert.ok((await page.text()).includes("Comment moderation"));
     await send({ action: "delete", commentId: comment.id }, true); assert.equal(await db.blogComment.count({ where: { id: comment.id } }), 0);
+    await db.user.update({ where: { id: reader.id }, data: { isActive: false } });
+    assert.equal((await send({ action: "like", liked: true })).status, 401);
+    assert.equal((await send({ action: "comment", body: "Inactive user comment" })).status, 401);
     await db.blogPost.delete({ where: { id: post.id } }); assert.equal(await db.blogComment.count({ where: { blogId: post.id } }), 0); assert.equal(await db.blogLike.count({ where: { blogId: post.id } }), 0);
-    console.log("Blog engagement passed: private drafts, deduplicated likes/unlike, immediate public comments, moderation, authorization, disabled features, rate limits, admin page and cascade cleanup.");
-  } finally { await db.blogPost.deleteMany({ where: { id: post.id } }); }
+    console.log("Blog engagement passed: login-required actions, account-bound likes and comment names, inactive sessions, private drafts, deduplicated likes/unlike, immediate public comments, moderation, authorization, disabled features, rate limits, admin page and cascade cleanup.");
+  } finally { await db.blogPost.deleteMany({ where: { id: post.id } }); await db.user.deleteMany({ where: { id: reader.id } }); }
 }
 main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => db.$disconnect());
