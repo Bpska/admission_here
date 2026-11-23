@@ -12,13 +12,22 @@ async function prepareBlogAnalytics(db) {
       SELECT to_regclass('"BlogVisit"')::text AS visits,
              to_regclass('"BlogQualifiedView"')::text AS qualified,
              to_regclass('"CollegeImport"')::text AS imports,
-             to_regclass('"CollegeImportRow"')::text AS import_rows
+             to_regclass('"CollegeImportRow"')::text AS import_rows,
+             to_regclass('"AuthThrottle"')::text AS auth_throttle
     `;
       const needed = [
         !tables.visits && "008_blog_visits",
         !tables.qualified && "013_qualified_blog_views",
         (!tables.imports || !tables.import_rows) && "015_college_imports",
+        !tables.auth_throttle && "017_user_login",
       ].filter(Boolean);
+      const [profile] = await tx.$queryRaw`
+        SELECT to_regclass('"User"')::text AS users,
+          EXISTS (SELECT 1 FROM information_schema.columns
+            WHERE table_schema = current_schema() AND table_name = 'User' AND column_name = 'designation') AS designation
+      `;
+      if (profile.users && !profile.designation)
+        needed.push("016_staff_designation");
       for (const migration of needed) {
         const sql = await fs.readFile(
           path.join(
@@ -31,7 +40,7 @@ async function prepareBlogAnalytics(db) {
           ),
           "utf8",
         );
-        // These files contain simple CREATE TABLE/INDEX statements only.
+        // These files contain additive CREATE TABLE/INDEX or ALTER TABLE statements.
         for (const statement of sql
           .split(";")
           .map((part) => part.trim())

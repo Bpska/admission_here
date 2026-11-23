@@ -13,6 +13,7 @@ interface AdminLayoutClientProps {
   permissions: string[];
   userName: string;
   userEmail: string;
+  userDesignation?: string | null;
 }
 
 export function AdminLayoutClient({
@@ -21,6 +22,7 @@ export function AdminLayoutClient({
   permissions,
   userName,
   userEmail,
+  userDesignation,
 }: AdminLayoutClientProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
@@ -65,6 +67,7 @@ export function AdminLayoutClient({
           permissions={permissions}
           userName={userName}
           userEmail={userEmail}
+          userDesignation={userDesignation}
           onClose={closeDesktopSidebar}
         />
       </div>}
@@ -82,6 +85,7 @@ export function AdminLayoutClient({
               permissions={permissions}
               userName={userName}
               userEmail={userEmail}
+              userDesignation={userDesignation}
               onClose={() => setMobileSidebarOpen(false)}
               onNavigate={() => setMobileSidebarOpen(false)}
             />
@@ -151,9 +155,10 @@ export function AdminLayoutClient({
           <div className="flex min-w-0 items-center gap-2 text-xs">
             <div className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
               <span className="hidden xs:inline">User:</span>
-              <strong className="text-foreground max-w-[88px] min-[400px]:max-w-[120px] sm:max-w-[180px] truncate font-medium">
-                {userName}
-              </strong>
+              <div className="min-w-0 text-right">
+                <strong className="block text-foreground max-w-[88px] min-[400px]:max-w-[120px] sm:max-w-[180px] truncate font-medium">{userName}</strong>
+                {userDesignation && <p title={userDesignation} className="max-w-[88px] min-[400px]:max-w-[120px] sm:max-w-[180px] truncate text-[10px] text-muted-foreground">{userDesignation}</p>}
+              </div>
             </div>
 
 

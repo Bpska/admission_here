@@ -1,5 +1,7 @@
 "use client";
 
+import { staffDisplayName } from "@/lib/staff-display";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useScrollLock } from "@/hooks/useScrollLock";
@@ -43,6 +45,7 @@ interface ApprovalItem {
   staff: {
     id: string;
     name: string;
+    designation?: string | null;
     email: string;
   };
   college?: {
@@ -55,6 +58,7 @@ interface ApprovalItem {
   reviewedBy?: {
     id: string;
     name: string;
+    designation?: string | null;
   } | null;
 }
 
@@ -66,6 +70,7 @@ interface ActivityLogItem {
   createdAt: string;
   staff: {
     name: string;
+    designation?: string | null;
     email: string;
   };
 }
@@ -297,7 +302,7 @@ export function StaffApprovalClient({
                 filteredRequests.map((req) => (
                   <tr key={req.id} className="hover:bg-muted/20 transition-colors">
                     <td className="p-3.5">
-                      <div className="font-bold text-foreground">{req.staff.name}</div>
+                      <div className="font-bold text-foreground">{staffDisplayName(req.staff)}</div>
                       <div className="text-[11px] text-muted-foreground">{req.staff.email}</div>
                     </td>
 
@@ -402,7 +407,7 @@ export function StaffApprovalClient({
               <div key={log.id} className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-muted/20 transition-colors">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-foreground">{log.staff.name}</span>
+                    <span className="font-bold text-foreground">{staffDisplayName(log.staff)}</span>
                     <span className="text-[10px] font-black px-2 py-0.5 rounded bg-muted border text-muted-foreground">
                       {log.action}
                     </span>
@@ -428,7 +433,7 @@ export function StaffApprovalClient({
             <div className="p-3 sm:p-4 border-b flex flex-wrap items-center justify-between gap-3 shrink-0">
               <div className="min-w-0">
                 <h3 id="college-preview-title" className="font-bold text-sm sm:text-base break-words">{previewItem.title}</h3>
-                <p className="text-xs text-muted-foreground">Submitted by {previewItem.staff.name} · {previewItem.status.replaceAll("_", " ")}</p>
+                <p className="text-xs text-muted-foreground">Submitted by {staffDisplayName(previewItem.staff)} · {previewItem.status.replaceAll("_", " ")}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <button type="button" aria-pressed={previewWidth === "desktop"} onClick={() => setPreviewWidth("desktop")} className="rounded-lg border px-3 py-1.5 text-xs">Desktop</button>

@@ -26,6 +26,7 @@ import {
 interface StaffItem {
   id: string;
   name: string;
+  designation?: string | null;
   email: string;
   phone?: string | null;
   isActive?: boolean;
@@ -96,6 +97,7 @@ export function StaffManagementClient({
 
   // Form State
   const [name, setName] = useState("");
+  const [designation, setDesignation] = useState("");
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -108,12 +110,14 @@ export function StaffManagementClient({
 
   // Edit Permissions modal state
   const [editingStaff, setEditingStaff] = useState<StaffItem | null>(null);
+  const [editDesignation, setEditDesignation] = useState("");
   const [editPermissions, setEditPermissions] = useState<string[]>([]);
   const [editSubmitting, setEditSubmitting] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
   const openEditModal = (staff: StaffItem) => {
     setEditingStaff(staff);
+    setEditDesignation(staff.designation || "");
     setEditPermissions([...staff.permissions]);
     setEditError(null);
   };
@@ -136,17 +140,17 @@ export function StaffManagementClient({
       const res = await fetch("/api/v1/admin/staff", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: editingStaff.id, permissions: editPermissions }),
+        body: JSON.stringify({ id: editingStaff.id, permissions: editPermissions, designation: editDesignation.trim() }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || "Failed to update.");
 
       setStaffList((prev) =>
         prev.map((s) =>
-          s.id === editingStaff.id ? { ...s, permissions: editPermissions } : s
+          s.id === editingStaff.id ? { ...s, permissions: editPermissions, designation: data.designation } : s
         )
       );
-      setSuccessMsg(`Permissions updated for "${editingStaff.name}".`);
+      setSuccessMsg(`Staff details updated for "${editingStaff.name}".`);
       setEditingStaff(null);
     } catch (err: any) {
       setEditError(err.message || "Failed to update permissions.");
@@ -201,6 +205,7 @@ export function StaffManagementClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
+          designation: designation.trim(),
           userId: userId.trim(),
           password,
           permissions: selectedPermissions,
@@ -218,6 +223,7 @@ export function StaffManagementClient({
 
       // Reset form
       setName("");
+      setDesignation("");
       setUserId("");
       setPassword("");
       setSelectedPermissions([]);
@@ -280,6 +286,7 @@ export function StaffManagementClient({
     return (
       staff.name.toLowerCase().includes(q) ||
       staff.email.toLowerCase().includes(q) ||
+      (staff.designation || "").toLowerCase().includes(q) ||
       staff.permissions.some((p) => p.toLowerCase().includes(q))
     );
   });
@@ -377,7 +384,7 @@ export function StaffManagementClient({
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
             <input
               type="text"
-              placeholder="Search staff by name, user ID, or permission..."
+              placeholder="Search name, designation, user ID, or permission..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
@@ -439,6 +446,7 @@ export function StaffManagementClient({
                         </div>
                         <div>
                           <strong className="block text-foreground text-xs">{staff.name}</strong>
+                          {staff.designation && <span className="mt-0.5 block max-w-xs break-words text-xs text-muted-foreground">{staff.designation}</span>}
                           <span
                             className="inline-block text-[10px] font-bold px-1.5 py-0.2 rounded"
                             style={{ background: "rgba(26,48,104,0.1)", color: "#1a3068" }}
@@ -510,7 +518,7 @@ export function StaffManagementClient({
                         <button
                           onClick={() => openEditModal(staff)}
                           className="p-1.5 rounded-md hover:bg-blue-500/10 text-blue-600 transition-colors cursor-pointer"
-                          title="Edit Permissions"
+                          title="Edit staff details"
                         >
                           <PencilLine className="w-4 h-4" />
                         </button>
@@ -604,6 +612,11 @@ export function StaffManagementClient({
                     If no &quot;@&quot; is entered, &quot;@admissionhere.in&quot; will be appended automatically.
                   </span>
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="staff-designation" className="mb-1 block text-xs font-semibold">Designation (optional)</label>
+                <input id="staff-designation" value={designation} onChange={event => setDesignation(event.target.value)} maxLength={120} placeholder="e.g. Admissions Counsellor or Content Editor" className="w-full rounded-lg border bg-background px-3 py-2 text-xs" />
               </div>
 
               {/* Password */}
@@ -757,7 +770,7 @@ export function StaffManagementClient({
             <div className="flex items-start justify-between pb-3 border-b">
               <div>
                 <h2 className="text-lg font-bold text-foreground">
-                  Edit Permissions — {editingStaff.name}
+                  Edit Staff — {editingStaff.name}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-0.5">{editingStaff.email}</p>
               </div>
@@ -775,6 +788,12 @@ export function StaffManagementClient({
                 <span>{editError}</span>
               </div>
             )}
+
+            <div>
+              <label htmlFor="edit-staff-designation" className="mb-1 block text-xs font-semibold">Designation (optional)</label>
+              <input id="edit-staff-designation" value={editDesignation} onChange={event => setEditDesignation(event.target.value)} maxLength={120} disabled={editSubmitting} placeholder="e.g. Admissions Counsellor" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <p className="mt-1 text-xs text-muted-foreground">Displayed with this staff member’s name. Leave blank to remove it.</p>
+            </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -856,7 +875,7 @@ export function StaffManagementClient({
                 ) : (
                   <>
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Update Permissions</span>
+                    <span>Save staff details</span>
                   </>
                 )}
               </button>

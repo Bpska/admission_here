@@ -6,12 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "prestart": "node scripts/prepare-blog-analytics.cjs",
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
+    "db:prepare-blog-analytics": "node scripts/prepare-blog-analytics.cjs",
     "db:seed": "node prisma/seed.js",
-    "predev": "prisma generate",
+    "predev": "prisma generate && node scripts/prepare-blog-analytics.cjs",
     "prebuild": "prisma generate"
   },
   "prisma": {

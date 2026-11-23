@@ -197,7 +197,7 @@ body {
 .blog-prose u { text-decoration: underline; }
 .blog-prose mark { background: #fef08a; color: #1e293b; padding: 0.05em 0.15em; border-radius: 0.15em; }
 .blog-prose a { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 3px; }
-.blog-prose img { display: block; max-width: 100%; height: auto; border-radius: 0.75rem; margin: 1.25rem auto; }
+.blog-prose img { display: block; position: static; float: none; clear: both; max-width: 100%; height: auto; object-fit: contain; border-radius: 0.75rem; margin: 1.25rem auto; }
 .blog-prose img.ProseMirror-selectednode { outline: 3px solid hsl(var(--primary)); }
 .blog-prose ul, .blog-prose ol { padding-left: 1.5rem; margin: 1em 0; }
 .blog-prose ul { list-style: disc; }
@@ -236,3 +236,7 @@ body {
 @media (max-width: 1279px) {
   .admin-content .overflow-x-auto:has(> table)::before { content: "Scroll sideways to see all columns"; display: block; position: sticky; left: 0; width: max-content; max-width: 100%; padding: .75rem 1rem; color: hsl(var(--muted-foreground)); font-size: .75rem; }
 }
+
+.blog-prose figure { max-width: 100%; margin: 1.25rem 0; }
+.blog-prose figcaption { margin-top: 0.5rem; font-size: 0.875rem; color: hsl(var(--muted-foreground)); text-align: center; }
+.blog-prose :is(h2, h3), #blog-comments { scroll-margin-top: 7rem; }

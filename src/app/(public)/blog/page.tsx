@@ -1,3 +1,6 @@
+import { staffDisplayName } from "@/lib/staff-display";
+import { BlogCoverImage } from "@/components/blog/BlogCoverImage";
+import { blogPreviewImage } from "@/lib/blog-image-display";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { constructSeoMetadata } from "@/lib/seo/metadata";
@@ -18,7 +21,7 @@ export default async function BlogHubPage() {
     where: { status: "PUBLISHED", showOnWebsiteBlog: true },
     orderBy: { publishedAt: "desc" },
     include: {
-      author: { select: { name: true } },
+      author: { select: { name: true, designation: true } },
       relatedCollege: { select: { name: true, slug: true } },
     },
   });
@@ -74,6 +77,7 @@ export default async function BlogHubPage() {
             key={post.id}
             className="rounded-2xl border bg-card hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col justify-between group"
           >
+            <Link href={`/blog/${post.slug}`} className="block shrink-0" aria-label={`Read ${post.title}`}><BlogCoverImage src={blogPreviewImage(post)} alt={post.title}/></Link>
             <div className="p-6 space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary uppercase tracking-wider">
@@ -100,7 +104,7 @@ export default async function BlogHubPage() {
             <div className="p-6 pt-0 border-t mt-4 flex items-center justify-between text-xs text-muted-foreground pt-4">
               <div className="flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5" />
-                <span className="truncate max-w-[120px]">{post.author.name}</span>
+                <span className="min-w-0 flex-1 break-words">{staffDisplayName(post.author)}</span>
               </div>
               <time dateTime={new Date(post.publishedAt || post.createdAt).toISOString()}>
                 {new Date(post.publishedAt || post.createdAt).toLocaleDateString()}

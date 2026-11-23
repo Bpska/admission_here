@@ -9,6 +9,9 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: ["/", "/colleges/", "/college/", "/blog/", "/llms.txt", "/llms-full.txt"],
         disallow: [
+          "/login",
+          "/register",
+          "/student",
           "/admin/",
           "/partner/",
           "/api/v1/admin/",
@@ -27,7 +30,7 @@ export default function robots(): MetadataRoute.Robots {
           "CCBot",
         ],
         allow: ["/", "/llms.txt", "/llms-full.txt", "/colleges/", "/college/", "/blog/"],
-        disallow: ["/admin/", "/partner/", "/api/"],
+        disallow: ["/admin/", "/partner/", "/api/", "/login", "/register", "/student"],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

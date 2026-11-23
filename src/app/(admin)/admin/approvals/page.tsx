@@ -27,9 +27,9 @@ export default async function AdminApprovalsPage() {
       where,
       orderBy: { createdAt: "desc" },
       include: {
-        staff: { select: { id: true, name: true, email: true } },
+        staff: { select: { id: true, name: true, designation: true, email: true } },
         college: { select: { id: true, name: true, slug: true, city: true, state: true } },
-        reviewedBy: { select: { id: true, name: true } },
+        reviewedBy: { select: { id: true, name: true, designation: true } },
       },
       take: 100,
     }),
@@ -37,7 +37,7 @@ export default async function AdminApprovalsPage() {
         where: access.isSuperAdmin ? {} : { staffId: access.userId },
       orderBy: { createdAt: "desc" },
       include: {
-        staff: { select: { name: true, email: true } },
+        staff: { select: { name: true, designation: true, email: true } },
       },
       take: 30,
     }),

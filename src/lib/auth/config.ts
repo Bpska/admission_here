@@ -1,8 +1,14 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "../db";
 import { UserRole } from "@prisma/client";
+import { loginSchema } from "./account-validation";
+import { authRequestAddress, consumeAuthAttempt } from "./throttle";
+
+class LoginRateLimitError extends CredentialsSignin {
+  code = "rate_limited";
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   // Auth.js rewrites requests to this configured canonical URL. Explicitly
@@ -15,31 +21,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const email = String(credentials.email).toLowerCase();
+      async authorize(credentials, request) {
+        const input = loginSchema.safeParse(credentials);
+        if (!input.success) return null;
+        const { email, password } = input.data;
+        const address = authRequestAddress(request);
+        const [network, account] = await Promise.all([
+          consumeAuthAttempt("login-ip", address, 100, 900000),
+          consumeAuthAttempt("login-account", `${address}:${email}`, 15, 900000),
+        ]);
+        if (!network.allowed || !account.allowed) throw new LoginRateLimitError();
         const user = await db.user.findUnique({
           where: { email },
-        });
+        }) || await db.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } });
 
         if (!user || !user.passwordHash || !user.isActive) {
           return null;
         }
 
-        let isPasswordValid = await bcrypt.compare(
-          String(credentials.password),
-          user.passwordHash
-        );
-
-        if (!isPasswordValid && email === "superadmin@admissionhere.in") {
-          const pass = String(credentials.password);
-          if (pass === "admission2026" || pass === "pass-admission2026") {
-            isPasswordValid = true;
-          }
-        }
+        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
         if (!isPasswordValid) {
           return null;
@@ -57,6 +57,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return {
           id: user.id,
           name: user.name,
+          designation: user.designation,
           email: user.email,
           role: user.role,
           managedCollegeId: user.managedCollegeId,
@@ -98,6 +99,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           session.user.id = current.id;
           session.user.name = current.name;
+          (session.user as any).designation = current.designation;
           session.user.email = current.email;
           (session.user as any).role = current.role;
           (session.user as any).managedCollegeId = current.managedCollegeId;
@@ -117,6 +119,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
-  secret: process.env.AUTH_SECRET || "default-secret-dev-random-admissions-hub-key",
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV !== "production" ? "default-secret-dev-random-admissions-hub-key" : undefined),
 });
 

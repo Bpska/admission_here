@@ -7,6 +7,7 @@ export interface AdminAccessResult {
   role: string;
   userId: string;
   userName: string;
+  userDesignation?: string | null;
   userEmail: string;
   permissions: string[];
   assignedCollegeIds?: string[];
@@ -17,7 +18,9 @@ export interface AdminAccessResult {
  * Wrapped in React cache() so multiple components in the same render cycle
  * do not re-execute or re-decode session tokens.
  */
-export const checkAdminAccess = cache(async function checkAdminAccess(feature?: string): Promise<AdminAccessResult> {
+export const checkAdminAccess = cache(async function checkAdminAccess(
+  feature?: string,
+): Promise<AdminAccessResult> {
   const session = await auth();
   const user = session?.user as any;
 
@@ -36,6 +39,7 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
   const role = user.role || "STUDENT";
   const permissions: string[] = user.permissions || [];
   const userName = user.name || "User";
+  const userDesignation = user.designation || null;
   const userEmail = user.email || "";
   const userId = user.id || "00000000-0000-0000-0000-000000000001";
 
@@ -46,6 +50,7 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
       role: "SUPER_ADMIN",
       userId,
       userName,
+      userDesignation,
       userEmail,
       permissions: [
         "dashboard",
@@ -63,13 +68,19 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
 
   if (role === "STAFF") {
     // Staff can never access Staff Management or User Role management
-    if (!feature || feature === "staff" || feature === "users" || feature === "all") {
+    if (
+      !feature ||
+      feature === "staff" ||
+      feature === "users" ||
+      feature === "all"
+    ) {
       return {
         allowed: false,
         isSuperAdmin: false,
         role: "STAFF",
         userId,
         userName,
+        userDesignation,
         userEmail,
         permissions,
       };
@@ -83,6 +94,7 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
         role: "STAFF",
         userId,
         userName,
+        userDesignation,
         userEmail,
         permissions,
         assignedCollegeIds: user.assignedCollegeIds || [],
@@ -97,6 +109,7 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
       role: "STAFF",
       userId,
       userName,
+      userDesignation,
       userEmail,
       permissions,
       assignedCollegeIds: user.assignedCollegeIds || [],
@@ -104,7 +117,16 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
   }
 
   if (role === "AUTHOR") {
-    return { allowed: feature === "blogs" || feature === "dashboard", isSuperAdmin: false, role, userId, userName, userEmail, permissions: ["blogs", "dashboard"] };
+    return {
+      allowed: feature === "blogs" || feature === "dashboard",
+      isSuperAdmin: false,
+      role,
+      userId,
+      userName,
+      userDesignation,
+      userEmail,
+      permissions: ["blogs", "dashboard"],
+    };
   }
 
   return {
@@ -113,16 +135,22 @@ export const checkAdminAccess = cache(async function checkAdminAccess(feature?: 
     role,
     userId,
     userName,
+    userDesignation,
     userEmail,
     permissions: [],
   };
 });
 
 export function canAccessCollege(access: AdminAccessResult, collegeId: string) {
-  return access.isSuperAdmin || (access.role === "STAFF" && (access.assignedCollegeIds || []).includes(collegeId));
+  return (
+    access.isSuperAdmin ||
+    (access.role === "STAFF" &&
+      (access.assignedCollegeIds || []).includes(collegeId))
+  );
 }
 
 export function collegeScope(access: AdminAccessResult) {
-  return access.isSuperAdmin ? {} : { id: { in: access.assignedCollegeIds || [] } };
+  return access.isSuperAdmin
+    ? {}
+    : { id: { in: access.assignedCollegeIds || [] } };
 }
-

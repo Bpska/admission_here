@@ -1,3 +1,4 @@
+import { staffDisplayName } from "@/lib/staff-display";
 import { BlogMobileList } from "@/components/admin/BlogMobileList";
 import { BlogCmsFilters } from "@/components/admin/BlogCmsFilters";
 import { filterBlogArticles, type BlogCmsFilters as Filters } from "@/lib/blog-cms";
@@ -41,7 +42,7 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
     where: access.isSuperAdmin ? {} : { authorId: access.userId },
     orderBy: { createdAt: "desc" },
     include: {
-      author: { select: { name: true } },
+      author: { select: { name: true, designation: true } },
       _count: { select: { generatedLeads: true } },
     },
   });
@@ -104,7 +105,7 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
           <table className="w-full text-left text-xs">
             <thead className="bg-muted/50 border-b font-bold text-muted-foreground uppercase text-[10px] tracking-wider">
               <tr>
-                <th className="p-4">Title &amp; Slug</th>
+                <th className="p-4">Title</th>
                 <th className="p-4">Category</th>
                 <th className="p-4">Author</th>
                 <th className="p-4">Status</th>
@@ -122,16 +123,11 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
                       {post.title}
                       <span className="ml-2 text-xs font-normal text-muted-foreground">{post.showOnWebsiteBlog ? "Website blog" : "College blog"}</span>
                     </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-muted-foreground font-mono">
-                        {publicHrefs.get(post.id) || post.slug}
+                    {post.isLiveBlog && (
+                      <span className="mt-0.5 text-[10px] font-extrabold text-red-600 flex items-center gap-0.5">
+                        <Radio className="w-3 h-3 animate-pulse" /> LIVE
                       </span>
-                      {post.isLiveBlog && (
-                        <span className="text-[10px] font-extrabold text-red-600 flex items-center gap-0.5">
-                          <Radio className="w-3 h-3 animate-pulse" /> LIVE
-                        </span>
-                      )}
-                    </div>
+                    )}
                     {post.featuredImageUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -146,7 +142,7 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
                       {post.category.replace(/_/g, " ")}
                     </span>
                   </td>
-                  <td className="p-4">{post.author.name}</td>
+                  <td className="p-4">{staffDisplayName(post.author)}</td>
                   <td className="p-4">
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] font-bold ${

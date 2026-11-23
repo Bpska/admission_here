@@ -1,3 +1,9 @@
+import { staffDisplayName } from "@/lib/staff-display";
+import { BlogCoverImage } from "./BlogCoverImage";
+import { BlogShareTools } from "./BlogShareTools";
+import { analyzeBlogContent } from "@/lib/blog-readability";
+import { suggestBlogMetadata } from "@/lib/blog-suggestions";
+import { blogPreviewImage, safeBlogImageUrl } from "@/lib/blog-image-display";
 import { relatedBlogArticles } from "@/lib/related-blog-articles";
 import { RelatedBlogArticles } from "./RelatedBlogArticles";
 import { blogEngagement } from "@/lib/blog-engagement";
@@ -29,7 +35,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const post = await db.blogPost.findUnique({
     where: { slug, status: "PUBLISHED" },
-
+    include: { author: { select: { name: true, designation: true } } },
   });
 
   if (!post) {
@@ -39,12 +45,19 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
     });
   }
 
-  return constructSeoMetadata({
-    title: post.metaTitle || post.title,
-    description: post.metaDescription || `Read ${post.title} on AdmissionsHub.`,
+  const description = post.metaDescription?.trim() || suggestBlogMetadata(post.title, analyzeBlogContent(post.contentMdx).text).metaDescription || `Read ${post.title} on Admission Here.`;
+  const metadata = constructSeoMetadata({
+    title: post.metaTitle?.trim() || post.title,
+    description,
     canonicalPath: (await canonicalBlogHref(post)) || `/blog/${slug}`,
     type: "article",
+    ogImage: blogPreviewImage(post) || "/logo.png",
+    keywords: post.tags,
   });
+  return { ...metadata, openGraph: { ...metadata.openGraph, type: "article" as const,
+    publishedTime: (post.publishedAt || post.createdAt).toISOString(),
+    modifiedTime: post.updatedAt.toISOString(), authors: [post.author.name], tags: post.tags,
+  } };
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -53,7 +66,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = await db.blogPost.findUnique({
     where: { slug, status: "PUBLISHED" },
     include: {
-      author: { select: { name: true } },
+      author: { select: { name: true, designation: true } },
       relatedCollege: {
         select: {
           id: true,
@@ -82,17 +95,25 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const stats = await getPostBlogStats(post.id);
   const engagement = await blogEngagement(post.id, "");
   const relatedArticles = await relatedBlogArticles(post, college || null);
+  const reading = analyzeBlogContent(post.contentMdx);
+  const description = post.metaDescription?.trim() || suggestBlogMetadata(post.title, reading.text).metaDescription;
 
   // NewsArticle JSON-LD
   const articleSchema = generateNewsArticleJsonLd({
     title: post.title,
     slug: post.slug,
-    metaDescription: post.metaDescription,
-    featuredImageUrl: post.featuredImageUrl,
-    publishedAt: post.publishedAt,
+    metaDescription: description,
+    featuredImageUrl: blogPreviewImage(post),
+    publishedAt: post.publishedAt || post.createdAt,
     updatedAt: post.updatedAt,
     authorName: post.author.name,
+    authorDesignation: post.author.designation,
     canonicalPath,
+    articleType: ["EXAM_NEWS", "ADMISSION_ALERT"].includes(post.category) ? "NewsArticle" : "BlogPosting",
+    wordCount: reading.wordCount,
+    readingMinutes: reading.readingMinutes,
+    category: post.category.replace(/_/g, " "),
+    tags: post.tags,
   });
 
   // FAQPage JSON-LD
@@ -139,7 +160,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground pt-1">
           <span className="flex items-center gap-1.5 font-medium text-foreground">
             <User className="w-3.5 h-3.5 text-primary" />
-            <span>By {post.author.name}</span>
+            <span>By {staffDisplayName(post.author)}</span>
           </span>
           <span>•</span>
           <span className="flex items-center gap-1.5">
@@ -157,8 +178,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <Eye className="w-3.5 h-3.5" />
             <BlogViewTracker key={post.id} blogId={post.id} initialViews={stats.views} />
           </span>
+          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" />{reading.readingMinutes} min read</span>
+          {post.updatedAt.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" }) !== (post.publishedAt || post.createdAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" }) && (
+            <span>Updated <time dateTime={post.updatedAt.toISOString()}>{post.updatedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</time></span>
+          )}
         </div>
       </header>
+
+      <BlogShareTools title={post.title} path={canonicalPath} commentsEnabled={post.commentsEnabled && !!engagement} />
+
+      {(safeBlogImageUrl(post.featuredImageUrl) || !blogPreviewImage(post)) && (
+        <figure className="overflow-hidden rounded-2xl border">
+          <BlogCoverImage src={post.featuredImageUrl} alt={post.title} priority variant="article" />
+        </figure>
+      )}
 
       {/* Main Body with MDX & Shortcodes (TLDR, Live Ticker, College CTA) */}
       <RichBlogRenderer

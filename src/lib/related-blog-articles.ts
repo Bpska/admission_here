@@ -1,3 +1,4 @@
+import { blogPreviewImage } from "./blog-image-display";
 import { BlogPost, Prisma } from "@prisma/client";
 import { db } from "./db";
 import { getCollegeBlogPosts } from "./college-blogs";
@@ -8,5 +9,5 @@ export async function relatedBlogArticles(post: BlogPost, college: { id: string;
   const keywords = new Set(suggestionKeywords(post.title)); const tags = new Set(post.tags.map(tag => tag.toLowerCase()));
   return candidates.map(candidate => ({ candidate, score: (candidate.category === post.category ? 5 : 0) + candidate.tags.filter(tag => tags.has(tag.toLowerCase())).length * 3 + suggestionKeywords(candidate.title).filter(word => keywords.has(word)).length }))
     .sort((a, b) => b.score - a.score || (b.candidate.publishedAt?.getTime() || b.candidate.createdAt.getTime()) - (a.candidate.publishedAt?.getTime() || a.candidate.createdAt.getTime()))
-    .slice(0, 3).map(({ candidate }) => ({ id: candidate.id, title: candidate.title, description: candidate.metaDescription, href: blogArticleHref(candidate, college?.slug), category: candidate.category.replace(/_/g, " ") }));
+    .slice(0, 3).map(({ candidate }) => ({ id: candidate.id, title: candidate.title, imageUrl: blogPreviewImage(candidate), description: candidate.metaDescription, href: blogArticleHref(candidate, college?.slug), category: candidate.category.replace(/_/g, " ") }));
 }

@@ -1,3 +1,4 @@
+import { staffDisplayName } from "@/lib/staff-display";
 import { BlogMobileList } from "@/components/admin/BlogMobileList";
 import { BlogCmsFilters } from "@/components/admin/BlogCmsFilters";
 import { filterBlogArticles, type BlogCmsFilters as Filters } from "@/lib/blog-cms";
@@ -70,7 +71,7 @@ export default async function StaffBlogDashboardPage({ searchParams }: { searchP
     where: isSuperAdmin ? undefined : { authorId: userId },
     orderBy: { createdAt: "desc" },
     include: {
-      author: { select: { name: true } },
+      author: { select: { name: true, designation: true } },
     },
   });
 
@@ -104,7 +105,7 @@ export default async function StaffBlogDashboardPage({ searchParams }: { searchP
           <p className="text-xs text-muted-foreground">
             {isSuperAdmin
               ? "Full editorial control across all staff blog posts."
-              : `Welcome back, ${access.userName}! Manage your assigned blog articles below.`}
+              : `Welcome back, ${staffDisplayName({ name: access.userName, designation: access.userDesignation })}! Manage your assigned blog articles below.`}
           </p>
         </div>
 
@@ -245,7 +246,7 @@ export default async function StaffBlogDashboardPage({ searchParams }: { searchP
                         {post.category.replace(/_/g, " ")}
                       </span>
                     </td>
-                    {isSuperAdmin && <td className="p-4">{post.author.name}</td>}
+                    {isSuperAdmin && <td className="p-4">{staffDisplayName(post.author)}</td>}
                     <td className="p-4">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${

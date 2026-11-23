@@ -43,6 +43,7 @@ interface CollegeHeaderClientProps {
 
 export function CollegeHeaderClient({ college, previewBasePath, programs = [] }: CollegeHeaderClientProps) {
   const pathname = usePathname();
+  const TitleTag = pathname.startsWith(`/college/${college.slug}/blogs`) ? "p" : "h1";
   const router = useRouter();
   const selectedProgramKey = pathname.split("/programs/")[1]?.split("/")[0] || "";
   const selectedProgram = programs.find(program => program.key === selectedProgramKey);
@@ -109,9 +110,9 @@ export function CollegeHeaderClient({ college, previewBasePath, programs = [] }:
                   </span>
                 </div>
 
-                <h1 className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-tight break-words">
+                <TitleTag className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight leading-tight break-words">
                   {college.name}{selectedProgram ? ` — ${selectedProgram.label}` : ""}
-                </h1>
+                </TitleTag>
 
                 <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-muted-foreground pt-0.5">
                   <span className="flex items-center gap-1">

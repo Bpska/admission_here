@@ -39,6 +39,7 @@ export default async function StaffManagementPage() {
   const formattedStaff = staffMembers.map((s) => ({
     id: s.id,
     name: s.name,
+    designation: s.designation,
     email: s.email,
     phone: s.phone,
     isActive: s.isActive,

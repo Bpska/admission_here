@@ -1,3 +1,4 @@
+import { staffDisplayName } from "@/lib/staff-display";
 import { LeadExportButton } from "@/components/admin/LeadExportButton";
 import Link from "next/link";
 import { db } from "@/lib/db";
@@ -44,7 +45,7 @@ export default async function AdminDashboardPage() {
       where: access.isSuperAdmin ? {} : { authorId: access.userId },
       take: 4,
       orderBy: { createdAt: "desc" },
-      include: { author: { select: { name: true } } },
+      include: { author: { select: { name: true, designation: true } } },
     }),
   ]);
 
@@ -78,7 +79,7 @@ export default async function AdminDashboardPage() {
               STAFF PORTAL
             </span>
             <span className="text-xs text-muted-foreground">
-              Logged in as <strong className="text-foreground">{access.userName}</strong> ({access.userEmail})
+              Logged in as <strong className="text-foreground">{staffDisplayName({ name: access.userName, designation: access.userDesignation })}</strong> ({access.userEmail})
             </span>
           </div>
           <div>
@@ -233,7 +234,7 @@ export default async function AdminDashboardPage() {
                 <div className="min-w-0 flex-1">
                   <h4 className="font-bold text-foreground truncate">{b.title}</h4>
                   <p className="text-muted-foreground mt-0.5">
-                    By {b.author.name} • {b.category.replace("_", " ")}
+                    By {staffDisplayName(b.author)} • {b.category.replace("_", " ")}
                   </p>
                 </div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase shrink-0">

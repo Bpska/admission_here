@@ -1,3 +1,4 @@
+import { staffDisplayName } from "@/lib/staff-display";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Building2, Plus, Award, CheckCircle2, Globe2, BookOpen } from "lucide-react";
@@ -38,7 +39,7 @@ export default async function AdminCollegesPage({ searchParams }: {
     take: 20,
     select: {
       id: true, title: true, status: true, adminFeedback: true, createdAt: true,
-      staff: { select: { name: true } },
+      staff: { select: { name: true, designation: true } },
     },
   })]);
   const submittedRequest = submissions.find(request => request.id === submitted);
@@ -143,7 +144,7 @@ export default async function AdminCollegesPage({ searchParams }: {
                   <div className="min-w-0">
                     <p className="text-sm font-semibold break-words">{request.title}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {access.isSuperAdmin && `${request.staff.name} · `}
+                      {access.isSuperAdmin && `${staffDisplayName(request.staff)} · `}
                       {request.createdAt.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}
                     </p>
                     {request.adminFeedback && <p className="text-xs text-muted-foreground mt-1 break-words">Admin feedback: {request.adminFeedback}</p>}

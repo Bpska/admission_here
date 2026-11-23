@@ -91,24 +91,35 @@ export interface NewsArticleJsonLdParams {
   publishedAt?: Date | string | null;
   updatedAt?: Date | string | null;
   authorName: string;
+  authorDesignation?: string | null;
+  articleType?: "NewsArticle" | "BlogPosting";
+  wordCount?: number;
+  readingMinutes?: number;
+  category?: string;
+  tags?: string[];
 }
 
 export function generateNewsArticleJsonLd(params: NewsArticleJsonLdParams) {
   return {
     "@context": "https://schema.org",
-    "@type": "NewsArticle",
+    "@type": params.articleType || "NewsArticle",
     headline: params.title,
     description: params.metaDescription || params.title,
-    image: [params.featuredImageUrl || `${BASE_URL}/images/og-blog.jpg`],
+    ...(params.featuredImageUrl ? { image: [new URL(params.featuredImageUrl, BASE_URL).href] } : {}),
+    ...(params.wordCount !== undefined ? { wordCount: params.wordCount } : {}),
+    ...(params.readingMinutes ? { timeRequired: `PT${params.readingMinutes}M` } : {}),
+    ...(params.category ? { articleSection: params.category } : {}),
+    ...(params.tags?.length ? { keywords: params.tags.join(", ") } : {}),
     datePublished: params.publishedAt ? new Date(params.publishedAt).toISOString() : new Date().toISOString(),
     dateModified: params.updatedAt ? new Date(params.updatedAt).toISOString() : new Date().toISOString(),
     author: {
       "@type": "Person",
       name: params.authorName,
+      ...(params.authorDesignation ? { jobTitle: params.authorDesignation } : {}),
     },
     publisher: {
       "@type": "Organization",
-      name: "AdmissionsHub Editorial Desk",
+      name: "Admission Here Editorial Desk",
       logo: {
         "@type": "ImageObject",
         url: `${BASE_URL}/logo.png`,

@@ -96,7 +96,7 @@ export default async function HomePage() {
     where: { status: "PUBLISHED", showOnWebsiteBlog: true },
     orderBy: { publishedAt: "desc" },
     take: 5,
-    include: { author: { select: { name: true } } },
+    include: { author: { select: { name: true, designation: true } } },
   });
 
   const blogStats = await getBlogStats(blogs.map(post => post.id));

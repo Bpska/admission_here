@@ -55,6 +55,7 @@ interface AdminSidebarProps {
   permissions?: string[];
   userName?: string;
   userEmail?: string;
+  userDesignation?: string | null;
   onClose?: () => void;
   onNavigate?: () => void;
 }
@@ -64,6 +65,7 @@ export function AdminSidebar({
   permissions = [],
   userName = "Super Administrator",
   userEmail = "superadmin@admissionhere.in",
+  userDesignation,
   onClose,
   onNavigate,
 }: AdminSidebarProps) {
@@ -177,6 +179,7 @@ export function AdminSidebar({
           </div>
           <div className="min-w-0">
             <p className="font-semibold text-white text-xs truncate">{userName}</p>
+            {userDesignation && <p className="break-words text-[10px] text-blue-200">{userDesignation}</p>}
             <p className="text-[10px] text-blue-300 truncate">{userEmail}</p>
           </div>
         </div>

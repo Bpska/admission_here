@@ -24,8 +24,10 @@ import {
 } from "lucide-react";
 import { AiCounselorDrawer } from "../ai/AiCounselorDrawer";
 import { AiSearchCommandBar } from "../ai/AiSearchCommandBar";
+import { portalDestination } from "@/lib/portal-navigation";
+import { staffDisplayName } from "@/lib/staff-display";
 
-export function Navbar({ customFilters = [] }: { customFilters?: NavbarFilterOption[] }) {
+export function Navbar({ customFilters = [], account }: { customFilters?: NavbarFilterOption[]; account?: { name: string; role: string; designation?: string | null; managedCollegeId?: string | null } | null }) {
   const categories = CATEGORIES.map(category => ({ ...category, columns: category.columns.map((column, index) => ({ ...column, items: [...column.items, ...customFilters.filter(item => item.category === category.key && item.section === `column_${index + 1}`).map((item): SubItem => ({ label: item.label, href: item.href }))] })) }));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [counselorOpen, setCounselorOpen] = useState(false);
@@ -116,15 +118,15 @@ export function Navbar({ customFilters = [] }: { customFilters?: NavbarFilterOpt
                 <span className="sm:hidden">Help</span>
               </button>
 
-              <Link href="/student" className="text-xs font-bold text-[#1a3068] px-2 py-2">My account</Link>
+              <Link href={account ? portalDestination(account.role, account.managedCollegeId) : "/login?callbackUrl=%2Fstudent"} title={account ? `Signed in as ${staffDisplayName(account)}` : "Sign in or create an account"} className="text-xs font-bold text-[#1a3068] px-2 py-2">{account ? account.role === "STUDENT" ? "My account" : "Dashboard" : "Sign in"}</Link>
               {/* Admin Portal Button */}
-              <Link
+              {(!account || account.role !== "STUDENT") && <Link
                 href="/login?callbackUrl=%2Fadmin"
                 className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-[#1a3068] text-[#1a3068] rounded-lg hover:bg-[#1a3068] hover:text-white transition-colors"
               >
                 <UserCheck className="w-3.5 h-3.5" />
                 <span>Admin</span>
-              </Link>
+              </Link>}
 
               {/* Mobile Menu Hamburger */}
               <button

@@ -67,6 +67,7 @@ export function CreateStaffForm() {
   const router = useRouter();
 
   const [name, setName] = useState("");
+  const [designation, setDesignation] = useState("");
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -120,6 +121,7 @@ export function CreateStaffForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
+          designation: designation.trim(),
           userId: userId.trim(),
           password,
           permissions: selectedPermissions,
@@ -133,7 +135,6 @@ export function CreateStaffForm() {
       }
 
       router.push("/admin/staff");
-      router.refresh();
     } catch (err: any) {
       setErrorMsg(err.message || "An error occurred while creating staff.");
     } finally {
@@ -194,6 +195,11 @@ export function CreateStaffForm() {
               className="w-full px-3 py-2 text-xs border rounded-lg bg-background outline-hidden focus:border-primary"
             />
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="staff-designation" className="mb-1 block text-xs font-semibold">Designation (optional)</label>
+          <input id="staff-designation" value={designation} onChange={event => setDesignation(event.target.value)} maxLength={120} placeholder="e.g. Admissions Counsellor or Content Editor" className="w-full rounded-lg border bg-background px-3 py-2 text-xs" />
         </div>
 
         <div>

@@ -15,7 +15,7 @@ export function constructSeoMetadata({
   title,
   description,
   canonicalPath = "",
-  ogImage = "/images/og-default.jpg",
+  ogImage = "/logo.png",
   keywords = [],
   type = "website",
 }: MetadataOptions): Metadata {

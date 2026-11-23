@@ -16,8 +16,8 @@ export async function GET(request: Request) {
   if (status && status !== "ALL" && !["PENDING", "APPROVED", "REJECTED", "REVISION_REQUESTED"].includes(status)) return NextResponse.json({ error: "Invalid approval status" }, { status: 400 });
   const where: Prisma.CollegeApprovalRequestWhereInput = { ...(access.isSuperAdmin ? {} : { staffId: access.userId }), ...(status && status !== "ALL" ? { status: status as any } : {}) };
   const [requests, activityLogs] = await Promise.all([
-    db.collegeApprovalRequest.findMany({ where, orderBy: { createdAt: "desc" }, take: 100, include: { staff: { select: { id: true, name: true, email: true } }, college: { select: { id: true, name: true, slug: true, city: true, state: true } }, reviewedBy: { select: { id: true, name: true } } } }),
-    db.staffActivityLog.findMany({ where: access.isSuperAdmin ? {} : { staffId: access.userId }, orderBy: { createdAt: "desc" }, take: 30, include: { staff: { select: { name: true, email: true } } } }),
+    db.collegeApprovalRequest.findMany({ where, orderBy: { createdAt: "desc" }, take: 100, include: { staff: { select: { id: true, name: true, designation: true, email: true } }, college: { select: { id: true, name: true, slug: true, city: true, state: true } }, reviewedBy: { select: { id: true, name: true, designation: true } } } }),
+    db.staffActivityLog.findMany({ where: access.isSuperAdmin ? {} : { staffId: access.userId }, orderBy: { createdAt: "desc" }, take: 30, include: { staff: { select: { name: true, designation: true, email: true } } } }),
   ]);
   return NextResponse.json({ success: true, requests, activityLogs, isSuperAdmin: access.isSuperAdmin });
 }

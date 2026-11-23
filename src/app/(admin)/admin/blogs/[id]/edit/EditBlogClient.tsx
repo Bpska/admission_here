@@ -25,6 +25,8 @@ export function EditBlogClient({ post, canPublish }: { post: any; canPublish: bo
     <BlogMdxEditor
       initialData={{
         id: post.id,
+        slug: post.slug,
+        publicPath: post.publicPath,
         status: post.status,
         likesEnabled: post.likesEnabled,
         commentsEnabled: post.commentsEnabled,

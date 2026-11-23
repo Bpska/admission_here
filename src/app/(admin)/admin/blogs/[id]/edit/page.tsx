@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { EditBlogClient } from "./EditBlogClient";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
+import { canonicalBlogHref } from "@/lib/blog-destination";
 
 interface EditBlogPageProps {
   params: Promise<{ id: string }>;
@@ -45,7 +46,7 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
         </div>
       </div>
 
-      <EditBlogClient post={post} canPublish={access.isSuperAdmin || access.permissions.includes("blogs") || access.permissions.includes("blogs:publish")} />
+      <EditBlogClient post={{ ...post, publicPath: await canonicalBlogHref(post) }} canPublish={access.isSuperAdmin || access.permissions.includes("blogs") || access.permissions.includes("blogs:publish")} />
     </div>
   );
 }

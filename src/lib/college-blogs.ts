@@ -10,7 +10,7 @@ export async function getCollegeBlogPosts(college: CollegeReference, scope: Pris
   const candidates = await client.blogPost.findMany({
     where: { AND: [scope, { OR: [{ relatedCollegeId: college.id }, { contentMdx: { contains: college.slug } }] }] },
     orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-    include: { author: { select: { name: true } } },
+    include: { author: { select: { name: true, designation: true } } },
   });
   // Exact parsed membership prevents ordinary text or a similar college slug
   // from adding an unrelated article to this college's page.

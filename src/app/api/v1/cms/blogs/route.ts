@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
       where,
       orderBy: { createdAt: "desc" },
       include: {
-        author: { select: { name: true, id: true } },
+        author: { select: { name: true, designation: true, id: true } },
         _count: { select: { generatedLeads: true } },
       },
     });

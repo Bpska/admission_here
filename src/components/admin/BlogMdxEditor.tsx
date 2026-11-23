@@ -5,7 +5,7 @@ import { BlogAutoSuggestions } from "./BlogAutoSuggestions";
 import Link from "next/link";
 import { RichTextEditor } from "./RichTextEditor";
 import { ImageUploadField } from "./ImageUploadField";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { 
   Building2, 
   Radio, 
@@ -17,6 +17,8 @@ import {
   Edit3
 } from "lucide-react";
 import { SeoGeoChecklist } from "./SeoGeoChecklist";
+import { BlogSearchAppearance } from "./BlogSearchAppearance";
+import { analyzeBlogContent } from "@/lib/blog-readability";
 import { RichBlogRenderer } from "../blog/RichBlogRenderer";
 import { RichBlogEditor } from "./RichBlogEditor";
 import { BlogCollegeSelector } from "./BlogCollegeSelector";
@@ -31,6 +33,8 @@ interface BlogMdxEditorProps {
     status?: string;
     faqsJson?: { question: string; answer: string }[];
     id?: string;
+    slug?: string;
+    publicPath?: string;
     title: string;
     metaTitle?: string;
     metaDescription?: string;
@@ -84,7 +88,12 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
-  const wordCount = contentMdx.replace(/<[^>]*>/g, " ").trim().split(/\s+/).filter(Boolean).length;
+  const reading = useMemo(() => analyzeBlogContent(contentMdx), [contentMdx]);
+  const wordCount = reading.wordCount;
+  const tags = tagsText.split(",").map(tag => tag.trim()).filter(Boolean);
+  const previewSlug = initialData?.slug || title.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").slice(0, 80).replace(/^-+|-+$/g, "") || "article";
+  const previewCollege = initialData?.relatedCollegeSlug || blogCollegeSlugs(contentMdx).sort()[0] || "college";
+  const previewPath = initialData?.publicPath || (showOnWebsiteBlog ? `/blog/${previewSlug}` : `/college/${previewCollege}/blogs/${previewSlug}`);
 
   const insertShortcode = (shortcode: string) => {
     setContentMdx((prev) => `${prev}\n\n${shortcode}\n\n`);
@@ -215,7 +224,7 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
           {/* Tags */}
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1">
-              Tags <span className="font-normal">(comma-separated)</span>
+              Tags <span className="font-normal">(first tag = main topic)</span>
             </label>
             <input
               type="text"
@@ -330,48 +339,18 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
           <p className="text-xs text-muted-foreground">Comments appear immediately. You can hide or delete them from comment management. Save the article to apply these settings.</p>
           {initialData?.id ? <Link href={`/admin/blogs/${initialData.id}/engagement`} className="inline-block rounded-lg border px-3 py-2 text-sm font-semibold text-primary">Manage likes &amp; comments</Link> : <p className="text-xs text-muted-foreground">Save this article first to open comment moderation.</p>}
         </section>
-        <div className="bg-card border rounded-xl p-5 space-y-4">
-          <h4 className="font-bold text-sm text-foreground">Search appearance</h4>
-
-          <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="font-semibold text-muted-foreground">SEO Meta Title</span>
-              <span className={`text-[11px] font-mono ${metaTitle.length >= 50 && metaTitle.length <= 65 ? "text-emerald-600 font-bold" : "text-amber-600"}`}>
-                {metaTitle.length} / 60
-              </span>
-            </div>
-            <input
-              type="text"
-              value={metaTitle}
-              onChange={(e) => setMetaTitle(e.target.value)}
-              placeholder="Optimized title tag for SERP (50-60 chars)"
-              className="w-full text-xs border rounded-lg px-3 py-2 bg-background outline-hidden focus:border-primary"
-            />
-          </div>
-
-          <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="font-semibold text-muted-foreground">Meta Description</span>
-              <span className={`text-[11px] font-mono ${metaDescription.length >= 140 && metaDescription.length <= 165 ? "text-emerald-600 font-bold" : "text-amber-600"}`}>
-                {metaDescription.length} / 160
-              </span>
-            </div>
-            <textarea
-              rows={3}
-              value={metaDescription}
-              onChange={(e) => setMetaDescription(e.target.value)}
-              placeholder="Compelling SERP snippet summarizing key facts (150-160 chars)"
-              className="w-full text-xs border rounded-lg p-2.5 bg-background outline-hidden focus:border-primary"
-            />
-          </div>
-        </div>
+        <BlogSearchAppearance
+          title={title} metaTitle={metaTitle} metaDescription={metaDescription}
+          content={contentMdx} featuredImageUrl={featuredImageUrl} previewPath={previewPath}
+          onTitleChange={setMetaTitle} onDescriptionChange={setMetaDescription} disabled={saving || generating}
+        />
 
         {/* Real-time GEO / SEO Checklist */}
         <SeoGeoChecklist
-          metaTitle={metaTitle}
-          metaDescription={metaDescription}
-          contentLength={contentMdx.length}
+          title={title} metaTitle={metaTitle} metaDescription={metaDescription}
+          content={contentMdx} featuredImageUrl={featuredImageUrl} tags={tags}
           hasShortcodes={blogCollegeSlugs(contentMdx).length > 0}
+          faqCount={faqs.filter(faq => faq.question.trim() && faq.answer.trim()).length}
         />
       </div>
     </div>

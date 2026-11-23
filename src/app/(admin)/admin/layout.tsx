@@ -28,6 +28,7 @@ export default async function AdminLayout({
       permissions={permissions}
       userName={userName}
       userEmail={userEmail}
+      userDesignation={user.designation || null}
     >
       {children}
     </AdminLayoutClient>

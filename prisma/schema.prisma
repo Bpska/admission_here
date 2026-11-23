@@ -62,6 +62,7 @@ enum LeadStatus {
 model User {
   id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name             String
+  designation      String?      @db.VarChar(120)
   email            String       @unique
   phone            String?      @unique
   phoneVerified    Boolean      @default(false)
@@ -82,6 +83,15 @@ model User {
   submittedRequests CollegeApprovalRequest[] @relation("StaffSubmittedRequests")
   reviewedRequests  CollegeApprovalRequest[] @relation("AdminReviewedRequests")
   activityLogs     StaffActivityLog[]
+}
+
+model AuthThrottle {
+  key       String   @id @db.VarChar(64)
+  attempts  Int      @default(1)
+  expiresAt DateTime
+  updatedAt DateTime @default(now())
+
+  @@index([expiresAt])
 }
 
 model StaffPermission {

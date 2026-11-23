@@ -7,6 +7,7 @@ import { z } from "zod";
 
 const permissionsSchema = z.array(z.enum(["dashboard", "colleges", "exams", "blogs", "reviews", "leads", "seo-geo", "blogs:publish", "blogs:delete"]));
 const assignedSchema = z.array(z.string().uuid());
+const designationSchema = z.string().trim().max(120).regex(/^[^\u0000-\u001f\u007f]*$/).nullable().optional();
 
 export async function GET() {
   try {
@@ -35,6 +36,7 @@ export async function GET() {
     const formatted = staffList.map((staff) => ({
       id: staff.id,
       name: staff.name,
+      designation: staff.designation,
       email: staff.email,
       phone: staff.phone,
       isActive: staff.isActive,
@@ -62,6 +64,8 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { name, userId, password, permissions, assignedCollegeIds = [] } = body;
+    const designation = designationSchema.safeParse(body.designation);
+    if (!designation.success) return NextResponse.json({ error: "Designation must be a single line of up to 120 characters." }, { status: 400 });
     if (typeof name !== "string" || typeof userId !== "string" || typeof password !== "string" || password.length < 8 || !permissionsSchema.safeParse(permissions).success || !assignedSchema.safeParse(assignedCollegeIds).success) return NextResponse.json({ error: "Enter valid staff details, permissions and a password of at least 8 characters." }, { status: 400 });
     if (await db.college.count({ where: { id: { in: Array.from(new Set(assignedCollegeIds)) as string[] } } }) !== new Set(assignedCollegeIds).size) return NextResponse.json({ error: "An assigned college no longer exists." }, { status: 400 });
 
@@ -100,6 +104,7 @@ export async function POST(req: Request) {
     const newStaff = await db.user.create({
       data: {
         name: name.trim(),
+        designation: designation.data || null,
         email,
         passwordHash,
         role: UserRole.STAFF,
@@ -137,6 +142,7 @@ export async function POST(req: Request) {
         staff: {
           id: newStaff.id,
           name: newStaff.name,
+          designation: newStaff.designation,
           email: newStaff.email,
           isActive: newStaff.isActive,
           permissions: newStaff.staffPermission?.permissions || [],
@@ -164,6 +170,8 @@ export async function PATCH(req: Request) {
 
     const body = await req.json();
     const { id, permissions, assignedCollegeIds, isActive } = body;
+    const designation = designationSchema.safeParse(body.designation);
+    if (!designation.success) return NextResponse.json({ error: "Designation must be a single line of up to 120 characters." }, { status: 400 });
     if (!z.string().uuid().safeParse(id).success || (permissions !== undefined && !permissionsSchema.safeParse(permissions).success) || (assignedCollegeIds !== undefined && !assignedSchema.safeParse(assignedCollegeIds).success)) return NextResponse.json({ error: "Invalid staff account or permissions." }, { status: 400 });
     const target = await db.user.findUnique({ where: { id } });
     if (!target || target.role !== "STAFF") return NextResponse.json({ error: "Staff account not found." }, { status: 404 });
@@ -177,15 +185,9 @@ export async function PATCH(req: Request) {
     }
 
     const updateUserData: any = {};
+    if (body.designation !== undefined) updateUserData.designation = designation.data || null;
     if (typeof isActive === "boolean") {
       updateUserData.isActive = isActive;
-    }
-
-    if (Object.keys(updateUserData).length > 0) {
-      await db.user.update({
-        where: { id },
-        data: updateUserData,
-      });
     }
 
     const permissionUpdateData: any = {};
@@ -199,15 +201,20 @@ export async function PATCH(req: Request) {
       permissionUpdateData.isActive = isActive;
     }
 
-    const updated = await db.staffPermission.upsert({
-      where: { userId: id },
-      update: permissionUpdateData,
-      create: {
-        userId: id,
-        permissions: permissions || ["colleges"],
-        assignedCollegeIds: assignedCollegeIds || [],
-        isActive: typeof isActive === "boolean" ? isActive : true,
-      },
+    const updated = await db.$transaction(async (tx) => {
+      if (Object.keys(updateUserData).length > 0) {
+        await tx.user.update({ where: { id }, data: updateUserData });
+      }
+      return tx.staffPermission.upsert({
+        where: { userId: id },
+        update: permissionUpdateData,
+        create: {
+          userId: id,
+          permissions: permissions || ["colleges"],
+          assignedCollegeIds: assignedCollegeIds || [],
+          isActive: typeof isActive === "boolean" ? isActive : true,
+        },
+      });
     });
 
     // Record Activity Log
@@ -215,8 +222,8 @@ export async function PATCH(req: Request) {
       await db.staffActivityLog.create({
         data: {
           staffId: id,
-          action: "UPDATED_PERMISSIONS",
-          details: `Staff permissions updated. Active: ${updated.isActive}, Permissions: ${updated.permissions.join(", ")}, Assigned colleges: ${updated.assignedCollegeIds.length}`,
+          action: body.designation !== undefined ? "UPDATED_STAFF_PROFILE" : "UPDATED_PERMISSIONS",
+          details: `Staff details updated. Designation: ${body.designation !== undefined ? designation.data || "Not set" : target.designation || "Not set"}. Active: ${updated.isActive}, Permissions: ${updated.permissions.join(", ")}, Assigned colleges: ${updated.assignedCollegeIds.length}`,
         },
       });
     } catch {
@@ -226,6 +233,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({
       success: true,
       message: "Staff account and permissions updated successfully.",
+      designation: body.designation !== undefined ? designation.data || null : target.designation,
       permissions: updated.permissions,
       assignedCollegeIds: updated.assignedCollegeIds,
       isActive: updated.isActive,

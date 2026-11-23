@@ -89,9 +89,33 @@ In the blog editor, enter a title and choose **Generate from title**. Preview th
 
 Without an AI key, generation returns a clearly labelled starter draft with topic-specific guidance. To enable AI writing, set `OPENAI_API_KEY` on the server, optionally set `BLOG_DRAFT_MODEL` (default `gpt-4o-mini`), and restart the app. The key is never sent to the browser. Review generated content and verify institution-specific facts before publication.
 
+### Public user accounts
+
+Visitors can choose **Sign in → Create an account** to register with a name, email and password. Registration creates a student account and signs the visitor in; students can manage their own profile, applications and reviews under **My account**. Staff, author and administrator sign-ins keep their existing role-specific destinations. Student accounts cannot request staff/admin roles or permissions through registration.
+
+Passwords are hashed before storage. Sign-in uses the stored password hash for every account; the retired administrator password shortcuts are no longer accepted. Sessions use Auth.js cookies, and the optional Save password checkbox delegates saving to the browser’s password manager. Passwords are never stored in application local storage. This flow does not send email verification or password-reset messages.
+
+Registration and sign-in attempts are limited in PostgreSQL across app instances. Migration `017_user_login` creates `AuthThrottle`; development, npm production and Docker startup also prepare it for legacy databases. Configure the reverse proxy to overwrite forwarded client-address headers. Set a private `AUTH_SECRET` and the public `AUTH_URL`/`NEXTAUTH_URL` before production; Docker Compose requires the secret instead of supplying a shared default. Keep that secret consistent across all instances and releases.
+
+### Staff designations
+
+In **Staff Management**, enter a designation when creating a staff account or choose **Edit staff details** to update an existing member. Designations are optional and limited to 120 characters; clearing the field removes the title. The saved title appears with staff names in the admin header/sidebar, staff and user lists, approvals/activity, and blog author details. The designation is a display label; feature access continues to use the account’s role and permissions. Existing sessions pick up profile changes on refresh.
+
+Migration `016_staff_designation` adds the nullable `User.designation` column. Apply it with the normal release migrations before deploying the generated Prisma Client. The existing npm/Docker startup preparation also adds this column for legacy databases that do not have a migration baseline.
+
+### Blog SEO and reader tools
+
+The blog editor includes search and social previews, metadata suggestions from the article title and body, and checks for headings, internal links, reference links, cover images and alt text. The first comma-separated tag is used as the main topic for coverage hints. Suggestions change fields only when selected; save the article to persist them. The score is an editorial guide, not a search-engine ranking score.
+
+Published website and college articles include reading time, automatic contents links for two or more section headings, link copying, native sharing and WhatsApp sharing. Article metadata and structured data use the saved title, description, dates and images, with news and guide articles classified separately. Set `NEXT_PUBLIC_APP_URL` to the public website origin when building a production release so canonical and structured-data URLs use the correct domain.
+
 ### Blog view measurement
 
 New article views qualify after 45 seconds of active reading in a visible, focused tab. Background time and time after 60 seconds without reader activity are excluded. A page visit counts once; a return visit can count again after qualifying separately. Signed, time-checked visit tickets and an atomic event record prevent immediate submissions and duplicate retries from inflating counts. Unique visitors continue to use the anonymous signed browser identity. Editorial accounts and common bots are excluded. Existing historical analytics are retained.
+
+The tracker retries temporary network/database failures and resumes when the browser comes back online. Completed submissions reuse their ticket so retries cannot add duplicate views.
+
+`npm start` and the Docker container prepare missing `BlogVisit` and `BlogQualifiedView` tables before serving requests, preserving existing view data. The startup check also prepares missing bulk-import storage (`CollegeImport` and `CollegeImportRow`). This supports older databases without a Prisma migration baseline; it does not run all historical migrations or create the base application schema. The database account needs permission to create these tables if they are absent. Migration-managed deployments should apply their pending migrations with `prisma migrate deploy` before starting the app. For hosts that launch standalone `server.js` directly, run `node scripts/prepare-blog-analytics.cjs` first (include that script and the `prisma/migrations` directory in the release). You can also run `npm run db:prepare-blog-analytics` as a release step. Keep the same `AUTH_SECRET` on every app instance so view tickets remain valid across requests.
 
 ### Programme-specific college profiles
 

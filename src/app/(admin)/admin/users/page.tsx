@@ -1,3 +1,4 @@
+import { staffDisplayName } from "@/lib/staff-display";
 import { db } from "@/lib/db";
 import { Users, ShieldCheck, UserCheck } from "lucide-react";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
@@ -55,7 +56,7 @@ export default async function AdminUsersPage() {
             <tbody className="divide-y text-foreground">
               {users.map((u) => (
                 <tr key={u.id} className="hover:bg-muted/20 transition-colors">
-                  <td className="p-4 font-bold text-sm text-foreground">{u.name}</td>
+                  <td className="p-4 font-bold text-sm text-foreground">{staffDisplayName(u)}</td>
                   <td className="p-4 text-muted-foreground">{u.email}</td>
                   <td className="p-4">{u.phone || "—"}</td>
                   <td className="p-4">

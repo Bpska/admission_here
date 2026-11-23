@@ -1,3 +1,6 @@
+import { staffDisplayName } from "@/lib/staff-display";
+import { BlogCoverImage } from "@/components/blog/BlogCoverImage";
+import { blogPreviewImage } from "@/lib/blog-image-display";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -14,7 +17,8 @@ interface CategoryPageProps {
 
 export async function generateMetadata({ params }: CategoryPageProps) {
   const { cat } = await params;
-  const normalizedCategory = cat.replace(/-/g, "_").toUpperCase();
+  const normalizedCategory = cat === "admission-alerts" ? "ADMISSION_ALERT" : cat.replace(/-/g, "_").toUpperCase();
+  if (!Object.values(BlogCategory).includes(normalizedCategory as BlogCategory)) notFound();
 
   return constructSeoMetadata({
     title: `${cat.replace(/-/g, " ").toUpperCase()} - AdmissionsHub News`,
@@ -25,7 +29,8 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
 export default async function BlogCategoryPage({ params }: CategoryPageProps) {
   const { cat } = await params;
-  const normalizedCategory = cat.replace(/-/g, "_").toUpperCase();
+  const normalizedCategory = cat === "admission-alerts" ? "ADMISSION_ALERT" : cat.replace(/-/g, "_").toUpperCase();
+  if (!Object.values(BlogCategory).includes(normalizedCategory as BlogCategory)) notFound();
 
   const posts = await db.blogPost.findMany({
     where: {
@@ -35,7 +40,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
     },
     orderBy: { publishedAt: "desc" },
     include: {
-      author: { select: { name: true } },
+      author: { select: { name: true, designation: true } },
     },
   });
 
@@ -61,9 +66,10 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
         {posts.map((post) => (
           <article
             key={post.id}
-            className="rounded-2xl border bg-card hover:shadow-md transition-all p-6 flex flex-col justify-between"
+            className="rounded-2xl border bg-card hover:shadow-md transition-all overflow-hidden flex flex-col justify-between"
           >
-            <div className="space-y-3">
+            <Link href={`/blog/${post.slug}`} className="block shrink-0" aria-label={`Read ${post.title}`}><BlogCoverImage src={blogPreviewImage(post)} alt={post.title}/></Link>
+            <div className="space-y-3 p-6">
               <Link href={`/blog/${post.slug}`}>
                 <h3 className="font-bold text-base text-foreground hover:text-primary transition-colors">
                   {post.title}
@@ -74,8 +80,8 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
               </p>
             </div>
 
-            <div className="pt-4 border-t mt-4 flex items-center justify-between text-xs text-muted-foreground">
-              <span>{post.author.name}</span>
+            <div className="p-6 pt-4 border-t mt-4 flex items-center justify-between text-xs text-muted-foreground">
+              <span>{staffDisplayName(post.author)}</span>
               <span>{new Date(post.publishedAt || post.createdAt).toLocaleDateString()}</span>
             </div>
           </article>
