@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "375px: featured and article images follow their original proportions; thumbnails are centered and fill their frames; no horizontal overflow",
+    "768px: featured and article images follow their original proportions; thumbnails are centered and fill their frames; no horizontal overflow",
+    "1440px: featured and article images follow their original proportions; thumbnails are centered and fill their frames; no horizontal overflow"
+  ],
+  "errors": []
+}

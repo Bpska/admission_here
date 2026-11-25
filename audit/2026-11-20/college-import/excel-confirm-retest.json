@@ -1,0 +1,12 @@
+{
+  "uploadedXlsx": true,
+  "previewBeforeWrite": true,
+  "confirmed": true,
+  "draft": true,
+  "programmes": [
+    "B.Tech",
+    "MBA",
+    "MCA"
+  ],
+  "leadingZerosPreserved": true
+}

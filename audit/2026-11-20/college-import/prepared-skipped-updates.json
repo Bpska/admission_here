@@ -1,0 +1,9 @@
+{
+  "id": "79b1e35d-48bb-41e5-abf5-40720313ffe0",
+  "url": "http://localhost:3000/admin/colleges/bulk-upload?import=79b1e35d-48bb-41e5-abf5-40720313ffe0",
+  "rows": 10,
+  "status": "PREVIEW",
+  "version": 2,
+  "updatesPrepared": true,
+  "collegeRecordsChanged": false
+}

@@ -1,0 +1,262 @@
+{
+  "runs": [
+    {
+      "runAt": "2026-11-19T16:06:46.964Z",
+      "colleges": [
+        {
+          "key": "iit",
+          "id": "2bdd65a2-c51c-495e-9607-410d654fe4d0",
+          "slug": "iit-bhubaneswar",
+          "name": "Indian Institute of Technology Bhubaneswar",
+          "created": true,
+          "programmeCount": 25,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/e2bd0cbe-764d-48b4-9d89-a98b2f4eb3cc",
+              "source": "https://www.iitbbs.ac.in/wp-content/uploads/2024/04/IIT_Bhubaneswar_Logo-768x225.png",
+              "sha256": "70576b961698c67d08879efda18c7976cdd9a01695685d73948eae30938a28e2"
+            }
+          ],
+          "sources": [
+            "https://www.iitbbs.ac.in/",
+            "https://www.iitbbs.ac.in/index.php/home/about/",
+            "https://www.iitbbs.ac.in/index.php/home/academics-ug/",
+            "https://www.iitbbs.ac.in/index.php/home/academics-pg/"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "kiit",
+          "id": "a60f1737-86e3-4753-a92e-0b74dcd4e7df",
+          "slug": "kiit-university-bhubaneswar",
+          "name": "Kalinga Institute of Industrial Technology (KIIT University)",
+          "created": true,
+          "programmeCount": 22,
+          "imageSources": [],
+          "sources": [
+            "https://kiit.ac.in/about/",
+            "https://kiit.ac.in/contact/",
+            "https://kiitee.kiit.ac.in/courses-available/"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "soa",
+          "id": "581c0bd5-7667-4a6f-8c55-59e4b661a6ce",
+          "slug": "siksha-o-anusandhan-soa-iter-bhubaneswar",
+          "name": "Siksha 'O' Anusandhan (SOA / ITER)",
+          "created": true,
+          "programmeCount": 24,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/24f7680e-2ad2-479e-9cd8-eeebb2380e7d",
+              "source": "https://static1.squarespace.com/static/57713a8e2994cae381dd86fe/t/5a06f38af9619a1bb0d41f1a/1510405003944/SOA-PNG.png?format=1000w",
+              "sha256": "b1a4e9029d4363843483fc4445cd93f10b7e423dafaeefe3138e9e8da9a58640"
+            },
+            {
+              "url": "/api/v1/blog-images/03fdc900-57be-43ec-b4f2-aeb7df7fc82c",
+              "source": "https://images.squarespace-cdn.com/content/v1/57713a8e2994cae381dd86fe/1706003156365-1ISMFJWBRMP75F81UR6C/DJI_0937+Web.jpg?format=1600w",
+              "sha256": "476e5743dccd326307499d687f0f206d1d7b208df8a7c65c1574971805178f5a"
+            }
+          ],
+          "sources": [
+            "https://www.soa.ac.in/",
+            "https://www.soa.ac.in/academics-at-soa",
+            "https://www.soa.ac.in/iter",
+            "https://www.soa.ac.in/ibcs"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "outr",
+          "id": "26360bbd-7502-4610-a129-4aa4b3dd419f",
+          "slug": "odisha-university-of-technology-and-research-outr-bhubaneswar",
+          "name": "Odisha University of Technology and Research (OUTR)",
+          "created": true,
+          "programmeCount": 36,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/69332300-e33b-44af-9da0-3af88204f8c8",
+              "source": "https://www.outr.ac.in/public/design/front/assets/img/logo.png",
+              "sha256": "8495f38fb994291300f91997a10bed4959603e23337b7f4b67c1a5fbfc032050"
+            },
+            {
+              "url": "/api/v1/blog-images/1e7079c5-eaf0-47da-9b11-35bcec606aa4",
+              "source": "https://www.outr.ac.in/public/design/front/assets/img/college1.jpg",
+              "sha256": "3d82e0dbaa7ae86e7f2e1ea13db7306c132bf3ef04dce284c7e4a8ec8f405f52"
+            }
+          ],
+          "sources": [
+            "https://www.outr.ac.in/about-outr",
+            "https://www.outr.ac.in/contact-us",
+            "https://www.outr.ac.in/syllabus-12",
+            "https://www.outr.ac.in/public/uploads/Academic%20Regulation_PG%20Programme_2023-24.pdf"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "iiit",
+          "id": "65c9a46b-433b-4688-a547-1e161835faa4",
+          "slug": "iiit-bhubaneswar",
+          "name": "International Institute of Information Technology Bhubaneswar",
+          "created": true,
+          "programmeCount": 7,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/c8d41afe-2702-430d-a98a-ec9e23cf6083",
+              "source": "https://www.iiit-bh.ac.in/wp-content/uploads/2024/06/iiit-logo.jpg",
+              "sha256": "00ddca475256f97d60b850487c43b8e7f7fd6c0441d1dfb458764e242928eed6"
+            }
+          ],
+          "sources": [
+            "https://www.iiit-bh.ac.in/academics/",
+            "https://www.iiit-bh.ac.in/Admission/b-tech/",
+            "https://www.iiit-bh.ac.in/about-iiit/about/"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "cgu",
+          "id": "4a750157-df33-4530-bc3b-57c08a930781",
+          "slug": "c-v-raman-global-university-bhubaneswar",
+          "name": "C.V. Raman Global University",
+          "created": true,
+          "programmeCount": 40,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/b829155b-4e65-46d2-8ff6-0a99a3283c12",
+              "source": "https://cgu-odisha.ac.in/wp-content/uploads/2023/04/logo-new.png",
+              "sha256": "3d3e474bc07a5914a632a574cb8e91876d148aac75bf488d014d6d08a6b71ea0"
+            }
+          ],
+          "sources": [
+            "https://cgu-odisha.ac.in/inventing-the-future-with-learning/",
+            "https://cgu-odisha.ac.in/contact-us/",
+            "https://cgu-odisha.ac.in/academic/programme-of-2026-27/program/"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "silicon",
+          "id": "f01c2323-3a41-4aa3-bf26-6543d927d6c9",
+          "slug": "silicon-university-bhubaneswar",
+          "name": "Silicon University",
+          "created": true,
+          "programmeCount": 14,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/dfe4687a-0c3f-4bf2-81fe-f8e4f8b8ee30",
+              "source": "https://silicon.ac.in/wp-content/themes/sit/assets/img/logo-7.png",
+              "sha256": "8d2eadb17ab3c1284ac5da535a97f776e3fb76a17e80acbd19ceb3ff69233f95"
+            },
+            {
+              "url": "/api/v1/blog-images/f31304a4-62c5-43da-a110-1a078e5c053c",
+              "source": "https://silicon.ac.in/wp-content/uploads/2025/02/8.jpg",
+              "sha256": "1d7b32dc3d2e8c8b3f355024ac92ccd2a7b7d87caff64ff92e7d87d7f32e1836"
+            }
+          ],
+          "sources": [
+            "https://silicon.ac.in/about-us/",
+            "https://silicon.ac.in/programs/"
+          ],
+          "verifiedAt": "2026-11-19"
+        },
+        {
+          "key": "gita",
+          "id": "f3bca085-3261-44af-9450-2d08b5985668",
+          "slug": "gita-autonomous-college-bhubaneswar",
+          "name": "GITA Autonomous College (Gandhi Institute for Technological Advancement)",
+          "created": true,
+          "programmeCount": 11,
+          "imageSources": [
+            {
+              "url": "/api/v1/blog-images/9bc25615-fd37-4b5c-9715-cb7c88dfacd5",
+              "source": "https://gita.edu.in/assets/images/gitalog.png",
+              "sha256": "f286d8190d990cb758924be5c78e70b9dcf2a5c65625baa28251b093c7ce6182"
+            },
+            {
+              "url": "/api/v1/blog-images/c7848589-3af0-4fc1-938c-8e6e66b6c7ed",
+              "source": "https://gita.edu.in/Admin/uploads/1754291657_1750159563_web-sn-01.webp",
+              "sha256": "8113b48cd9c65351bbe637ac026d90b1fd0111457af3bce678e1bc5606baa6fc"
+            }
+          ],
+          "sources": [
+            "https://gita.edu.in/story.php",
+            "https://gita.edu.in/courses.php",
+            "https://gita.edu.in/"
+          ],
+          "verifiedAt": "2026-11-19"
+        }
+      ]
+    },
+    {
+      "runAt": "2026-11-19T16:08:40.376Z",
+      "colleges": [
+        {
+          "key": "iit",
+          "id": "2bdd65a2-c51c-495e-9607-410d654fe4d0",
+          "name": "Indian Institute of Technology Bhubaneswar",
+          "slug": "iit-bhubaneswar",
+          "websiteUrl": "https://www.iitbbs.ac.in/",
+          "created": false
+        },
+        {
+          "key": "kiit",
+          "id": "a60f1737-86e3-4753-a92e-0b74dcd4e7df",
+          "name": "Kalinga Institute of Industrial Technology (KIIT University)",
+          "slug": "kiit-university-bhubaneswar",
+          "websiteUrl": "https://kiit.ac.in/",
+          "created": false
+        },
+        {
+          "key": "soa",
+          "id": "581c0bd5-7667-4a6f-8c55-59e4b661a6ce",
+          "name": "Siksha 'O' Anusandhan (SOA / ITER)",
+          "slug": "siksha-o-anusandhan-soa-iter-bhubaneswar",
+          "websiteUrl": "https://www.soa.ac.in/",
+          "created": false
+        },
+        {
+          "key": "outr",
+          "id": "26360bbd-7502-4610-a129-4aa4b3dd419f",
+          "name": "Odisha University of Technology and Research (OUTR)",
+          "slug": "odisha-university-of-technology-and-research-outr-bhubaneswar",
+          "websiteUrl": "https://www.outr.ac.in/",
+          "created": false
+        },
+        {
+          "key": "iiit",
+          "id": "65c9a46b-433b-4688-a547-1e161835faa4",
+          "name": "International Institute of Information Technology Bhubaneswar",
+          "slug": "iiit-bhubaneswar",
+          "websiteUrl": "https://www.iiit-bh.ac.in/",
+          "created": false
+        },
+        {
+          "key": "cgu",
+          "id": "4a750157-df33-4530-bc3b-57c08a930781",
+          "name": "C.V. Raman Global University",
+          "slug": "c-v-raman-global-university-bhubaneswar",
+          "websiteUrl": "https://cgu-odisha.ac.in/",
+          "created": false
+        },
+        {
+          "key": "silicon",
+          "id": "f01c2323-3a41-4aa3-bf26-6543d927d6c9",
+          "name": "Silicon University",
+          "slug": "silicon-university-bhubaneswar",
+          "websiteUrl": "https://silicon.ac.in/",
+          "created": false
+        },
+        {
+          "key": "gita",
+          "id": "f3bca085-3261-44af-9450-2d08b5985668",
+          "name": "GITA Autonomous College (Gandhi Institute for Technological Advancement)",
+          "slug": "gita-autonomous-college-bhubaneswar",
+          "websiteUrl": "https://gita.edu.in/",
+          "created": false
+        }
+      ]
+    }
+  ]
+}

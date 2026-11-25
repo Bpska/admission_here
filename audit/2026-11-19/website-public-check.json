@@ -1,0 +1,223 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "route": "/",
+      "status": 200,
+      "title": "Top Colleges, Cutoffs, Admissions & AI Counselor Platform | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/colleges",
+      "status": 200,
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/colleges/",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/blog",
+      "status": 200,
+      "title": "AdmissionsHub Editorial & Live Exam Updates 2026 | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/blog",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/login",
+      "status": 200,
+      "title": "Admission Here | Higher Education Discovery & Cutoff Platform",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/courses-fees",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/admission",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/placements",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/rankings",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/gallery",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 375,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/blogs",
+      "status": 200,
+      "title": "Nalanda Institute of Technology Blogs & News | AdmissionsHub",
+      "viewport": 375,
+      "scrollWidth": 375,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar/blogs",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "status": 200,
+      "title": "Top Colleges, Cutoffs, Admissions & AI Counselor Platform | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/colleges",
+      "status": 200,
+      "title": "Top Colleges in India 2026 | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/colleges/",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/blog",
+      "status": 200,
+      "title": "AdmissionsHub Editorial & Live Exam Updates 2026 | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/blog",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/login",
+      "status": 200,
+      "title": "Admission Here | Higher Education Discovery & Cutoff Platform",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/courses-fees",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/admission",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/placements",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/rankings",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/gallery",
+      "status": 200,
+      "title": "Nalanda Institute of Technology, Bhubaneswar | Admission Here | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar",
+      "missingAlt": 0
+    },
+    {
+      "width": 1440,
+      "route": "/college/nalanda-institute-of-technology-bhubaneswar/blogs",
+      "status": 200,
+      "title": "Nalanda Institute of Technology Blogs & News | AdmissionsHub",
+      "viewport": 1440,
+      "scrollWidth": 1440,
+      "canonical": "https://admissionshub.in/college/nalanda-institute-of-technology-bhubaneswar/blogs",
+      "missingAlt": 0
+    }
+  ],
+  "errors": []
+}

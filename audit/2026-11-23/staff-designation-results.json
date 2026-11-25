@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Create form saves designation; edit saves a 120-character title; list search, assignments and an existing staff session use the new value",
+    "Long designations fit in the staff header and sidebar at phone, tablet and desktop sizes",
+    "Designation appears in user/approval/activity/blog screens and all public blog locations, with author jobTitle in structured data",
+    "Modal creation saves a designation; clearing the title removes it from staff and public profiles",
+    "No browser runtime errors"
+  ],
+  "errors": []
+}

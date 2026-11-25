@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "Admin XLSX upload selects public visibility but preview writes no college",
+    "A single import confirmation publishes the college despite the template Draft cell",
+    "Newly imported college appears immediately on homepage and directory",
+    "Reimporting as an update keeps the published college public and avoids duplicates",
+    "Turning off public visibility creates a private Draft",
+    "No browser runtime errors"
+  ],
+  "errors": []
+}

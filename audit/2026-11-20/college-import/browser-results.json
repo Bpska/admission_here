@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "Anonymous users cannot read or upload imports or download the admin template",
+    "Authenticated non-administrators cannot import",
+    "Real downloaded XLSX template round-trips through the upload API",
+    "Invalid upload displays an error and clears the loading message",
+    "Uploading creates a preview only; no college is written before confirmation",
+    "Manual mapping and editable JSON correction produce a clean server-validated preview",
+    "Bulk preview fits 375px, 768px and 1440px viewports",
+    "Administrator confirmation imports the college and all three programmes",
+    "Repeated confirmed request does not duplicate the college",
+    "Results are downloadable and preview, report and commit endpoints enforce admin-only access",
+    "Engineering, Management and MCA listings preserve programme links and show their own fees",
+    "Import history exposes completed results and opens the saved preview",
+    "No browser runtime errors during the import workflow"
+  ],
+  "errors": [],
+  "date": "2026-11-20"
+}

@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "27 mobile/tablet/desktop page layouts: homepage, listing, category, article and college blog images load without overflow",
+    "Broken featured image switches to the local placeholder",
+    "Explore more cards display images and Read opens the matching illustrated article",
+    "No browser runtime errors"
+  ],
+  "layouts": 27,
+  "errors": []
+}

@@ -1,0 +1,107 @@
+{
+  "collegeId": "b118f681-7e01-434f-8398-0d5571ae7f1e",
+  "slug": "nalanda-institute-of-technology-bhubaneswar",
+  "sourceVerifiedAt": "2026-11-16",
+  "sourceUrls": [
+    "https://www.thenalanda.com/about",
+    "https://www.thenalanda.com/contact",
+    "https://www.thenalanda.com/departments",
+    "https://www.thenalanda.com/api/departments/",
+    "https://www.thenalanda.com/api/fees-structure/",
+    "https://www.thenalanda.com/api/hero-images/"
+  ],
+  "created": [
+    {
+      "id": "60e3975a-a0ef-4220-a976-4074c64ca2bc",
+      "degree": "BBA",
+      "specialization": "Bachelor of Business Administration (BBA)"
+    },
+    {
+      "id": "d0bc1c50-84f7-4d9c-b61e-0661c87d451d",
+      "degree": "BCA",
+      "specialization": "Bachelor of Computer Applications (BCA)"
+    },
+    {
+      "id": "8dcbdacb-7665-415a-a63f-02f302b6cada",
+      "degree": "B.Tech",
+      "specialization": "Civil Engineering"
+    },
+    {
+      "id": "e3d7d011-f5e0-4472-a52d-5697081cf7f7",
+      "degree": "B.Tech",
+      "specialization": "Computer Science & Engineering"
+    },
+    {
+      "id": "a3723ae0-f198-4d83-be79-fec8dd09e299",
+      "degree": "M.Tech",
+      "specialization": "Computer Science & Engineering"
+    },
+    {
+      "id": "afc6b884-8321-4e86-a617-3cd30bc5e542",
+      "degree": "B.Tech",
+      "specialization": "Computer Science & Engineering in AIML"
+    },
+    {
+      "id": "d171ddf3-cc11-48e8-a4d6-13e270eb151c",
+      "degree": "B.Tech",
+      "specialization": "Computer Science & Engineering in Cyber Security"
+    },
+    {
+      "id": "0a86fe6b-a814-49d2-8d0d-91869283c2ab",
+      "degree": "B.Tech",
+      "specialization": "Computer Science & Technology"
+    },
+    {
+      "id": "11d99f81-64bc-4d7b-909b-7879c47af66d",
+      "degree": "B.Tech",
+      "specialization": "Electrical Engineering"
+    },
+    {
+      "id": "02786bd7-2571-4983-8667-9e24a992e55b",
+      "degree": "MBA",
+      "specialization": "Finance"
+    },
+    {
+      "id": "055e04c7-2301-4300-b918-52c5a42ddc07",
+      "degree": "M.Sc",
+      "specialization": "M.Sc. in Applied Chemistry"
+    },
+    {
+      "id": "4c6e3cad-3647-47e4-a771-8ab359031962",
+      "degree": "M.Sc",
+      "specialization": "M.Sc. in Applied Physics"
+    },
+    {
+      "id": "ddb4a57a-f07b-47b4-8cc4-3f00b2043bea",
+      "degree": "M.Sc",
+      "specialization": "M.Sc. in Applied Mathematics"
+    },
+    {
+      "id": "3bb2bcb4-d10b-4dc6-ad5a-08aec9822cd5",
+      "degree": "MBA",
+      "specialization": "MBA in Human Resources"
+    },
+    {
+      "id": "bd0690d1-db71-464c-9a64-81539393683a",
+      "degree": "MCA",
+      "specialization": "MCA (Master in Computer Applications)"
+    },
+    {
+      "id": "8e1c01ca-8568-4fda-a714-d85eece5f7d2",
+      "degree": "MBA",
+      "specialization": "Marketing"
+    },
+    {
+      "id": "ab478f94-d7ec-43ac-96f8-bfca363301e7",
+      "degree": "B.Tech",
+      "specialization": "Mechanical Engineering"
+    },
+    {
+      "id": "8614638b-ca58-4180-8e28-9b5f5778d02d",
+      "degree": "M.Tech",
+      "specialization": "Thermal Engineering"
+    }
+  ],
+  "preservedExistingCollege": true,
+  "currentFeesAndPlacementsNotInferred": true
+}

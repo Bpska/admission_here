@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "Completed import replaces disabled controls with results and saved-college links",
+    "Preparing skipped updates creates another preview without changing colleges",
+    "Bulk match selection and validation still do not update records before confirmation",
+    "Explicit confirmation updates the matched college once and preserves original history",
+    "Completion screen fits phone, tablet and desktop",
+    "Upload another file resets the form for the next upload",
+    "Preparing skipped updates requires administrator access"
+  ],
+  "errors": []
+}

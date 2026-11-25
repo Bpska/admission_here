@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-20",
+  "productionBuild": "passed",
+  "serviceChecks": 23,
+  "localServerChecks": [
+    {
+      "path": "/admin/colleges/bulk-upload",
+      "status": 200
+    },
+    {
+      "path": "/admin/colleges/import-history",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/admin/college-imports",
+      "status": 200
+    },
+    {
+      "path": "/api/v1/admin/college-imports/template",
+      "status": 200
+    }
+  ],
+  "temporaryCollegesRemaining": 0,
+  "migration": "015_college_imports applied only to local database; migration baseline still requires review before deployment"
+}

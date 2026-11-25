@@ -1,0 +1,45 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "path": "/college/nalanda-institute-of-technology-bhubaneswar",
+      "status": 200,
+      "removedSectionLinks": 0
+    },
+    {
+      "width": 375,
+      "path": "/college/nalanda-institute-of-technology-bhubaneswar/programs/b-tech",
+      "status": 200,
+      "removedSectionLinks": 0
+    },
+    {
+      "width": 1440,
+      "path": "/college/nalanda-institute-of-technology-bhubaneswar",
+      "status": 200,
+      "removedSectionLinks": 0
+    },
+    {
+      "width": 1440,
+      "path": "/college/nalanda-institute-of-technology-bhubaneswar/programs/b-tech",
+      "status": 200,
+      "removedSectionLinks": 0
+    },
+    {
+      "oldPath": "/college/nalanda-institute-of-technology-bhubaneswar/cutoff",
+      "redirectsTo": "/college/nalanda-institute-of-technology-bhubaneswar"
+    },
+    {
+      "oldPath": "/college/nalanda-institute-of-technology-bhubaneswar/rankings",
+      "redirectsTo": "/college/nalanda-institute-of-technology-bhubaneswar"
+    },
+    {
+      "oldPath": "/college/nalanda-institute-of-technology-bhubaneswar/programs/b-tech/cutoff",
+      "redirectsTo": "/college/nalanda-institute-of-technology-bhubaneswar/programs/b-tech"
+    },
+    {
+      "oldPath": "/college/nalanda-institute-of-technology-bhubaneswar/programs/b-tech/rankings",
+      "redirectsTo": "/college/nalanda-institute-of-technology-bhubaneswar/programs/b-tech"
+    }
+  ],
+  "sitemapClean": true
+}

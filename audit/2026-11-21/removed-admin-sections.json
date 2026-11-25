@@ -1,0 +1,53 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "route": "/admin/colleges",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 375,
+      "route": "/admin/colleges/new",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 375,
+      "route": "/admin/colleges/756d8257-446c-4403-ada8-a9679565266d/edit",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 375,
+      "route": "/admin/colleges/756d8257-446c-4403-ada8-a9679565266d/data",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 1440,
+      "route": "/admin/colleges",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 1440,
+      "route": "/admin/colleges/new",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 1440,
+      "route": "/admin/colleges/756d8257-446c-4403-ada8-a9679565266d/edit",
+      "removedFieldsAbsent": true
+    },
+    {
+      "width": 1440,
+      "route": "/admin/colleges/756d8257-446c-4403-ada8-a9679565266d/data",
+      "removedFieldsAbsent": true
+    },
+    {
+      "template": "removed fields absent",
+      "columns": 55
+    },
+    {
+      "legacyColumnsIgnored": true
+    }
+  ],
+  "savedRecordsPreserved": true,
+  "errors": []
+}

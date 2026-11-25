@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Publishing requires an administrator, explicit confirmation and a completed import",
+    "Imported colleges still default to Draft",
+    "Publish action makes only the imported college public and updates the status screen",
+    "Published college appears on the homepage and public directory",
+    "Repeated publishing is idempotent"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "Public navigation reaches sign-up and sign-in; both forms fit phone/tablet/desktop and keep credentials out of URL submissions",
+    "Registration validates confirmation, normalizes email, creates a student, signs in automatically and uses an HTTP-only session without app-stored passwords",
+    "Student accounts see only their own applications, can save their profile, cannot access admin staff data, and can sign out",
+    "Incorrect passwords show a usable error; correct login returns to a safe requested page and rejects external redirects",
+    "Existing staff and administrator password sign-in still reaches the correct dashboard, including staff designation display",
+    "No browser runtime errors"
+  ],
+  "errors": []
+}

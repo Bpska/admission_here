@@ -1,0 +1,43 @@
+{
+  "id": "b5df01f6-5a9d-450d-b4bb-8b7f1d552f6b",
+  "slug": "gandhi-institute-for-technology-gift-autonomous-bhubaneswar",
+  "published": true,
+  "courses": 36,
+  "placementCohorts": 3,
+  "galleryPhotos": 4,
+  "faqs": 6,
+  "blog": {
+    "id": "ecf9803e-c330-48ba-ab9e-d149e63d31cc",
+    "slug": "gandhi-institute-for-technology-gift-autonomous-bhubaneswar-gift-10c2566d"
+  },
+  "images": [
+    {
+      "url": "/api/v1/blog-images/79097410-4516-47b6-a08c-736955d5e529",
+      "source": "https://top-autonomous-college-in-odisha.gift.edu.in/wp-content/uploads/2024/12/logo-896x1024.png"
+    },
+    {
+      "url": "/api/v1/blog-images/785ea35b-fc01-463f-9831-56660eb33c6e",
+      "source": "https://top-autonomous-college-in-odisha.gift.edu.in/wp-content/uploads/2023/06/gift-autonomous-college-bhubaneswar2-1.jpg"
+    },
+    {
+      "url": "/api/v1/blog-images/7af630cd-ad2c-4231-ad7e-9356790a0a6e",
+      "source": "https://top-autonomous-college-in-odisha.gift.edu.in/wp-content/uploads/2023/06/gift-college-bhubaneswar-1536x610-1.jpg"
+    },
+    {
+      "url": "/api/v1/blog-images/a19c24e8-f6ab-4b56-87f3-b0feead90157",
+      "source": "https://top-autonomous-college-in-odisha.gift.edu.in/wp-content/uploads/2023/06/GIFT-engineering-college-in-campus-hostel.jpg"
+    },
+    {
+      "url": "/api/v1/blog-images/08e1285c-ea15-4800-97c0-132a8a6afc9f",
+      "source": "https://top-autonomous-college-in-odisha.gift.edu.in/wp-content/uploads/2023/06/GIFT-Engineering-College-Laboratory-10-300x169-1.jpg"
+    }
+  ],
+  "reviewedAt": "2026-11-17",
+  "unavailable": [
+    "Verified NIRF rank",
+    "Round-wise cutoffs",
+    "Independent student reviews",
+    "Complete-course tuition",
+    "Highest/average packages"
+  ]
+}

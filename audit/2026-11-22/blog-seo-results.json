@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Admin metadata suggestions, live search/social previews, saved fields after reload, and responsive editor at 375/768/1440px",
+    "Website and college articles: contents anchors, one H1, reading time, copy/native/WhatsApp sharing and discussion links across three screen sizes",
+    "Article metadata, automatic description fallback, canonical paths and matching BlogPosting/NewsArticle structured data",
+    "No browser runtime errors"
+  ],
+  "errors": []
+}
