@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { validateBlogDestination } from "@/lib/blog-destination";
 import { getBlogStats } from "@/lib/blog-analytics";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { generateEmbedding } from "@/lib/ai/embeddings";
@@ -27,6 +28,7 @@ const BlogSaveSchema = z.object({
   commentsEnabled: z.boolean().optional(),
   showOnWebsiteBlog: z.boolean().optional(),
   publish: z.boolean().default(false),
+  scheduledAt: z.string().datetime().nullable().optional(),
   authorId: z.string().uuid().optional(), // Admin can override author
   relatedCollegeId: z.string().uuid().nullable().optional(),
 });
@@ -48,6 +50,8 @@ export async function GET(req: NextRequest) {
       (role === "STAFF" || role === "AUTHOR")
         ? { authorId: user.id }
         : undefined;
+
+    await publishDueScheduledBlogs();
 
     const posts = await db.blogPost.findMany({
       where,
@@ -103,6 +107,7 @@ export async function POST(req: NextRequest) {
       isLiveBlog,
       liveUpdatesJson,
       publish,
+      scheduledAt,
       showOnWebsiteBlog,
       likesEnabled,
       commentsEnabled,
@@ -118,7 +123,12 @@ export async function POST(req: NextRequest) {
       permissions.includes("blogs:publish") ||
       permissions.includes("blogs");
 
-    const effectivePublish = publish && canPublish;
+    const parsedScheduleDate = scheduledAt ? new Date(scheduledAt) : null;
+    const isFutureSchedule = Boolean(
+      parsedScheduleDate && !Number.isNaN(parsedScheduleDate.getTime()) && parsedScheduleDate.getTime() > Date.now()
+    );
+    const effectiveSchedule = isFutureSchedule && canPublish;
+    const effectivePublish = (publish || (Boolean(parsedScheduleDate) && !isFutureSchedule)) && canPublish && !effectiveSchedule;
 
     // Slug generation
     let slug = title
@@ -172,16 +182,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Choose a published college." }, { status: 400 });
     }
 
-    const previousPlacement = id ? await db.blogPost.findUnique({ where: { id }, select: { showOnWebsiteBlog: true, relatedCollegeId: true, publishedAt: true } }) : null;
-    const destinationError = await validateBlogDestination({ showOnWebsiteBlog: showOnWebsiteBlog ?? previousPlacement?.showOnWebsiteBlog ?? true, contentMdx, relatedCollegeId: relatedCollegeId !== undefined ? relatedCollegeId : previousPlacement?.relatedCollegeId }, effectivePublish);
+    const previousPlacement = id ? await db.blogPost.findUnique({ where: { id }, select: { showOnWebsiteBlog: true, relatedCollegeId: true, publishedAt: true, status: true } }) : null;
+    const destinationError = await validateBlogDestination({ showOnWebsiteBlog: showOnWebsiteBlog ?? previousPlacement?.showOnWebsiteBlog ?? true, contentMdx, relatedCollegeId: relatedCollegeId !== undefined ? relatedCollegeId : previousPlacement?.relatedCollegeId }, effectivePublish || effectiveSchedule);
     if (destinationError) return NextResponse.json({ error: destinationError }, { status: 400 });
 
-    // Generate embedding if publishing
+    // Generate embedding if publishing or scheduling
     let embedding: any = null;
-    if (effectivePublish) {
+    if (effectivePublish || effectiveSchedule) {
       const text = `${title} ${metaDescription || ""} ${tldrSummary.join(" ")}`;
       embedding = await generateEmbedding(text);
     }
+
+    const nextStatus = effectiveSchedule
+      ? PostStatus.SCHEDULED
+      : effectivePublish
+      ? PostStatus.PUBLISHED
+      : PostStatus.DRAFT;
+
+    const nextPublishedAt = effectiveSchedule
+      ? parsedScheduleDate!
+      : effectivePublish
+      ? (parsedScheduleDate || (previousPlacement?.status === PostStatus.PUBLISHED ? previousPlacement.publishedAt : null) || new Date())
+      : null;
 
     let post;
     const postData = {
@@ -200,8 +222,8 @@ export async function POST(req: NextRequest) {
       isLiveBlog,
       liveUpdatesJson,
       ...(relatedCollegeId !== undefined ? { relatedCollegeId } : {}),
-      status: effectivePublish ? PostStatus.PUBLISHED : PostStatus.DRAFT,
-      publishedAt: effectivePublish ? previousPlacement?.publishedAt || new Date() : undefined,
+      status: nextStatus,
+      publishedAt: nextPublishedAt,
     };
 
     if (id) {
@@ -211,14 +233,13 @@ export async function POST(req: NextRequest) {
         data: {
           slug,
           ...postData,
-          publishedAt: effectivePublish ? new Date() : null,
           authorId: resolvedAuthorId,
         },
       });
     }
 
     // Store vector embedding
-    if (effectivePublish && embedding) {
+    if ((effectivePublish || effectiveSchedule) && embedding) {
       try {
         await db.blogPost.update({ where: { id: post.id }, data: { embedding } });
       } catch (embErr) {
@@ -240,9 +261,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       post,
-      message: effectivePublish
+      message: effectiveSchedule
+        ? `Article scheduled for ${parsedScheduleDate!.toLocaleString("en-IN")}!`
+        : effectivePublish
         ? "Article published and indexed!"
-        : publish && !canPublish
+        : (publish || Boolean(scheduledAt)) && !canPublish
         ? "Draft saved. You don't have publish permission — ask the admin to publish."
         : "Draft saved successfully.",
     });

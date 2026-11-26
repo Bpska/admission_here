@@ -1,6 +1,7 @@
 import { staffDisplayName } from "@/lib/staff-display";
 import { BlogCoverImage } from "@/components/blog/BlogCoverImage";
 import { blogPreviewImage } from "@/lib/blog-image-display";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { constructSeoMetadata } from "@/lib/seo/metadata";
@@ -17,6 +18,7 @@ export const metadata = constructSeoMetadata({
 });
 
 export default async function BlogHubPage() {
+  await publishDueScheduledBlogs();
   const posts = await db.blogPost.findMany({
     where: { status: "PUBLISHED", showOnWebsiteBlog: true },
     orderBy: { publishedAt: "desc" },

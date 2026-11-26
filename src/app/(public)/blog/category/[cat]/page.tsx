@@ -1,6 +1,7 @@
 import { staffDisplayName } from "@/lib/staff-display";
 import { BlogCoverImage } from "@/components/blog/BlogCoverImage";
 import { blogPreviewImage } from "@/lib/blog-image-display";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -32,6 +33,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
   const normalizedCategory = cat === "admission-alerts" ? "ADMISSION_ALERT" : cat.replace(/-/g, "_").toUpperCase();
   if (!Object.values(BlogCategory).includes(normalizedCategory as BlogCategory)) notFound();
 
+  await publishDueScheduledBlogs();
   const posts = await db.blogPost.findMany({
     where: {
       status: "PUBLISHED",

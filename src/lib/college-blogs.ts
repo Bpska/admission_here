@@ -1,12 +1,16 @@
 import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { blogCollegeSlugs } from "./blog-content";
+import { publishDueScheduledBlogs } from "./blog-schedule";
 
 type CollegeReference = { id: string; slug: string };
 export function isBlogLinkedToCollege(post: { relatedCollegeId?: string | null; contentMdx: string }, college: CollegeReference) {
   return post.relatedCollegeId === college.id || blogCollegeSlugs(post.contentMdx).includes(college.slug);
 }
 export async function getCollegeBlogPosts(college: CollegeReference, scope: Prisma.BlogPostWhereInput = { status: "PUBLISHED", showOnWebsiteBlog: false }, client: Prisma.TransactionClient = db) {
+  if (client === db) {
+    await publishDueScheduledBlogs();
+  }
   const candidates = await client.blogPost.findMany({
     where: { AND: [scope, { OR: [{ relatedCollegeId: college.id }, { contentMdx: { contains: college.slug } }] }] },
     orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],

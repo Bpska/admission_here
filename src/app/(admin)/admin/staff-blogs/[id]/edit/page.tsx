@@ -36,6 +36,7 @@ export default async function StaffEditBlogPage({ params }: Props) {
       post={{
         id: post.id,
         status: post.status,
+        publishedAt: post.publishedAt ? post.publishedAt.toISOString() : null,
         likesEnabled: post.likesEnabled,
         commentsEnabled: post.commentsEnabled,
         faqsJson: (post.faqsJson as { question: string; answer: string }[]) || [],

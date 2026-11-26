@@ -10,6 +10,7 @@ interface Props {
     likesEnabled: boolean;
     commentsEnabled: boolean;
     status: string;
+    publishedAt?: string | null;
     faqsJson: { question: string; answer: string }[];
     id: string;
     title: string;
@@ -71,6 +72,7 @@ export function StaffEditBlogClient({ post, canPublish }: Props) {
         initialData={{
           id: post.id,
           status: post.status,
+          publishedAt: post.publishedAt,
         likesEnabled: post.likesEnabled,
         commentsEnabled: post.commentsEnabled,
           faqsJson: post.faqsJson,

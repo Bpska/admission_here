@@ -1,5 +1,6 @@
 import { staffDisplayName } from "@/lib/staff-display";
 import { BlogCoverImage } from "./BlogCoverImage";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import { BlogShareTools } from "./BlogShareTools";
 import { analyzeBlogContent } from "@/lib/blog-readability";
 import { suggestBlogMetadata } from "@/lib/blog-suggestions";
@@ -63,6 +64,7 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug, collegeSlug } = await params;
+  await publishDueScheduledBlogs();
 
   const post = await db.blogPost.findUnique({
     where: { slug, status: "PUBLISHED" },

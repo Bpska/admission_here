@@ -6,9 +6,10 @@ import { canonicalBlogHref } from "@/lib/blog-destination";
 import { BlogDestinationTabs } from "@/components/admin/BlogDestinationTabs";
 import { getBlogStats } from "@/lib/blog-analytics";
 import { BlogAnalyticsCards } from "@/components/admin/BlogAnalyticsCards";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { Plus, Edit, Eye, Radio, Trash2, EyeOff } from "lucide-react";
+import { Plus, Edit, Eye, Radio, Trash2, EyeOff, CalendarClock } from "lucide-react";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { AdminBlogActions } from "./AdminBlogActions";
@@ -38,6 +39,8 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
     );
   }
 
+  await publishDueScheduledBlogs();
+
   const allPosts = await db.blogPost.findMany({
     where: access.isSuperAdmin ? {} : { authorId: access.userId },
     orderBy: { createdAt: "desc" },
@@ -65,7 +68,14 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/blogs/calendar"
+            className="px-4 py-2 rounded-xl border border-purple-300 bg-purple-50 text-purple-800 font-bold text-xs flex items-center gap-1.5 hover:bg-purple-100 transition-colors"
+          >
+            <CalendarClock className="w-4 h-4" />
+            <span>Schedule Calendar</span>
+          </Link>
           <Link
             href={`/admin/blogs/new?destination=${destination}`}
             className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-2xs"
@@ -77,10 +87,11 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         {[
           { label: "Total Posts", value: matching.length, color: "#1a3068" },
           { label: "Published", value: matching.filter((p) => p.status === "PUBLISHED").length, color: "#1f8040" },
+          { label: "Scheduled", value: matching.filter((p) => p.status === "SCHEDULED").length, color: "#6d28d9" },
           { label: "Drafts", value: matching.filter((p) => p.status === "DRAFT").length, color: "#b45309" },
           { label: "Live Blogs", value: matching.filter((p) => p.isLiveBlog).length, color: "#c41e1e" },
         ].map((stat) => (
@@ -151,6 +162,14 @@ export default async function AdminBlogsPage({ searchParams }: { searchParams: P
                     >
                       {post.status}
                     </span>
+                    {post.status === "SCHEDULED" && post.publishedAt && (
+                      <p className="mt-1 text-[10px] font-semibold text-purple-700">
+                        {new Date(post.publishedAt).toLocaleString("en-IN", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </p>
+                    )}
                   </td>
                   <td className="p-4 font-semibold">{(analytics.perPost[post.id]?.views || 0).toLocaleString("en-IN")}</td>
                   <td className="p-4">{(analytics.perPost[post.id]?.visitors || 0).toLocaleString("en-IN")}</td>

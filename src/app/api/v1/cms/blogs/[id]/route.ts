@@ -20,6 +20,7 @@ const BlogPatchSchema = z.object({
   isLiveBlog: z.boolean().optional(),
   liveUpdatesJson: z.array(z.object({ id: z.string(), timestamp: z.string().datetime(), headline: z.string().min(1), bodyHtml: z.string(), isPinned: z.boolean().default(false) })).optional(),
   status: z.nativeEnum(PostStatus).optional(),
+  publishedAt: z.string().datetime().nullable().optional(),
   authorId: z.string().uuid().optional(),
   relatedCollegeId: z.string().uuid().nullable().optional(),
 });
@@ -86,7 +87,8 @@ export async function PATCH(
     if (parsed.data.relatedCollegeId && !await db.college.findUnique({ where: { id: parsed.data.relatedCollegeId, isPublished: true }, select: { id: true } })) {
       return NextResponse.json({ error: "Choose a published college." }, { status: 400 });
     }
-    const destinationError = await validateBlogDestination({ showOnWebsiteBlog: parsed.data.showOnWebsiteBlog ?? existing.showOnWebsiteBlog, contentMdx: parsed.data.contentMdx ?? existing.contentMdx, relatedCollegeId: parsed.data.relatedCollegeId !== undefined ? parsed.data.relatedCollegeId : existing.relatedCollegeId }, (parsed.data.status ?? existing.status) === "PUBLISHED");
+    const nextStatus = parsed.data.status ?? existing.status;
+    const destinationError = await validateBlogDestination({ showOnWebsiteBlog: parsed.data.showOnWebsiteBlog ?? existing.showOnWebsiteBlog, contentMdx: parsed.data.contentMdx ?? existing.contentMdx, relatedCollegeId: parsed.data.relatedCollegeId !== undefined ? parsed.data.relatedCollegeId : existing.relatedCollegeId }, nextStatus === "PUBLISHED" || nextStatus === "SCHEDULED");
     if (destinationError) return NextResponse.json({ error: destinationError }, { status: 400 });
     const updateData: any = { ...parsed.data };
 
@@ -95,21 +97,37 @@ export async function PATCH(
       delete updateData.authorId;
     }
 
-    // Permission to publish
+    // Permission to publish or schedule
     const canPublish =
       user.role === "SUPER_ADMIN" ||
       (user.permissions || []).includes("blogs:publish") ||
       (user.permissions || []).includes("blogs");
 
     if (
-      updateData.status === PostStatus.PUBLISHED &&
+      (updateData.status === PostStatus.PUBLISHED || updateData.status === PostStatus.SCHEDULED) &&
       !canPublish
     ) {
       updateData.status = PostStatus.DRAFT;
+      delete updateData.publishedAt;
     }
 
-    if (updateData.status === PostStatus.PUBLISHED) {
-      updateData.publishedAt = existing.publishedAt || new Date();
+    if (updateData.publishedAt !== undefined) {
+      updateData.publishedAt = updateData.publishedAt ? new Date(updateData.publishedAt) : null;
+    }
+
+    if (updateData.status === PostStatus.SCHEDULED) {
+      const targetDate = updateData.publishedAt instanceof Date ? updateData.publishedAt : existing.publishedAt;
+      if (!targetDate) {
+        return NextResponse.json({ error: "Select a schedule date and time." }, { status: 400 });
+      }
+      if (targetDate.getTime() <= Date.now()) {
+        updateData.status = PostStatus.PUBLISHED;
+      }
+      updateData.publishedAt = targetDate;
+    } else if (updateData.status === PostStatus.PUBLISHED) {
+      updateData.publishedAt = (updateData.publishedAt instanceof Date ? updateData.publishedAt : null) || existing.publishedAt || new Date();
+    } else if (updateData.status === PostStatus.DRAFT && existing.status === PostStatus.SCHEDULED && updateData.publishedAt === undefined) {
+      updateData.publishedAt = null;
     }
 
     const post = await db.blogPost.update({ where: { id }, data: updateData });

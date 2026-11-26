@@ -6,6 +6,7 @@ import { canonicalBlogHref } from "@/lib/blog-destination";
 import { BlogDestinationTabs } from "@/components/admin/BlogDestinationTabs";
 import { getBlogStats } from "@/lib/blog-analytics";
 import { BlogAnalyticsCards } from "@/components/admin/BlogAnalyticsCards";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { db } from "@/lib/db";
@@ -20,6 +21,7 @@ import {
   Clock,
   Radio,
   Trash2,
+  CalendarClock,
 } from "lucide-react";
 import { StaffBlogActions } from "./StaffBlogActions";
 
@@ -66,6 +68,8 @@ export default async function StaffBlogDashboardPage({ searchParams }: { searchP
     permissions.includes("blogs:delete") ||
     permissions.includes("blogs");
 
+  await publishDueScheduledBlogs();
+
   // Fetch only posts authored by this staff member (or all for SUPER_ADMIN)
   const allPosts = await db.blogPost.findMany({
     where: isSuperAdmin ? undefined : { authorId: userId },
@@ -109,14 +113,23 @@ export default async function StaffBlogDashboardPage({ searchParams }: { searchP
           </p>
         </div>
 
-        <Link
-          href={`/admin/staff-blogs/new?destination=${destination}`}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold text-white shadow-xs transition-opacity"
-          style={{ background: "#b45309" }}
-        >
-          <Plus className="w-4 h-4" />
-          <span>{destination === "college" ? "Write college blog" : "Write website blog"}</span>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/staff-blogs/calendar"
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border border-purple-300 bg-purple-50 text-purple-800 text-xs font-bold hover:bg-purple-100 transition-colors"
+          >
+            <CalendarClock className="w-4 h-4" />
+            <span>Schedule Calendar</span>
+          </Link>
+          <Link
+            href={`/admin/staff-blogs/new?destination=${destination}`}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold text-white shadow-xs transition-opacity"
+            style={{ background: "#b45309" }}
+          >
+            <Plus className="w-4 h-4" />
+            <span>{destination === "college" ? "Write college blog" : "Write website blog"}</span>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}

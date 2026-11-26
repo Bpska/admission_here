@@ -28,6 +28,7 @@ export function EditBlogClient({ post, canPublish }: { post: any; canPublish: bo
         slug: post.slug,
         publicPath: post.publicPath,
         status: post.status,
+        publishedAt: post.publishedAt,
         likesEnabled: post.likesEnabled,
         commentsEnabled: post.commentsEnabled,
         faqsJson: post.faqsJson || [],

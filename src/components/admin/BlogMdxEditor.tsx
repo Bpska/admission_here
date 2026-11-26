@@ -14,8 +14,11 @@ import {
   Save, 
   Send,
   Eye,
-  Edit3
+  Edit3,
+  CalendarClock,
+  CalendarDays
 } from "lucide-react";
+import { toDateTimeLocalValue } from "@/lib/blog-schedule";
 import { SeoGeoChecklist } from "./SeoGeoChecklist";
 import { BlogSearchAppearance } from "./BlogSearchAppearance";
 import { analyzeBlogContent } from "@/lib/blog-readability";
@@ -31,6 +34,7 @@ interface BlogMdxEditorProps {
     likesEnabled?: boolean;
     commentsEnabled?: boolean;
     status?: string;
+    publishedAt?: string | Date | null;
     faqsJson?: { question: string; answer: string }[];
     id?: string;
     slug?: string;
@@ -78,8 +82,24 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [scheduleMode, setScheduleMode] = useState<"now" | "schedule">(
+    initialData?.status === "SCHEDULED" && initialData?.publishedAt ? "schedule" : "now"
+  );
+  const [scheduledAt, setScheduledAt] = useState<string>(() =>
+    initialData?.status === "SCHEDULED" && initialData?.publishedAt
+      ? toDateTimeLocalValue(initialData.publishedAt)
+      : ""
+  );
 
-  const snapshot = JSON.stringify({ likesEnabled, commentsEnabled, title, metaTitle, metaDescription, featuredImageUrl, category, tagsText, contentMdx, showOnWebsiteBlog, isLiveBlog, liveUpdates, faqs });
+  const setPresetSchedule = (daysAhead: number, hour: number, minute = 0) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysAhead);
+    d.setHours(hour, minute, 0, 0);
+    setScheduleMode("schedule");
+    setScheduledAt(toDateTimeLocalValue(d));
+  };
+
+  const snapshot = JSON.stringify({ likesEnabled, commentsEnabled, title, metaTitle, metaDescription, featuredImageUrl, category, tagsText, contentMdx, showOnWebsiteBlog, isLiveBlog, liveUpdates, faqs, scheduleMode, scheduledAt });
   const initialSnapshot = useRef(snapshot);
   const dirty = initialSnapshot.current !== snapshot;
   useEffect(() => {
@@ -99,7 +119,7 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
     setContentMdx((prev) => `${prev}\n\n${shortcode}\n\n`);
   };
 
-  const handleFormSubmit = async (publish: boolean) => {
+  const handleFormSubmit = async (publish: boolean, useSchedule = false) => {
     if (saving || mediaBusy || featuredBusy || generating) return;
     setSaving(true);
     setSaveError("");
@@ -112,7 +132,16 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
         .map((t) => t.trim())
         .filter(Boolean);
 
-      if (!showOnWebsiteBlog && publish && blogCollegeSlugs(contentMdx).length === 0) throw new Error("Select at least one college in Colleges linked to this article before publishing.");
+      let scheduledIso: string | null = null;
+      if (useSchedule) {
+        if (!scheduledAt) throw new Error("Select a schedule date and time before scheduling.");
+        const parsed = new Date(scheduledAt);
+        if (Number.isNaN(parsed.getTime())) throw new Error("Enter a valid schedule date and time.");
+        if (parsed.getTime() <= Date.now()) throw new Error("Schedule date and time must be in the future, or switch to Publish immediately.");
+        scheduledIso = parsed.toISOString();
+      }
+
+      if (!showOnWebsiteBlog && (publish || useSchedule) && blogCollegeSlugs(contentMdx).length === 0) throw new Error("Select at least one college in Colleges linked to this article before publishing or scheduling.");
 
       await onSave(
         {
@@ -132,8 +161,9 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
           commentsEnabled,
           isLiveBlog,
           liveUpdatesJson: liveUpdates,
+          scheduledAt: scheduledIso,
         },
-        publish
+        publish && !useSchedule
       );
       initialSnapshot.current = snapshot;
     } catch (error) {
@@ -312,15 +342,27 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
             <span>{saving ? "Saving…" : initialData?.status === "PUBLISHED" ? "Move to draft" : "Save draft"}</span>
           </button>
           {canPublish ? (
-            <button
-              type="button"
-              disabled={saving || mediaBusy || featuredBusy || generating}
-              onClick={() => handleFormSubmit(true)}
-              className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-xs cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>{saving ? "Saving…" : initialData?.status === "PUBLISHED" ? "Update published article" : "Publish article"}</span>
-            </button>
+            scheduleMode === "schedule" ? (
+              <button
+                type="button"
+                disabled={saving || mediaBusy || featuredBusy || generating}
+                onClick={() => handleFormSubmit(false, true)}
+                className="px-5 py-2 rounded-lg bg-purple-700 text-white text-xs font-bold flex items-center gap-1.5 hover:bg-purple-800 transition-colors shadow-xs cursor-pointer"
+              >
+                <CalendarClock className="w-3.5 h-3.5" />
+                <span>{saving ? "Scheduling…" : initialData?.status === "SCHEDULED" ? "Update schedule" : "Schedule article"}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                disabled={saving || mediaBusy || featuredBusy || generating}
+                onClick={() => handleFormSubmit(true, false)}
+                className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-xs cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{saving ? "Saving…" : initialData?.status === "PUBLISHED" ? "Update published article" : "Publish article"}</span>
+              </button>
+            )
           ) : (
             <span className="text-[11px] text-amber-600 font-semibold px-3 py-2 rounded-lg border bg-amber-50">
               Publishing requires admin approval
@@ -331,6 +373,110 @@ export function BlogMdxEditor({ initialDestination, initialCollegeSlug, initialD
 
       {/* SEO & GEO Optimization Sidebar */}
       <div className="min-w-0 space-y-5">
+
+        {canPublish && (
+          <section className="space-y-3 rounded-xl border bg-card p-5">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-bold text-sm flex items-center gap-1.5">
+                <CalendarClock className="w-4 h-4 text-purple-700" />
+                <span>Publish schedule</span>
+              </h2>
+              <Link
+                href="/admin/blogs/calendar"
+                className="text-[11px] font-semibold text-primary hover:underline inline-flex items-center gap-1"
+              >
+                <CalendarDays className="w-3.5 h-3.5" />
+                Full calendar
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => setScheduleMode("now")}
+                className={`rounded-lg border px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+                  scheduleMode === "now"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                Publish now
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => {
+                  setScheduleMode("schedule");
+                  if (!scheduledAt) setPresetSchedule(1, 9, 0);
+                }}
+                className={`rounded-lg border px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+                  scheduleMode === "schedule"
+                    ? "border-purple-600 bg-purple-50 text-purple-800"
+                    : "bg-background text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                Schedule later
+              </button>
+            </div>
+
+            {scheduleMode === "schedule" && (
+              <div className="space-y-2.5 pt-1">
+                <label className="block text-xs font-semibold text-muted-foreground">
+                  Date &amp; time to auto-publish
+                  <input
+                    type="datetime-local"
+                    value={scheduledAt}
+                    min={toDateTimeLocalValue(new Date())}
+                    disabled={saving}
+                    onChange={(e) => setScheduledAt(e.target.value)}
+                    className="mt-1 block w-full rounded-lg border bg-background px-3 py-2 text-xs font-medium text-foreground"
+                  />
+                </label>
+
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => setPresetSchedule(1, 9, 0)}
+                    className="rounded-md border bg-muted/40 px-2 py-1 text-[11px] font-medium hover:bg-accent cursor-pointer"
+                  >
+                    Tomorrow 9 AM
+                  </button>
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => setPresetSchedule(2, 10, 0)}
+                    className="rounded-md border bg-muted/40 px-2 py-1 text-[11px] font-medium hover:bg-accent cursor-pointer"
+                  >
+                    +2 Days 10 AM
+                  </button>
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => setPresetSchedule(7, 9, 0)}
+                    className="rounded-md border bg-muted/40 px-2 py-1 text-[11px] font-medium hover:bg-accent cursor-pointer"
+                  >
+                    Next Week
+                  </button>
+                </div>
+
+                {scheduledAt && !Number.isNaN(new Date(scheduledAt).getTime()) && (
+                  <p className="rounded-lg bg-purple-50 border border-purple-200 px-3 py-2 text-[11px] text-purple-900">
+                    Will go live automatically on{" "}
+                    <strong>
+                      {new Date(scheduledAt).toLocaleString("en-IN", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
+                    </strong>
+                    .
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
+        )}
 
         <section className="space-y-4 rounded-xl border bg-card p-5">
           <h2 className="font-bold text-sm">Likes &amp; comments</h2>

@@ -1,4 +1,5 @@
 import { getBlogStats } from "@/lib/blog-analytics";
+import { publishDueScheduledBlogs } from "@/lib/blog-schedule";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/lib/db";
@@ -42,6 +43,7 @@ export const metadata = constructSeoMetadata({
 });
 
 export default async function HomePage() {
+  await publishDueScheduledBlogs();
   const [collegeCount, examCount, cutoffCount, streamCounts] = await Promise.all([
     db.college.count({ where: { isPublished: true } }),
     db.exam.count(),
