@@ -7,6 +7,8 @@ import { revalidatePath } from "next/cache";
 import { createCollegeProfile } from "@/lib/create-college-profile";
 import { validateCustomNavbarFilter } from "@/lib/custom-navbar-filters";
 import { CollegeCreateSchema } from "@/lib/college-validation";
+import { CollegeBulkDeleteSchema, CollegeBulkDeleteConflict, deleteSelectedColleges } from "@/lib/college-bulk-delete";
+import { isSameSiteRequest } from "@/lib/security";
 
 
 
@@ -28,6 +30,46 @@ export async function GET() {
     return NextResponse.json({ success: true, colleges });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch colleges" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const access = await checkAdminAccess("colleges");
+    if (!access.allowed) return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
+    if (!access.isSuperAdmin) {
+      return NextResponse.json({ error: "Only Super Administrators can delete colleges." }, { status: 403 });
+    }
+    if (!isSameSiteRequest(req)) {
+      return NextResponse.json({ error: "Cross-site deletion is not allowed." }, { status: 403 });
+    }
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Send the selected college IDs and deletion confirmation as JSON." }, { status: 400 });
+    }
+    const parsed = CollegeBulkDeleteSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || "Invalid college selection." }, { status: 400 });
+    }
+    const result = await deleteSelectedColleges(parsed.data.ids);
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/admin/colleges");
+      revalidatePath("/colleges");
+      revalidatePath("/sitemap.xml");
+      for (const college of result.colleges) revalidatePath(`/college/${college.slug}`, "layout");
+    } catch {
+      // Cache refresh must not turn a committed deletion into an error response.
+    }
+    return NextResponse.json({ success: true, deletedCount: result.deletedCount });
+  } catch (error) {
+    if (error instanceof CollegeBulkDeleteConflict) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    console.error("Bulk college delete error:", error);
+    return NextResponse.json({ error: "Could not delete the selected colleges. No colleges were deleted. Please try again." }, { status: 500 });
   }
 }
 

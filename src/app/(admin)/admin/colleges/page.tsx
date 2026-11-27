@@ -5,6 +5,7 @@ import { Building2, Plus, Award, CheckCircle2, Globe2, BookOpen } from "lucide-r
 import { checkAdminAccess, collegeScope } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
 import { AdminCollegeActions } from "./AdminCollegeActions";
+import { CollegeBulkSelection, CollegeSelectionCheckbox } from "@/components/admin/CollegeBulkSelection";
 
 export const revalidate = 0;
 
@@ -161,6 +162,7 @@ export default async function AdminCollegesPage({ searchParams }: {
 
       {/* Colleges Data Table */}
       <div className="bg-card border rounded-2xl overflow-hidden shadow-xs">
+        <CollegeBulkSelection ids={colleges.map(college => college.id)} enabled={access.isSuperAdmin}>
         <div className="p-4 border-b bg-muted/10 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>Showing <strong className="text-foreground">{colleges.length}</strong> onboarded institutions</span>
           <span className="text-[11px]">Click <strong>Edit</strong> to configure fees, hostel, gallery, and SEO tags</span>
@@ -170,6 +172,7 @@ export default async function AdminCollegesPage({ searchParams }: {
           {colleges.length === 0 && <p className="p-4 text-sm text-muted-foreground">No college profiles available.</p>}
           {colleges.map(college => <article key={college.id} className="space-y-4 p-4">
             <div className="flex items-start gap-3">
+              {access.isSuperAdmin && <CollegeSelectionCheckbox id={college.id} name={college.name} />}
               {college.logoUrl ? <img src={college.logoUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg border bg-white p-1 object-contain" /> : <Building2 className="h-9 w-9 shrink-0 rounded-lg bg-muted p-2" />}
               <div className="min-w-0 space-y-1"><h2 className="break-words text-sm font-bold">{college.name}</h2><p className="text-xs text-muted-foreground">{college.city}, {college.state}</p></div>
             </div>
@@ -181,6 +184,7 @@ export default async function AdminCollegesPage({ searchParams }: {
           <table className="w-full text-left text-xs">
             <thead className="bg-muted/50 border-b font-bold text-muted-foreground uppercase text-[10px] tracking-wider">
               <tr>
+                {access.isSuperAdmin && <th className="p-4"><span className="sr-only">Select college</span></th>}
                 <th className="p-4">College Name &amp; Slug</th>
                 <th className="p-4">Location</th>
                 <th className="p-4">Ownership</th>
@@ -192,7 +196,7 @@ export default async function AdminCollegesPage({ searchParams }: {
             </thead>
             <tbody className="divide-y text-foreground">
               {colleges.length === 0 && (
-                <tr><td colSpan={7} className="p-6 text-sm text-muted-foreground">
+                <tr><td colSpan={access.isSuperAdmin ? 8 : 7} className="p-6 text-sm text-muted-foreground">
                   {access.isSuperAdmin
                     ? "No college profiles have been created yet."
                     : "No colleges are assigned to you yet. You can submit a new college now; it will appear in this directory after admin approval."}
@@ -200,6 +204,7 @@ export default async function AdminCollegesPage({ searchParams }: {
               )}
               {colleges.map((c) => (
                 <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                  {access.isSuperAdmin && <td className="p-4"><CollegeSelectionCheckbox id={c.id} name={c.name} /></td>}
                   <td className="p-4 max-w-xs">
                     <div className="flex items-center gap-2.5">
                       {c.logoUrl ? (
@@ -269,6 +274,7 @@ export default async function AdminCollegesPage({ searchParams }: {
             </tbody>
           </table>
         </div>
+        </CollegeBulkSelection>
       </div>
     </div>
   );

@@ -98,6 +98,19 @@ async function main() {
       false,
     );
     passed("One college imports as Draft with missing optional fields");
+    const aidedJob = await finish(
+      await newJob(headers, [[`${mark} Aided`, "Test City", "Test State", "AIDED"]]),
+    );
+    assert.equal(aidedJob.rows[0].status, "CREATED");
+    const aidedId = aidedJob.rows[0].collegeId!;
+    assert.equal((await db.college.findUniqueOrThrow({ where: { id: aidedId } })).ownershipType, "AIDED");
+    assert.equal((await runBatch(aidedJob.id, aidedJob.version)).rows[0].collegeId, aidedId);
+    assert.equal(await db.college.count({ where: { name: `${mark} Aided` } }), 1);
+    const aidedUpdate = await newJob(headers, [[`${mark} Single`, "Test City", "Test State", "Government Aided"]]);
+    const aidedUpdated = await finish(await reviseImport(aidedUpdate.id, aidedUpdate.version, aidedUpdate.mapping as Record<string, string>, { allowUpdates: true, allowPublish: false }, [{ rowNumber: 2, raw: aidedUpdate.rows[0].raw as string[], decision: { action: "update", targetId: firstId, confirmed: true } }]));
+    assert.equal(aidedUpdated.rows[0].status, "UPDATED");
+    assert.equal((await db.college.findUniqueOrThrow({ where: { id: firstId } })).ownershipType, "AIDED");
+    passed("Aided colleges are saved, existing ownership updates to Aided, and completed retries do not duplicate colleges");
     const batch = await finish(
       await newJob(
         headers,

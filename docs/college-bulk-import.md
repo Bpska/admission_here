@@ -158,6 +158,25 @@ All write tests used uniquely named local fixtures which were removed afterward.
 
 ## XLSX compatibility
 
+### Aided college ownership (27 November 2026)
+
+College Type now supports `AIDED` alongside `PUBLIC_GOVERNMENT`, `PRIVATE`, `DEEMED` and `AUTONOMOUS`. Government Aided, Govt. Aided and Grant-in-aid are accepted as aliases and saved as `AIDED`. The add/edit forms, public ownership filter and downloadable template also support Aided. Unknown ownership values still fail validation.
+
+The supplied 250-college Odisha workbook had `AIDED` in rows 15–251, causing the same unsupported-type error on 237 rows. All 250 rows now pass validation in both Draft and Publish modes. The workbook does not need to be edited. Open the existing preview and choose **Revalidate / prepare retry**, or upload the original file again. Review duplicate matches and confirm the import as usual.
+
+Migration `018_aided_college_ownership` adds the PostgreSQL enum value without changing existing colleges. The normal `predev`/`prestart` preparation also applies this additive migration on legacy databases without a migration baseline. Regenerate Prisma Client and restart the running app after updating. Migration-managed deployments should apply the migration through their normal release procedure.
+
+The preview now groups repeated validation errors with affected row numbers and shows each row's actual error in its collapsed heading.
+
+Verification:
+
+```sh
+node --import tsx scripts/verify-aided-college-import.ts /path/to/colleges.xlsx /path/to/pasted-errors.txt
+node --env-file=.env --import tsx scripts/verify-college-import.ts
+```
+
+The first command performs read-only validation; the second uses temporary fixtures in a localhost database and removes them afterward.
+
 The importer reads worksheet values directly from OOXML ZIP/XML parts. It resolves workbook relationships and namespace URIs rather than relying on ExcelJS's workbook loader or fixed internal sheet filenames. It supports inline/shared strings, namespace aliases and UTF-8/UTF-16 XML. Formulas, error cells, merged cells, date serials, unsafe references and DTDs remain rejected. Eight database-free regression checks are available through `node --import tsx scripts/verify-college-xlsx.ts`, including 100-college XLSX input and custom worksheet paths. ExcelJS is retained for generating the styled downloadable template only.
 
 The live local endpoint accepted a filled Excel template and confirmed one Draft college with B.Tech, MBA and MCA. Temporary records were removed.

@@ -343,6 +343,7 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
               >
                 <option value="PUBLIC_GOVERNMENT">Public / Government</option>
                 <option value="PRIVATE">Private</option>
+                <option value="AIDED">Government Aided</option>
                 <option value="DEEMED">Deemed to be University</option>
                 <option value="AUTONOMOUS">Autonomous</option>
               </select>

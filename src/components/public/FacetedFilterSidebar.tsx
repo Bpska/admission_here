@@ -143,6 +143,7 @@ export function FacetedFilterSidebar({
             {[
               { label: "Public / Government", val: "PUBLIC_GOVERNMENT" },
               { label: "Private", val: "PRIVATE" },
+              { label: "Government Aided", val: "AIDED" },
               { label: "Deemed University", val: "DEEMED" },
             ].map((item) => (
               <label

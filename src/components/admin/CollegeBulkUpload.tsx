@@ -360,6 +360,14 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
     ).length || 0;
   const plans = job?.rows.map((r) => r.preview) || [];
   const invalid = plans.filter((p) => p.errors.length).length;
+  const errorGroups = new Map<string, number[]>();
+  for (const row of job?.rows || []) {
+    for (const error of new Set(row.preview.errors)) {
+      const numbers = errorGroups.get(error) || [];
+      numbers.push(row.rowNumber);
+      errorGroups.set(error, numbers);
+    }
+  }
   const showInvalidRows = () => {
     if (!job) return;
     const invalidRows = job.rows.filter((row) => row.preview.errors.length);
@@ -819,6 +827,37 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
               status stay Draft.
             </label>
           </section>
+          {invalid > 0 && (
+            <section
+              aria-label="Upload validation errors"
+              className="space-y-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+            >
+              <h2 className="font-bold">{invalid} row(s) need correction</h2>
+              <p>
+                Correct the values below, then click Validate changes. College
+                Type supports PUBLIC_GOVERNMENT, PRIVATE, DEEMED, AUTONOMOUS and
+                AIDED.
+              </p>
+              {dirty && (
+                <p className="font-semibold">
+                  These messages are from the last validation. Validate changes
+                  to refresh them.
+                </p>
+              )}
+              <ul className="list-disc space-y-2 break-words pl-5">
+                {[...errorGroups].map(([message, numbers]) => (
+                  <li key={message}>
+                    <span className="font-semibold">{numbers.length} row(s): </span>
+                    {message}
+                    <span className="block text-xs">
+                      Rows {numbers.slice(0, 10).join(", ")}
+                      {numbers.length > 10 ? ` and ${numbers.length - 10} more` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           <div className="space-y-3">
             {job.rows.map((row) => (
               <details
@@ -846,6 +885,14 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                       : ""}
                     {dirty ? " · Revalidation needed" : ""}
                   </span>
+                  {row.preview.errors.map((message, index) => (
+                    <span
+                      key={index}
+                      className="mt-1 block break-words text-sm text-red-700"
+                    >
+                      {message}
+                    </span>
+                  ))}
                 </summary>
                 {openRows.has(row.id) && (
                   <div className="mt-4 space-y-4">
@@ -855,13 +902,6 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                       >
                         {row.message}
                       </p>
-                    )}
-                    {row.preview.errors.length > 0 && (
-                      <ul className="list-disc space-y-1 pl-5 text-sm text-red-700">
-                        {row.preview.errors.map((e, i) => (
-                          <li key={i}>{e}</li>
-                        ))}
-                      </ul>
                     )}
                     {row.preview.warnings.length > 0 && (
                       <ul className="list-disc space-y-1 pl-5 text-xs text-amber-800">

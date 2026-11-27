@@ -480,12 +480,17 @@ export async function validateRow(
     const types: Record<string, string> = {
       government: "PUBLIC_GOVERNMENT",
       public: "PUBLIC_GOVERNMENT",
+      publicgovernment: "PUBLIC_GOVERNMENT",
       private: "PRIVATE",
       deemed: "DEEMED",
       autonomous: "AUTONOMOUS",
+      aided: "AIDED",
+      governmentaided: "AIDED",
+      govtaided: "AIDED",
+      grantinaid: "AIDED",
     };
     profile.ownershipType =
-      types[values.ownershipType.toLowerCase()] || values.ownershipType;
+      types[normalize(values.ownershipType)] || values.ownershipType;
   }
   if (values.approvedBy)
     check("Approvals", () => (profile.approvedBy = list(values.approvedBy)));

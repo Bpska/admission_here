@@ -21,6 +21,16 @@ async function prepareBlogAnalytics(db) {
         (!tables.imports || !tables.import_rows) && "015_college_imports",
         !tables.auth_throttle && "017_user_login",
       ].filter(Boolean);
+      const [ownership] = await tx.$queryRaw`
+        SELECT EXISTS (
+          SELECT 1 FROM pg_enum e
+          JOIN pg_type t ON t.oid = e.enumtypid
+          JOIN pg_namespace n ON n.oid = t.typnamespace
+          WHERE t.typname = 'OwnershipType' AND n.nspname = current_schema()
+            AND e.enumlabel = 'AIDED'
+        ) AS aided
+      `;
+      if (!ownership.aided) needed.push("018_aided_college_ownership");
       const [profile] = await tx.$queryRaw`
         SELECT to_regclass('"User"')::text AS users,
           EXISTS (SELECT 1 FROM information_schema.columns

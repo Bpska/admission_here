@@ -27,9 +27,9 @@ const FIELD_CATALOG: ImportField[] = [
   {
     key: "ownershipType",
     label: "College Type",
-    hint: "Choose the actual ownership value.",
+    hint: "Choose PUBLIC_GOVERNMENT, PRIVATE, DEEMED, AUTONOMOUS or AIDED (government-aided).",
     aliases: ["ownership", "ownership type"],
-    choices: ["PUBLIC_GOVERNMENT", "PRIVATE", "DEEMED", "AUTONOMOUS"],
+    choices: ["PUBLIC_GOVERNMENT", "PRIVATE", "DEEMED", "AUTONOMOUS", "AIDED"],
   },
   {
     key: "estYear",
