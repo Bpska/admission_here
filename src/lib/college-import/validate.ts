@@ -3,8 +3,15 @@ import sanitizeHtml from "sanitize-html";
 import { BlogCategory, Prisma } from "@prisma/client";
 import { CollegeCreateSchema } from "../college-validation";
 import { DATA_SCHEMAS } from "../admin-data";
+import { planImages } from "./image-plan";
 import { slugifyCollegeName } from "../college-slug";
-import { IMPORT_FIELDS, REMOVED_COLLEGE_FIELDS, normalize } from "./fields";
+import {
+  IMPORT_FIELDS,
+  MANUAL_IMPORT_FIELDS,
+  importMappingValue,
+  mappedImportField,
+  normalize,
+} from "./fields";
 
 export function importBlogCategory(value: string) {
   const normalized = normalize(value);
@@ -33,6 +40,8 @@ export type ImportOptions = {
   allowUpdates: boolean;
   allowPublish: boolean;
   publishOnImport?: boolean;
+  imageOnly?: boolean;
+  replaceImages?: boolean;
 };
 export type Catalog = Awaited<ReturnType<typeof loadCatalog>>;
 export const DecisionSchema = z
@@ -48,6 +57,8 @@ export const OptionsSchema = z
     allowUpdates: z.boolean().default(false),
     allowPublish: z.boolean().default(false),
     publishOnImport: z.boolean().default(false),
+    imageOnly: z.boolean().optional(),
+    replaceImages: z.boolean().optional(),
   })
   .strict();
 export async function loadCatalog(tx: Prisma.TransactionClient) {
@@ -123,9 +134,10 @@ export function findDuplicates(
 }
 export function mapValues(raw: string[], mapping: Record<string, string>) {
   const data: Record<string, string> = {};
-  for (const [index, key] of Object.entries(mapping))
-    if (key && !REMOVED_COLLEGE_FIELDS.has(key))
-      data[key] = raw[Number(index)] || "";
+  for (const [index, value] of Object.entries(mapping)) {
+    const key = mappedImportField(value);
+    if (key) data[key] = raw[Number(index)] || "";
+  }
   return data;
 }
 function list(value: string) {
@@ -355,6 +367,7 @@ export async function validateRow(
     choice.action === "update"
       ? catalog.colleges.find((c) => c.id === choice.targetId)
       : undefined;
+  const images = sample ? [] : planImages(values, existing, options.replaceImages);
   const profile: Record<string, any> = {},
     programmes: ReturnType<typeof normalizeProgramme>[] = [],
     cutoffs: any[] = [],
@@ -382,6 +395,7 @@ export async function validateRow(
       placements,
       rankings,
       blog,
+      images,
       programmeAdds: 0,
       programmeUpdates: 0,
     };
@@ -401,6 +415,7 @@ export async function validateRow(
       placements,
       rankings,
       blog,
+      images,
       programmeAdds: 0,
       programmeUpdates: 0,
     };
@@ -421,6 +436,15 @@ export async function validateRow(
     errors.push(
       "Possible existing college found. Explicitly confirm Create New, or choose Update/Skip.",
     );
+  if (options.imageOnly) {
+    if (choice.action !== "update") errors.push("Image-only mode requires a confirmed existing college.");
+    return {
+      name: existing?.name || values.name || "(unnamed)",
+      sample, choice, candidates, errors, warnings, profile,
+      programmes, cutoffs, placements, rankings, blog, images,
+      programmeAdds: 0, programmeUpdates: 0,
+    };
+  }
   const simple = [
     "name",
     "slug",
@@ -450,13 +474,11 @@ export async function validateRow(
   for (const key of [
     "websiteUrl",
     "brochurePdfUrl",
-    "logoUrl",
-    "coverImageUrl",
   ])
     if (values[key])
       check(
         key,
-        () => (profile[key] = safeUrl(values[key], /Image|logo/.test(key))),
+        () => (profile[key] = safeUrl(values[key])),
       );
   if (values.contactEmail)
     check(
@@ -483,9 +505,16 @@ export async function validateRow(
       private: "PRIVATE",
       deemed: "DEEMED",
       autonomous: "AUTONOMOUS",
+      aided: "AIDED",
+      governmentaided: "AIDED",
+      publicgovernment: "PUBLIC_GOVERNMENT",
+      deemedtobeuniversity: "DEEMED",
     };
+    const type = normalize(values.ownershipType);
     profile.ownershipType =
-      types[values.ownershipType.toLowerCase()] || values.ownershipType;
+      Object.hasOwn(types, type)
+        ? types[type]
+        : values.ownershipType;
   }
   if (values.approvedBy)
     check("Approvals", () => (profile.approvedBy = list(values.approvedBy)));
@@ -565,14 +594,6 @@ export async function validateRow(
             .max(100)
             .parse(JSON.parse(values[key]))),
       );
-  if (values.galleryUrls)
-    check(
-      "Gallery",
-      () =>
-        (profile.galleryUrls = list(values.galleryUrls).map((url) =>
-          safeUrl(url, true),
-        )),
-    );
   for (const key of ["isPublished", "showInNavbar"])
     if (values[key]) check(key, () => (profile[key] = boolean(values[key])));
   if (options.publishOnImport) {
@@ -601,8 +622,6 @@ export async function validateRow(
     "metaDescription",
     "websiteUrl",
     "brochurePdfUrl",
-    "logoUrl",
-    "coverImageUrl",
     "contactEmail",
     "estYear",
     "nirfRank",
@@ -612,18 +631,18 @@ export async function validateRow(
     "hostelInfo",
     "scholarshipInfo",
     "approvedBy",
-    "galleryUrls",
     "faqsJson",
     "qnaJson",
     "facilitiesJson",
   ]);
   for (const key of choice.clearFields || []) {
+    if (key === "logoUrl" || key === "coverImageUrl" || key === "galleryUrls") continue;
     if (!existing || !clearAllowed.has(key))
       errors.push(
         `Cannot clear ${key}. Choose an optional college field on an existing college.`,
       );
     else
-      profile[key] = ["approvedBy", "galleryUrls"].includes(key)
+      profile[key] = key === "approvedBy"
         ? []
         : ["faqsJson", "qnaJson", "facilitiesJson"].includes(key)
           ? []
@@ -862,10 +881,12 @@ export async function validateRow(
     warnings.push(
       "Formula-like text was treated only as text; spreadsheet code is never executed.",
     );
-  const unmapped = Object.entries(mapping).filter(([, v]) => !v).length;
-  if (unmapped)
+  const ignoredValues = raw.filter(
+    (value, index) => value.trim() && !mappedImportField(mapping[index] || ""),
+  ).length;
+  if (ignoredValues)
     warnings.push(
-      `${unmapped} unmatched column(s) will be ignored. Map them or explicitly leave them ignored.`,
+      `${ignoredValues} populated cell(s) are in ignored columns. Review Column mapping if you want to import them.`,
     );
   return {
     name: values.name || existing?.name || "(unnamed)",
@@ -882,29 +903,28 @@ export async function validateRow(
     blog,
     programmeAdds: programmes.length - programmeUpdates,
     programmeUpdates,
+    images,
   };
 }
 export function validateMapping(
   mapping: Record<string, string>,
   headers: string[],
 ) {
-  const allowed = new Set([
-      ...IMPORT_FIELDS.map((f) => f.key),
-      ...REMOVED_COLLEGE_FIELDS,
-    ]),
+  const allowed = new Set(IMPORT_FIELDS.map((f) => importMappingValue(f.key))),
     seen = new Set<string>();
   for (const [key, value] of Object.entries(mapping)) {
     if (
       !/^\d+$/.test(key) ||
       Number(key) >= headers.length ||
-      (value && !allowed.has(value))
+      (value && !allowed.has(value) && !MANUAL_IMPORT_FIELDS.has(value))
     )
       throw new Error("Invalid column mapping.");
-    if (value && seen.has(value))
+    const field = mappedImportField(value);
+    if (field && seen.has(field))
       throw new Error(
-        `Multiple columns map to ${value}. Choose one or ignore the other.`,
+        `Multiple columns map to ${field}. Choose one or ignore the other.`,
       );
-    if (value) seen.add(value);
+    if (field) seen.add(field);
   }
   if (!seen.has("name") && !seen.has("websiteUrl") && !seen.has("slug"))
     throw new Error(

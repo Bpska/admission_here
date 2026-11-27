@@ -21,6 +21,7 @@ enum OwnershipType {
   PRIVATE
   DEEMED
   AUTONOMOUS
+  AIDED
 }
 
 enum PostStatus {

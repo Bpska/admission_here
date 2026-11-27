@@ -1,3 +1,4 @@
+import { isCollegeOwnershipType } from "@/lib/college-ownership";
 import { programKey } from "@/lib/college-programs";
 import { db } from "@/lib/db";
 import { CollegeCard } from "@/components/public/CollegeCard";
@@ -136,8 +137,8 @@ export default async function CollegesDirectoryPage({
     whereClause.state = { contains: targetState, mode: "insensitive" };
   }
 
-  if (sParams.ownership) {
-    whereClause.ownershipType = sParams.ownership as any;
+  if (sParams.ownership && isCollegeOwnershipType(sParams.ownership)) {
+    whereClause.ownershipType = sParams.ownership;
   }
 
   if (targetStream || targetLevel) {
@@ -192,7 +193,7 @@ export default async function CollegesDirectoryPage({
         { navbarFilter: null, navbarCategory: selectedFilter.category, navbarSection: { in: legacySections } },
       ],
       ...(targetState ? { state: whereClause.state } : {}),
-      ...(sParams.ownership ? { ownershipType: whereClause.ownershipType } : {}),
+      ownershipType: whereClause.ownershipType,
       ...(query && query !== intrinsicQuery ? { AND: whereClause.AND } : {}),
       ...(sParams.maxFees || sParams.level ? { courses: { some: {
         ...(sParams.maxFees ? { totalFeesInr: { lte: parseInt(sParams.maxFees, 10) } } : {}),
@@ -208,7 +209,7 @@ export default async function CollegesDirectoryPage({
 
   const colleges = await db.college.findMany({
     where: directoryWhere,
-    orderBy: [{ nirfRank: "asc" }, { ratingOverall: "desc" }],
+    orderBy: [{ nirfRank: "asc" }, { ratingOverall: "desc" }, { name: "asc" }, { id: "asc" }],
     include: {
       courses: {
         where: whereClause.courses?.some,
@@ -221,7 +222,6 @@ export default async function CollegesDirectoryPage({
         orderBy: { batchYear: "desc" },
       },
     },
-    take: 24,
   });
 
   const breadcrumbs = [
@@ -247,7 +247,7 @@ export default async function CollegesDirectoryPage({
           {targetState ? `in ${targetState}` : ""}
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-          Showing {colleges.length} verified institutions ranked by official NIRF scores and placement records.
+          Showing {colleges.length} published {colleges.length === 1 ? "college" : "colleges"}.
         </p>
       </div>
 

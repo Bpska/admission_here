@@ -1,19 +1,10 @@
 import { NextResponse } from "next/server";
 import { checkAdminAccess } from "@/lib/auth/staff-guard";
 import { db } from "@/lib/db";
+import { imageMimeType, MAX_IMAGE_BYTES } from "@/lib/image-format";
 
 export const runtime = "nodejs";
-const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 const MAX_REQUEST_BYTES = MAX_IMAGE_BYTES + 1024 * 1024;
-
-function imageType(bytes: Uint8Array) {
-  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
-  if ([137, 80, 78, 71, 13, 10, 26, 10].every((value, index) => bytes[index] === value)) return "image/png";
-  const header = Buffer.from(bytes.subarray(0, 12)).toString("ascii");
-  if (header.startsWith("GIF87a") || header.startsWith("GIF89a")) return "image/gif";
-  if (header.startsWith("RIFF") && header.slice(8, 12) === "WEBP") return "image/webp";
-  return null;
-}
 
 export async function POST(request: Request) {
   const purpose = new URL(request.url).searchParams.get("purpose") === "colleges" ? "colleges" : "blogs";
@@ -40,7 +31,7 @@ export async function POST(request: Request) {
     if (!(file instanceof File) || file.size === 0) return NextResponse.json({ error: "Choose a picture." }, { status: 400 });
     if (file.size > MAX_IMAGE_BYTES) return NextResponse.json({ error: "Each picture must be 3 MB or smaller." }, { status: 413 });
     const data = new Uint8Array(await file.arrayBuffer());
-    const mimeType = imageType(data);
+    const mimeType = imageMimeType(data);
     if (!mimeType || file.type !== mimeType) return NextResponse.json({ error: "Use a JPEG, PNG, GIF or WebP picture." }, { status: 400 });
     const image = await db.blogImage.create({ data: { uploaderId: access.userId, mimeType, size: file.size, data } });
     return NextResponse.json({ url: `/api/v1/blog-images/${image.id}`, id: image.id }, { status: 201 });

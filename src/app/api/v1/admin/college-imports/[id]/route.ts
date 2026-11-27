@@ -7,7 +7,7 @@ import {
   limitedBody,
   privateHeaders,
 } from "@/lib/college-import/http";
-import { DecisionSchema, OptionsSchema } from "@/lib/college-import/validate";
+import { DecisionSchema, OptionsSchema, type Plan } from "@/lib/college-import/validate";
 import { LIMITS } from "@/lib/college-import/fields";
 import {
   getImport,
@@ -92,11 +92,12 @@ export async function POST(request: Request, { params }: Context) {
             status: job.status,
             version: job.version,
             visibility: job.visibility,
-            rows: job.rows.map(({ id, status, collegeId, message }) => ({
+            rows: job.rows.map(({ id, status, collegeId, message, preview }) => ({
               id,
               status,
               collegeId,
               message,
+              images: (preview as unknown as Plan).images ?? [],
             })),
           }
         : job;

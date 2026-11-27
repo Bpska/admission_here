@@ -144,6 +144,13 @@ export default async function HomePage() {
             {/* Direct Search Form */}
             <div className="pt-2">
               <HeroSearchBox />
+              <Link
+                href="/colleges"
+                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl border border-blue-200 bg-white px-5 py-2.5 text-sm font-bold text-[#1a3068] transition-colors hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1a3068]"
+              >
+                View all colleges
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
             </div>
 
             {/* Real Data Highlights */}

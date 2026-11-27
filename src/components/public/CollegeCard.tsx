@@ -1,5 +1,6 @@
 "use client";
 
+import { collegeOwnershipLabel } from "@/lib/college-ownership";
 import { collegeProgramHref } from "@/lib/college-programs";
 import { useCollegeComparison } from "./CollegeComparison";
 import Link from "next/link";
@@ -101,7 +102,7 @@ export function CollegeCard({ college, isCompared, onToggleCompare }: CollegeCar
                 </span>
               )}
               <span className="text-[11px] text-muted-foreground">
-                {college.ownershipType.replace("_", " ")}
+                {collegeOwnershipLabel(college.ownershipType)}
               </span>
             </div>
 

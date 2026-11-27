@@ -1,3 +1,4 @@
+import { collegeOwnershipLabel } from "@/lib/college-ownership";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
@@ -23,7 +24,7 @@ export async function GET() {
     markdown += `## College: ${c.name} (${c.shortName || ""})\n`;
     markdown += `- URL: ${baseUrl}/college/${c.slug}\n`;
     markdown += `- Location: ${c.city}, ${c.state}\n`;
-    markdown += `- Ownership: ${c.ownershipType}\n`;
+    markdown += `- Ownership: ${collegeOwnershipLabel(c.ownershipType)}\n`;
     markdown += `- NIRF Engineering/Overall Rank: #${c.nirfRank || "Unranked"}\n`;
     markdown += `- NAAC Accreditation Grade: ${c.naacGrade || "N/A"}\n`;
     markdown += `- Student Rating: ${c.ratingOverall} / 5.0 (${c.reviewCount} reviews)\n`;

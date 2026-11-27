@@ -1,3 +1,4 @@
+import { collegeOwnershipLabel } from "@/lib/college-ownership";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { formatInr } from "@/lib/utils";
@@ -150,7 +151,7 @@ export default async function CollegeComparisonPage({ params }: ComparePageProps
                 <td className="p-4 font-bold text-muted-foreground">Ownership</td>
                 {colleges.map((c) => (
                   <td key={c.id} className="p-4 font-medium">
-                    {c.ownershipType.replace("_", " ")}
+                    {collegeOwnershipLabel(c.ownershipType)}
                   </td>
                 ))}
               </tr>
