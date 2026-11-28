@@ -31,11 +31,7 @@ const FIELD_CATALOG: ImportField[] = [
     label: "College Type",
     hint: "Choose PUBLIC_GOVERNMENT, PRIVATE, DEEMED, AUTONOMOUS or AIDED (government-aided).",
     aliases: ["ownership", "ownership type"],
-<<<<<<< HEAD
-    choices: ["PUBLIC_GOVERNMENT", "PRIVATE", "DEEMED", "AUTONOMOUS", "AIDED"],
-=======
     choices: Object.keys(COLLEGE_OWNERSHIP_LABELS),
->>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
   },
   {
     key: "estYear",

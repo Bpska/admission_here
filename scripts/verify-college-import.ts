@@ -98,7 +98,6 @@ async function main() {
       false,
     );
     passed("One college imports as Draft with missing optional fields");
-<<<<<<< HEAD
     const aidedJob = await finish(
       await newJob(headers, [[`${mark} Aided`, "Test City", "Test State", "AIDED"]]),
     );
@@ -112,20 +111,6 @@ async function main() {
     assert.equal(aidedUpdated.rows[0].status, "UPDATED");
     assert.equal((await db.college.findUniqueOrThrow({ where: { id: firstId } })).ownershipType, "AIDED");
     passed("Aided colleges are saved, existing ownership updates to Aided, and completed retries do not duplicate colleges");
-=======
-    const aided = await finish(
-      await newJob(headers, [
-        [`${mark} Aided`, "Test City", "Test State", "AIDED"],
-        [`${mark} Government Aided`, "Test City", "Test State", "Government Aided"],
-      ]),
-    );
-    for (const row of aided.rows) {
-      assert.equal(row.status, "CREATED");
-      const college = await db.college.findUniqueOrThrow({ where: { id: row.collegeId! } });
-      assert.equal(college.ownershipType, "AIDED");
-    }
-    passed("AIDED and Government Aided both save as AIDED");
->>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
     const batch = await finish(
       await newJob(
         headers,

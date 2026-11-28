@@ -508,23 +508,14 @@ export async function validateRow(
       autonomous: "AUTONOMOUS",
       aided: "AIDED",
       governmentaided: "AIDED",
-<<<<<<< HEAD
       govtaided: "AIDED",
       grantinaid: "AIDED",
-=======
-      publicgovernment: "PUBLIC_GOVERNMENT",
       deemedtobeuniversity: "DEEMED",
->>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
     };
     const type = normalize(values.ownershipType);
-    profile.ownershipType =
-<<<<<<< HEAD
-      types[normalize(values.ownershipType)] || values.ownershipType;
-=======
-      Object.hasOwn(types, type)
-        ? types[type]
-        : values.ownershipType;
->>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
+    profile.ownershipType = Object.hasOwn(types, type)
+      ? types[type]
+      : values.ownershipType;
   }
   if (values.approvedBy)
     check("Approvals", () => (profile.approvedBy = list(values.approvedBy)));
