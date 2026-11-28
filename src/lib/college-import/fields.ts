@@ -1,3 +1,5 @@
+import { COLLEGE_OWNERSHIP_LABELS } from "../college-ownership";
+
 /** Public headings and aliases are shared by the parser, mapping UI and template. */
 export type ImportField = {
   key: string;
@@ -29,7 +31,11 @@ const FIELD_CATALOG: ImportField[] = [
     label: "College Type",
     hint: "Choose PUBLIC_GOVERNMENT, PRIVATE, DEEMED, AUTONOMOUS or AIDED (government-aided).",
     aliases: ["ownership", "ownership type"],
+<<<<<<< HEAD
     choices: ["PUBLIC_GOVERNMENT", "PRIVATE", "DEEMED", "AUTONOMOUS", "AIDED"],
+=======
+    choices: Object.keys(COLLEGE_OWNERSHIP_LABELS),
+>>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
   },
   {
     key: "estYear",
@@ -202,18 +208,18 @@ const FIELD_CATALOG: ImportField[] = [
   {
     key: "logoUrl",
     label: "Logo Image URL",
-    hint: "HTTP(S) image URL or an existing uploaded image URL.",
+    hint: "Public HTTPS image URL or existing uploaded image path. Downloaded when confirmed.",
   },
   {
     key: "coverImageUrl",
     label: "Cover Image URL",
-    hint: "HTTP(S) image URL or an existing uploaded image URL.",
+    hint: "Public HTTPS image URL or existing uploaded image path. Downloaded when confirmed.",
     aliases: ["image urls", "image url"],
   },
   {
     key: "galleryUrls",
     label: "Gallery Image URLs",
-    hint: "JSON array of image URLs or one URL per line. No remote files are fetched.",
+    hint: "Up to 10 public HTTPS image URLs or existing uploaded image paths. Use a JSON array or one URL per line.",
     aliases: ["gallery urls"],
   },
   {
@@ -309,23 +315,25 @@ const FIELD_CATALOG: ImportField[] = [
     hint: "Existing filter identifier; custom filters must first be created in the normal admin form.",
   },
 ];
-export const REMOVED_COLLEGE_FIELDS = new Set([
+export const MANUAL_IMPORT_FIELDS = new Set([
   "nirfRank",
   "cutoffs",
   "rankings",
 ]);
-export const IMPORT_FIELDS = FIELD_CATALOG.filter(
-  (field) => !REMOVED_COLLEGE_FIELDS.has(field.key),
-);
-export function isRemovedImportColumn(heading: string) {
-  return FIELD_CATALOG.some(
-    (field) =>
-      REMOVED_COLLEGE_FIELDS.has(field.key) &&
-      [field.key, field.label, ...(field.aliases || [])].some(
-        (label) => normalize(label) === normalize(heading),
-      ),
-  );
+export const IMPORT_FIELDS = FIELD_CATALOG;
+// Older previews can contain bare mappings for these previously ignored fields.
+export function importMappingValue(key: string) {
+  return MANUAL_IMPORT_FIELDS.has(key) ? `manual:${key}` : key;
 }
+
+export function mappedImportField(value: string) {
+  if (MANUAL_IMPORT_FIELDS.has(value)) return "";
+  return value.startsWith("manual:") ? value.slice("manual:".length) : value;
+}
+
+const AUTOMATIC_IMPORT_FIELDS = IMPORT_FIELDS.filter(
+  (field) => !MANUAL_IMPORT_FIELDS.has(field.key),
+);
 export const PROGRAMME_SAMPLE = [
   {
     ref: "BTECH-CSE",
@@ -372,7 +380,7 @@ export function normalize(value: string) {
 }
 export function autoMapping(headers: string[]) {
   const names = new Map(
-    IMPORT_FIELDS.flatMap((f) =>
+    AUTOMATIC_IMPORT_FIELDS.flatMap((f) =>
       [f.label, f.key, ...(f.aliases || [])].map(
         (n) => [normalize(n), f.key] as const,
       ),

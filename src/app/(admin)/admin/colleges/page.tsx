@@ -1,9 +1,11 @@
+import { collegeOwnershipLabel } from "@/lib/college-ownership";
 import { staffDisplayName } from "@/lib/staff-display";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Building2, Plus, Award, CheckCircle2, Globe2, BookOpen } from "lucide-react";
 import { checkAdminAccess, collegeScope } from "@/lib/auth/staff-guard";
 import { StaffAccessDenied } from "@/components/admin/StaffAccessDenied";
+import { CollegeBulkDelete, CollegeDeleteCheckbox } from "./CollegeBulkDelete";
 import { AdminCollegeActions } from "./AdminCollegeActions";
 import { CollegeBulkSelection, CollegeSelectionCheckbox } from "@/components/admin/CollegeBulkSelection";
 
@@ -54,6 +56,8 @@ export default async function AdminCollegesPage({ searchParams }: {
   const totalCount = colleges.length;
   const publishedCount = colleges.filter((c) => c.isPublished).length;
   const draftCount = totalCount - publishedCount;
+
+  const CollegeSelection = access.isSuperAdmin ? CollegeBulkDelete : ({ children }: { children: React.ReactNode }) => children;
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -168,11 +172,16 @@ export default async function AdminCollegesPage({ searchParams }: {
           <span className="text-[11px]">Click <strong>Edit</strong> to configure fees, hostel, gallery, and SEO tags</span>
         </div>
 
+        <CollegeSelection ids={colleges.map(({ id }) => id)}>
         <div className="divide-y md:hidden">
           {colleges.length === 0 && <p className="p-4 text-sm text-muted-foreground">No college profiles available.</p>}
           {colleges.map(college => <article key={college.id} className="space-y-4 p-4">
             <div className="flex items-start gap-3">
+<<<<<<< HEAD
               {access.isSuperAdmin && <CollegeSelectionCheckbox id={college.id} name={college.name} />}
+=======
+              {access.isSuperAdmin && <CollegeDeleteCheckbox id={college.id} name={college.name} />}
+>>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
               {college.logoUrl ? <img src={college.logoUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg border bg-white p-1 object-contain" /> : <Building2 className="h-9 w-9 shrink-0 rounded-lg bg-muted p-2" />}
               <div className="min-w-0 space-y-1"><h2 className="break-words text-sm font-bold">{college.name}</h2><p className="text-xs text-muted-foreground">{college.city}, {college.state}</p></div>
             </div>
@@ -207,6 +216,7 @@ export default async function AdminCollegesPage({ searchParams }: {
                   {access.isSuperAdmin && <td className="p-4"><CollegeSelectionCheckbox id={c.id} name={c.name} /></td>}
                   <td className="p-4 max-w-xs">
                     <div className="flex items-center gap-2.5">
+                      {access.isSuperAdmin && <CollegeDeleteCheckbox id={c.id} name={c.name} />}
                       {c.logoUrl ? (
                         <img
                           src={c.logoUrl}
@@ -237,7 +247,7 @@ export default async function AdminCollegesPage({ searchParams }: {
 
                   <td className="p-4 whitespace-nowrap">
                     <span className="text-[11px] font-medium text-foreground">
-                      {c.ownershipType.replace(/_/g, " ")}
+                      {collegeOwnershipLabel(c.ownershipType)}
                     </span>
                   </td>
 
@@ -274,7 +284,11 @@ export default async function AdminCollegesPage({ searchParams }: {
             </tbody>
           </table>
         </div>
+<<<<<<< HEAD
         </CollegeBulkSelection>
+=======
+        </CollegeSelection>
+>>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
       </div>
     </div>
   );

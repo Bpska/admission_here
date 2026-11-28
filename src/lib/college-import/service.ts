@@ -4,6 +4,7 @@ import { applyDataMutation } from "../admin-data";
 import { validateCustomNavbarFilter } from "../custom-navbar-filters";
 import { slugifyCollegeName } from "../college-slug";
 import { createHash } from "node:crypto";
+import { applyImportedImages, prepareImageDownloads } from "./image-storage";
 import { LIMITS, normalize } from "./fields";
 import {
   Catalog,
@@ -216,6 +217,10 @@ export async function reviseImport(
         throw new Error(
           "This preview changed in another tab. Reload before editing.",
         );
+      if (
+        Boolean(options.imageOnly) !== Boolean((job.options as ImportOptions).imageOnly) &&
+        job.rows.some((row) => terminal.includes(row.status))
+      ) throw new Error("Start a new import to change image-only mode after rows have completed.");
       validateMapping(mapping, job.headers as string[]);
       if (new Set(changes.map((c) => c.rowNumber)).size !== changes.length)
         throw new Error("Duplicate edited row numbers.");
@@ -503,6 +508,19 @@ async function writePlan(
   return college.id;
 }
 async function importOne(id: string, rowId: string) {
+  const snapshot = await db.collegeImportRow.findUnique({ where: { id: rowId }, include: { import: true } });
+  if (!snapshot || snapshot.importId !== id || snapshot.status !== "PENDING" || snapshot.import.status !== "IMPORTING") return;
+  const options = snapshot.import.options as ImportOptions;
+  const decision = snapshot.decision as Decision;
+  const preview = snapshot.preview as unknown as Plan;
+  // Older previews lack image plans. Rebuild only those before trying downloads.
+  const images = preview.images ?? (await validateRow(
+    snapshot.raw as string[], snapshot.import.mapping as Record<string, string>,
+    decision, options, await loadCatalog(db),
+  )).images;
+  const downloads = decision.action === "skip" || preview.errors.length
+    ? new Map()
+    : await prepareImageDownloads(images);
   for (let attempt = 0; attempt < 3; attempt++)
     try {
       await db.$transaction(
@@ -530,10 +548,16 @@ async function importOne(id: string, rowId: string) {
             await loadCatalog(tx),
           );
           if (plan.errors.length) throw new Error(plan.errors.join("\n"));
+          // Recheck ownership of image fields on the current college under
+          // the same transaction that links successful downloads.
           const collegeId =
             plan.choice.action === "skip"
               ? null
-              : await writePlan(tx, plan, job.actorId);
+              : options.imageOnly
+                ? plan.choice.targetId!
+                : await writePlan(tx, plan, job.actorId);
+          if (collegeId && plan.images.length)
+            plan.images = await applyImportedImages(tx, collegeId, job.actorId, plan.images, downloads);
           await tx.collegeImportRow.update({
             where: { id: rowId },
             data: {
@@ -685,6 +709,8 @@ export async function publishImportedColleges(id: string, version: number) {
       throw new Error(
         "This import changed. Reload its latest results before publishing.",
       );
+    if ((job.options as ImportOptions).imageOnly)
+      throw new Error("An image-only import does not publish colleges.");
     if (!["COMPLETED", "PARTIAL"].includes(job.status))
       throw new Error("Finish the import before publishing its colleges.");
     const ids = [

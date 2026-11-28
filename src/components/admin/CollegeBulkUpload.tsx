@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { imageLabels, storedImageId } from "@/lib/college-import/image-plan";
 import {
   IMPORT_FIELDS,
-  REMOVED_COLLEGE_FIELDS,
-  isRemovedImportColumn,
+  MANUAL_IMPORT_FIELDS,
+  importMappingValue,
+  mappedImportField,
 } from "@/lib/college-import/fields";
 import type {
   Decision,
@@ -67,8 +69,6 @@ const clearable = [
   "metaDescription",
   "websiteUrl",
   "brochurePdfUrl",
-  "logoUrl",
-  "coverImageUrl",
   "contactEmail",
   "estYear",
   "nirfRank",
@@ -78,7 +78,6 @@ const clearable = [
   "hostelInfo",
   "scholarshipInfo",
   "approvedBy",
-  "galleryUrls",
   "faqsJson",
   "qnaJson",
 ];
@@ -212,10 +211,12 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
           ...current,
           status: progress.status,
           visibility: progress.visibility,
-          rows: current.rows.map((row) => ({
-            ...row,
-            ...progress.rows.find((item: Partial<Row>) => item.id === row.id),
-          })),
+          rows: current.rows.map((row) => {
+            const update = progress.rows.find((item: Partial<Row>) => item.id === row.id);
+            if (!update) return row;
+            const { images, ...result } = update;
+            return { ...row, ...result, preview: { ...row.preview, images } };
+          }),
         };
         setJob(current);
         if (current.status !== "IMPORTING") break;
@@ -411,6 +412,14 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
         ],
       ]
     : [];
+  const processedImages = job?.rows.flatMap((row) =>
+    row.status === "CREATED" || row.status === "UPDATED" ? row.preview.images ?? [] : []) ?? [];
+  const imagesSaved = processedImages.filter((image) => image.status === "saved").length;
+  const imageErrors = processedImages.filter((image) => ["failed", "invalid"].includes(image.status)).length;
+  const invalidImageLinks = job?.rows.reduce((count, row) =>
+    count + (row.status === "PENDING" && row.decision.action !== "skip"
+      ? row.preview.images?.filter((image) => image.status === "invalid").length ?? 0
+      : 0), 0) ?? 0;
   const completed =
     job?.rows.filter((r) => r.status !== "PENDING" && r.status !== "FAILED")
       .length || 0;
@@ -456,8 +465,8 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
           <p>
             Maximum 10 MB, 500 college rows, 80 columns. Only .xlsx and UTF-8
             comma-separated .csv are supported. Formulas, macros, merged cells
-            and multiple sheets are rejected. Image links are saved as
-            references; files are not fetched from remote URLs.
+            and multiple sheets are rejected. College images are downloaded after
+            confirmation. Preview thumbnails are available for images already stored on this site.
           </p>
           <p>
             The upload form is set to publish selected colleges when you confirm
@@ -550,7 +559,7 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                     Website visibility: {job.visibility.published} published ·{" "}
                     {job.visibility.draft} Draft
                   </p>
-                  {job.visibility.draft > 0 && (
+                  {!job.options.imageOnly && job.visibility.draft > 0 && (
                     <>
                       <p className="text-sm">
                         Draft colleges are saved, but hidden from the homepage,
@@ -670,11 +679,15 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                 {job.status} · Preview version {job.version}
               </p>
             </div>
+            <p className="text-sm" aria-live="polite">
+              {imagesSaved} images saved · {imageErrors} image errors
+              {invalidImageLinks > 0 && ` · ${invalidImageLinks} invalid image inputs in preview`}
+            </p>
             <a
               href={`/api/v1/admin/college-imports/${job.id}/report`}
               className={button}
             >
-              Download result / error report
+              Download college and image report
             </a>
           </div>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -697,52 +710,83 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
               marked. Select Ignore if they are not needed.
             </p>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {job.headers.map((heading, i) =>
-                isRemovedImportColumn(heading) ||
-                REMOVED_COLLEGE_FIELDS.has(job.mapping[i]) ? null : (
-                  <label className="block space-y-1 text-xs" key={i}>
-                    <span className="font-semibold">
-                      {heading}
-                      {!job.mapping[i] && (
-                        <span className="ml-2 text-amber-700">
-                          Unmatched / ignored
-                        </span>
-                      )}
-                    </span>
-                    <select
-                      disabled={
-                        busy ||
-                        job.status === "IMPORTING" ||
-                        !!job.rows.some(finished)
-                      }
-                      className={fieldStyle}
-                      value={job.mapping[i] || ""}
-                      onChange={(e) =>
-                        edit((j) => ({
-                          ...j,
-                          mapping: { ...j.mapping, [i]: e.target.value },
-                        }))
-                      }
-                    >
-                      <option value="">Ignore this column</option>
-                      {IMPORT_FIELDS.map((f) => (
-                        <option key={f.key} value={f.key}>
-                          {f.label}
-                        </option>
-                      ))}
+              {job.headers.map((heading, i) => (
+                <label className="block space-y-1 text-xs" key={i}>
+                  <span className="font-semibold">
+                    {heading}
+                    {!mappedImportField(job.mapping[i] || "") && (
+                      <span className="ml-2 text-amber-700">
+                        Ignored · {job.rows.filter((row) => row.raw[i]?.trim()).length} populated rows
+                      </span>
+                    )}
+                  </span>
+                  <select
+                    disabled={
+                      busy ||
+                      job.status === "IMPORTING" ||
+                      !!job.rows.some(finished)
+                    }
+                    className={fieldStyle}
+                    value={mappedImportField(job.mapping[i] || "") ? job.mapping[i] : ""}
+                    onChange={(e) =>
+                      edit((j) => ({
+                        ...j,
+                        mapping: { ...j.mapping, [i]: e.target.value },
+                      }))
+                    }
+                  >
+                    <option value="">Ignore this column</option>
+                    {IMPORT_FIELDS.map((f) => (
+                      <option key={f.key} value={importMappingValue(f.key)}>
+                        {f.label}
+                          {MANUAL_IMPORT_FIELDS.has(f.key) && " (manual mapping)"}
+                      </option>
+                    ))}
                     </select>
                   </label>
-                ),
-              )}
+              ))}
             </div>
           </details>
           <section className="space-y-3 rounded-xl border bg-card p-5">
             <h2 className="font-bold">Import permissions</h2>
-            <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
+            <label className="flex items-start gap-3 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1"
+                disabled={busy || job.status === "IMPORTING" || isComplete || job.rows.some(finished)}
+                checked={!!job.options.imageOnly}
+                onChange={(event) => {
+                  const imageOnly = event.target.checked;
+                  edit((current) => ({
+                    ...current,
+                    options: { ...current.options, imageOnly },
+                    rows: current.rows.map((row) =>
+                      imageOnly && row.decision.action === "create"
+                        ? { ...row, decision: { action: "skip" } }
+                        : row),
+                  }));
+                }}
+              />
+              Update images only for selected existing colleges. New colleges are skipped.
+            </label>
+            <label className="flex items-start gap-3 text-sm">
               <input
                 type="checkbox"
                 className="mt-1"
                 disabled={busy || job.status === "IMPORTING" || isComplete}
+                checked={!!job.options.replaceImages}
+                onChange={(event) => {
+                  const replaceImages = event.target.checked;
+                  edit((current) => ({ ...current, options: { ...current.options, replaceImages } }));
+                }}
+              />
+              Replace existing logos, covers and galleries for selected rows with supplied images.
+            </label>
+            <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
+              <input
+                type="checkbox"
+                className="mt-1"
+                disabled={busy || job.status === "IMPORTING" || isComplete || job.options.imageOnly}
                 checked={!!job.options.publishOnImport}
                 onChange={(event) =>
                   edit((current) => ({
@@ -807,7 +851,7 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
               <input
                 type="checkbox"
                 className="mt-1"
-                disabled={busy || job.status === "IMPORTING" || isComplete}
+                disabled={busy || job.status === "IMPORTING" || isComplete || job.options.imageOnly}
                 checked={job.options.allowPublish}
                 onChange={(e) =>
                   edit((j) => ({
@@ -910,6 +954,22 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                         ))}
                       </ul>
                     )}
+                    {!!row.preview.images?.length && (
+                      <ul className="space-y-2 text-sm" aria-label="Image results">
+                        {row.preview.images.map((image, index) => (
+                          <li key={index} className="flex items-start gap-3 break-all">
+                            {image.url && storedImageId(image.url) && (
+                              <img src={image.url} alt={`${imageLabels[image.field]} preview`}
+                                loading="lazy" className="h-12 w-16 shrink-0 rounded border object-contain" />
+                            )}
+                            <span>
+                              <strong>{imageLabels[image.field]}</strong> · {image.message}
+                              {image.source && <span className="block text-xs text-muted-foreground">{image.source}</span>}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {!finished(row) && !row.preview.sample && (
                       <fieldset
                         disabled={
@@ -945,7 +1005,7 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                             <option value="update">
                               Update existing college
                             </option>
-                            <option value="create">Create new college</option>
+                            {!job.options.imageOnly && <option value="create">Create new college</option>}
                           </select>
                         </label>
                         {row.preview.candidates.length > 0 && (
@@ -1006,7 +1066,7 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                               : "I confirm this is a separate institution and should be created despite the possible match."}
                           </label>
                         )}
-                        {row.decision.action === "update" && (
+                        {row.decision.action === "update" && !job.options.imageOnly && (
                           <details>
                             <summary className="cursor-pointer text-sm font-semibold">
                               Explicitly clear existing optional fields
@@ -1092,38 +1152,33 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                           }
                           className="mt-3 grid gap-4 sm:grid-cols-2"
                         >
-                          {job.headers.map((heading, index) =>
-                            isRemovedImportColumn(heading) ||
-                            REMOVED_COLLEGE_FIELDS.has(
-                              job.mapping[index],
-                            ) ? null : (
-                              <label
-                                key={index}
-                                className={`block space-y-1 text-xs ${/json|overview|content|procedure/i.test(heading) ? "sm:col-span-2" : ""}`}
-                              >
-                                <span className="font-semibold">{heading}</span>
-                                <textarea
-                                  className={fieldStyle}
-                                  rows={
-                                    /json|overview|content|procedure/i.test(
-                                      heading,
-                                    )
-                                      ? 5
-                                      : 2
-                                  }
-                                  value={row.raw[index] || ""}
-                                  onChange={(e) =>
-                                    editRow(row.rowNumber, (r) => ({
-                                      ...r,
-                                      raw: r.raw.map((v, i) =>
-                                        i === index ? e.target.value : v,
-                                      ),
-                                    }))
-                                  }
-                                />
-                              </label>
-                            ),
-                          )}
+                          {job.headers.map((heading, index) => (
+                            <label
+                              key={index}
+                              className={`block space-y-1 text-xs ${/json|overview|content|procedure/i.test(heading) ? "sm:col-span-2" : ""}`}
+                            >
+                              <span className="font-semibold">{heading}</span>
+                              <textarea
+                                className={fieldStyle}
+                                rows={
+                                  /json|overview|content|procedure/i.test(
+                                    heading,
+                                  )
+                                    ? 5
+                                    : 2
+                                }
+                                value={row.raw[index] || ""}
+                                onChange={(e) =>
+                                  editRow(row.rowNumber, (r) => ({
+                                    ...r,
+                                    raw: r.raw.map((v, i) =>
+                                      i === index ? e.target.value : v,
+                                    ),
+                                  }))
+                                }
+                              />
+                            </label>
+                          ))}
                         </fieldset>
                       </details>
                     )}
@@ -1193,7 +1248,9 @@ export function CollegeBulkUpload({ initialId }: { initialId?: string }) {
                   </p>
                 )}
               <p className="text-sm font-semibold">
-                {job.options.publishOnImport
+                {job.options.imageOnly
+                  ? "After confirmation: only images on selected existing colleges may change."
+                  : job.options.publishOnImport
                   ? "After confirmation: selected colleges will be published on the website."
                   : "After confirmation: new colleges without a Published status will be saved as Draft."}
               </p>

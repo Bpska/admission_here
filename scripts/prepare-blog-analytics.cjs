@@ -2,7 +2,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 // Legacy installations may have been deployed with db push rather than a
-// migration baseline. Prepare additive analytics/import storage; never run
+// migration baseline. Prepare additive schema changes; never run
 // all historical migrations or reset existing data.
 async function prepareBlogAnalytics(db) {
   return db.$transaction(
@@ -13,13 +13,19 @@ async function prepareBlogAnalytics(db) {
              to_regclass('"BlogQualifiedView"')::text AS qualified,
              to_regclass('"CollegeImport"')::text AS imports,
              to_regclass('"CollegeImportRow"')::text AS import_rows,
-             to_regclass('"AuthThrottle"')::text AS auth_throttle
+             to_regclass('"AuthThrottle"')::text AS auth_throttle,
+             EXISTS (
+               SELECT 1 FROM pg_enum
+               WHERE enumtypid = to_regtype('"OwnershipType"')
+                 AND enumlabel = 'AIDED'
+             ) AS aided_ownership
     `;
       const needed = [
         !tables.visits && "008_blog_visits",
         !tables.qualified && "013_qualified_blog_views",
         (!tables.imports || !tables.import_rows) && "015_college_imports",
         !tables.auth_throttle && "017_user_login",
+        !tables.aided_ownership && "018_aided_college_ownership",
       ].filter(Boolean);
       const [ownership] = await tx.$queryRaw`
         SELECT EXISTS (
@@ -50,7 +56,7 @@ async function prepareBlogAnalytics(db) {
           ),
           "utf8",
         );
-        // These files contain additive CREATE TABLE/INDEX or ALTER TABLE statements.
+        // These files contain additive schema changes without procedural SQL.
         for (const statement of sql
           .split(";")
           .map((part) => part.trim())
@@ -84,8 +90,8 @@ if (require.main === module) {
     .then((created) =>
       console.log(
         created.length
-          ? "Database tables prepared: " + created.join(", ")
-          : "Database tables ready.",
+          ? "Database schema prepared: " + created.join(", ")
+          : "Database schema ready.",
       ),
     )
     .catch((error) => {

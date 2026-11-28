@@ -1,5 +1,6 @@
 "use client";
 
+import { collegeOwnershipLabel } from "@/lib/college-ownership";
 import Link from "next/link";
 import { collegeProgramHref } from "@/lib/college-programs";
 import { usePathname, useRouter } from "next/navigation";
@@ -106,7 +107,7 @@ export function CollegeHeaderClient({ college, previewBasePath, programs = [] }:
                     </span>
                   )}
                   <span className="text-[10px] sm:text-xs font-bold px-2 sm:px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground border">
-                    {college.ownershipType.replace(/_/g, " ")}
+                    {collegeOwnershipLabel(college.ownershipType)}
                   </span>
                 </div>
 

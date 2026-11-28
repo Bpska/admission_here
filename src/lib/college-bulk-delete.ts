@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { db } from "./db";
 
+<<<<<<< HEAD
 export const CollegeBulkDeleteSchema = z.object({
   ids: z.array(z.string().uuid()).min(1, "Select at least one college.").max(10000),
   confirm: z.literal(true),
@@ -28,4 +29,17 @@ export async function deleteSelectedColleges(ids: string[]) {
     }
     return { deletedCount: deleted.count, colleges };
   }, { timeout: 30000 });
+=======
+import { bulkDeleteLimit } from "./college-bulk-delete-limit";
+
+export const bulkDeleteCollegesSchema = z.object({
+  ids: z.array(z.string().uuid().transform((id) => id.toLowerCase())).min(1).max(bulkDeleteLimit),
+  confirm: z.literal(true),
+}).strict();
+
+export async function deleteSelectedColleges(ids: string[]) {
+  const uniqueIds = [...new Set(ids)];
+  const { count } = await db.college.deleteMany({ where: { id: { in: uniqueIds } } });
+  return { deleted: count, missing: uniqueIds.length - count };
+>>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
 }

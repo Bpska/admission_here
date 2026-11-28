@@ -93,7 +93,11 @@ Without `programme`, the existing college-wide placement table is used (one row 
 
 ### Content and images
 
-Normal prose and sanitized HTML are supported. Highlights are appended to the college overview. Admission Eligibility, Important Dates and Admission Link become labelled sections in existing admission content; Facilities and individual facility descriptions populate the existing facilities list. University aliases Affiliation, so two conflicting values are rejected. Image URLs are references, not remote downloads. No workbook code is executed.
+Normal prose and sanitized HTML are supported. Highlights are appended to the college overview. Admission Eligibility, Important Dates and Admission Link become labelled sections in existing admission content; Facilities and individual facility descriptions populate the existing facilities list. University aliases Affiliation, so two conflicting values are rejected. Logo Image URL, Cover Image URL, and Gallery Image URLs accept public HTTPS links and existing uploaded image paths. No workbook code is executed.
+
+The college image preview checks URL format and displays thumbnails for stored image paths. Remote URLs are contacted only after confirmation. Downloads accept JPEG, PNG, GIF and WebP up to 3 MB, with a public IPv4 destination and bounded redirects and time. Images are decoded and stored as WebP (first frame for animations, maximum 2400 pixels per side). The CSV result report includes each image outcome separately from the college row.
+
+For existing colleges, enable **Update images only**, select the matching colleges, and validate. Turn on **Replace existing logos, covers and galleries** only when you intend to replace supplied fields. Blank cells preserve saved images. Failed downloads preserve existing logos and covers, and an incomplete gallery replacement preserves the full existing gallery. To retry failures after a batch finishes, re-upload the affected rows in image-only mode.
 
 College blog title/content create a college-linked Draft article by default. Normalized matching titles update that college's existing article under the update confirmation. The existing article publication state is preserved unless an explicit publish action is requested. Website-listing defaults to No for a new article; omitted listing and category cells preserve an existing article's settings. College Blog Publish = Yes requires publication permission and a published college.
 
@@ -109,7 +113,7 @@ Import previews and history persist in PostgreSQL. They may contain institutiona
 
 New migration: `prisma/migrations/015_college_imports/migration.sql`. It adds only CollegeImport and CollegeImportRow; no existing college schema is changed.
 
-On an already migration-managed deployment, review/apply pending migrations with your normal release procedure (`prisma migrate deploy`) before enabling the page, then regenerate Prisma Client/build. Do not blindly run all historical SQL on an existing database with no migration baseline. The local development database had that condition, so only migration 015 SQL was applied locally. Establish or verify a proper baseline separately before a production rollout. No production database was modified for implementation.
+Build the release with a regenerated Prisma Client. For a migration-managed database, apply pending migrations with `prisma migrate deploy` before startup. Docker and `npm start` run the additive startup preparation, which also supports legacy databases by applying migration 018 when the `AIDED` enum value is missing. If the application database role cannot alter the enum, have the enum owner apply migration 018 before startup. After rollout, revalidate any saved bulk upload preview blocked by the old ownership validation.
 
 Run fixture tests against a disposable/local database:
 
@@ -207,4 +211,4 @@ Regression evidence: `audit/2026-11-20/college-import/publish-on-import-results.
 
 Cutoff and Rankings sections are removed from public college/programme pages, college add/edit forms, section navigation and the course data manager. NIRF Rank entry is removed as well. Existing database records remain intact. Legacy public section URLs redirect to the college/programme overview.
 
-The downloadable single-sheet template and column-mapping options exclude NIRF Rank, Cutoffs JSON and Rankings JSON. These columns in older spreadsheets are ignored, including when revalidating old mappings; they cannot alter the preserved records through bulk upload. Remaining programme, fee, admission, placement, gallery, blog and publication workflows continue to work.
+NIRF Rank, Cutoffs JSON and Rankings JSON are available for explicit selection in Column mapping. They stay ignored by default, including in older previews. The mapping panel shows how many rows have values in each ignored column. Map only verified data that follows the formats in the template.

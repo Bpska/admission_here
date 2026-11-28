@@ -1,5 +1,6 @@
 "use client";
 
+import { COLLEGE_OWNERSHIP_LABELS } from "@/lib/college-ownership";
 import { CollegeBlogsSection } from "@/components/admin/CollegeBlogsSection";
 import { AdminDataEditor } from "@/components/admin/AdminDataEditor";
 import { CollegeSectionNavigation } from "@/components/admin/CollegeSectionNavigation";
@@ -341,11 +342,17 @@ export function EditCollegeClient({ college, approvalRequest }: EditCollegeClien
                 onChange={(e) => setOwnershipType(e.target.value)}
                 className="w-full px-3 py-2 border rounded-lg bg-background"
               >
+<<<<<<< HEAD
                 <option value="PUBLIC_GOVERNMENT">Public / Government</option>
                 <option value="PRIVATE">Private</option>
                 <option value="AIDED">Government Aided</option>
                 <option value="DEEMED">Deemed to be University</option>
                 <option value="AUTONOMOUS">Autonomous</option>
+=======
+                {Object.entries(COLLEGE_OWNERSHIP_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+>>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
               </select>
             </div>
 

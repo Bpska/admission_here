@@ -1,5 +1,6 @@
 "use client";
 
+import { COLLEGE_OWNERSHIP_LABELS } from "@/lib/college-ownership";
 import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Filter, RotateCcw, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
@@ -143,7 +144,11 @@ export function FacetedFilterSidebar({
             {[
               { label: "Public / Government", val: "PUBLIC_GOVERNMENT" },
               { label: "Private", val: "PRIVATE" },
+<<<<<<< HEAD
               { label: "Government Aided", val: "AIDED" },
+=======
+              { label: COLLEGE_OWNERSHIP_LABELS.AIDED, val: "AIDED" },
+>>>>>>> bf39c3e1d53886ab5c3cf73c54160c1ed20f9878
               { label: "Deemed University", val: "DEEMED" },
             ].map((item) => (
               <label

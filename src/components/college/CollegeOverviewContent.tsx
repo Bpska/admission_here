@@ -1,3 +1,4 @@
+import { collegeOwnershipLabel } from "@/lib/college-ownership";
 import { formatInr } from "@/lib/utils";
 import Link from "next/link";
 import {
@@ -71,7 +72,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
             <div className="p-3.5 rounded-xl bg-muted/30 border">
               <span className="text-muted-foreground block text-[11px]">Ownership</span>
               <span className="font-bold text-foreground text-sm">
-                {college.ownershipType.replace(/_/g, " ")}
+                {collegeOwnershipLabel(college.ownershipType)}
               </span>
             </div>
 
@@ -192,7 +193,7 @@ export function CollegeOverviewContent({ college, relatedColleges, previewBasePa
             />
           ) : (
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              {college.name} is a premier {college.ownershipType.replace(/_/g, " ").toLowerCase()} institution located in {college.city}, {college.state}. Renowned for academic rigor, cutting-edge laboratories, and strong industry linkages, it offers comprehensive undergraduate and postgraduate programs.
+              {college.name} is a premier {collegeOwnershipLabel(college.ownershipType).toLowerCase()} institution located in {college.city}, {college.state}. Renowned for academic rigor, cutting-edge laboratories, and strong industry linkages, it offers comprehensive undergraduate and postgraduate programs.
             </p>
           )}
         </section>
